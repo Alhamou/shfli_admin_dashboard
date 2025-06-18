@@ -13,6 +13,7 @@ import { toQueryString } from '@/lib/helpFunctions';
 import { getAllItems } from '@/services/restApiServices';
 import { ICreatMainItem } from '@/interfaces';
 import { CustomBadge } from '@/components/ui/custom-badge';
+import { Eye } from 'lucide-react';
 
 const initialQuery = { page: 1, limit: 25, total: 0 }
 
@@ -69,7 +70,7 @@ const getStatusBadge = (status: 'active' | 'pending' | 'blocked') => {
   return (
     <CustomBadge 
       variant={status} 
-      size="sm"
+      size="lg"
       className="whitespace-nowrap"
     >
       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -87,7 +88,7 @@ const getItemTypeBadge = (itemAs: 'shop' | 'used' | 'job') => {
   return (
     <CustomBadge 
       variant={itemAs} 
-      size="sm"
+      size="lg"
       className="whitespace-nowrap"
     >
       {labels[itemAs]}
@@ -106,7 +107,7 @@ const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
   return (
     <CustomBadge 
       variant={itemFor} 
-      size="sm"
+      size="lg"
       className="whitespace-nowrap"
     >
       {labels[itemFor]}
@@ -115,12 +116,12 @@ const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
 };
 
   return (
-        <div className="container mx-auto py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Items Management</h1>
-      </div>
-      
-      <div className="bg-white rounded-lg shadow p-6">
+<div className="mx-auto py-8">
+  <div className="flex items-center justify-between mb-6">
+    <h1 className="text-2xl font-bold">Items Management</h1>
+  </div>
+  
+  <div className="bg-white rounded-lg shadow p-6">
     <div 
       ref={tableContainerRef}
       className="rounded-md border overflow-auto" 
@@ -134,27 +135,44 @@ const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
             <TableHead>Category</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Location</TableHead>
+            <TableHead>Stats</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {items.map((item,index) => (
+          {items.map((item, index) => (
             <TableRow key={`${index}`}>
               <TableCell className="flex items-center gap-4">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage 
-                    src={item.thumbnail || (item.images && item.images[0]?.url)} 
-                    alt={item.title}
-                  />
-                  <AvatarFallback>
-                    {item.title.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="space-y-1">
-                  <p className="font-medium">{item.title}</p>
-                  <p className="text-sm text-muted-foreground line-clamp-1">
-                    {item.description.substring(0, 50)}...
+                {item.item_as === 'job' ? (
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage 
+                      src={item.thumbnail || (item.images && item.images[0]?.url)} 
+                      alt={item.title}
+                    />
+                    <AvatarFallback>
+                      {item.title.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                ) : (
+                  <div className="relative h-40 w-40 flex-shrink-0">
+                    <img
+                      className="h-full w-full rounded-md object-cover"
+                      src={item.thumbnail || (item.images && item.images[0]?.url)}
+                      alt={item.title}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/placeholder-item.png';
+                      }}
+                    />
+                  </div>
+                )}
+                <div className="space-y-1 flex-1 min-w-0">
+                  <p className="font-medium truncate">{item.title}</p>
+                  <p className={`text-sm text-muted-foreground ${
+                    item.item_as === 'job' ? 'line-clamp-3' : 'line-clamp-2'
+                  }`}>
+                    {item.description}
                   </p>
                 </div>
               </TableCell>
@@ -195,7 +213,36 @@ const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
                 </div>
               </TableCell>
               <TableCell>
-                {getStatusBadge(item.is_active)}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    <span>{item.view_count || 0}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(item.activated_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    User: {item.uuid}
+                  </p>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex flex-col gap-1">
+                  {getStatusBadge(item.is_active)}
+                  {item.account_type && (
+    <CustomBadge 
+      variant={'unknown'} 
+      size="lg"
+      className="whitespace-nowrap"
+    >
+                      {item.account_type}
+                    </CustomBadge>
+                  )}
+                </div>
               </TableCell>
               <TableCell>
                 <button className="text-sm text-primary hover:underline">
@@ -208,7 +255,7 @@ const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
             <>
               {[...Array(pagination.limit)].map((_, i) => (
                 <TableRow key={`loading-${i}`}>
-                  <TableCell colSpan={7}>
+                  <TableCell colSpan={8}>
                     <div className="flex items-center space-x-4 p-4">
                       <Skeleton className="h-12 w-12 rounded-full" />
                       <div className="space-y-2">
@@ -234,7 +281,7 @@ const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
         </div>
       )}
     </div>
-          </div>
-    </div>
+  </div>
+</div>
   );
 }

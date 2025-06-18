@@ -133,6 +133,7 @@ export interface IBaseItem {
 
 export interface ICreatMainItem extends IBaseItem, ItemAd, ICarDetails, IPropertyDetails, IMobileDetails, JobItem {
 client_details?: IUser;
+  account_type: 'individual' | 'business';
 }
 export interface Pagination{
     total: number;
