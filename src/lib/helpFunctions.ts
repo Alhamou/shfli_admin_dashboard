@@ -25,3 +25,19 @@ export const cleanPhoneNumber = (phone: string): string => {
   }
   return phone;
 };
+
+export function toQueryString(parserObject: Record<string, unknown>) {
+  const params = new URLSearchParams();
+
+  Object.keys(parserObject).forEach(key => {
+    const value = parserObject[key];
+
+    if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+      params.append(key, JSON.stringify(value));
+    } else {
+      params.append(key, String(value));
+    }
+  });
+
+  return params.toString();
+}

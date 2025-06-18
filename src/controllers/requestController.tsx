@@ -1,5 +1,6 @@
 import { doSignature } from "@/lib/helpFunctions";
 import storageController from "./storageController";
+import { io, Socket } from "socket.io-client";
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
@@ -122,3 +123,24 @@ export async function handleError(
     );
   }
 }
+
+export const socket: Socket = io("wss://team.shfli.com", {
+  transports: ["websocket"], // Force WebSocket transport
+  autoConnect: false, // We'll manually connect
+  reconnection: true,
+  secure : true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+});
+
+// Utility function to connect with auth if needed
+export const connectSocket = (token: string) => {
+
+    socket.auth = {token : storageController.get('token') };
+  socket.connect();
+};
+
+// Utility function to disconnect
+export const disconnectSocket = () => {
+  socket.disconnect();
+};

@@ -1,97 +1,240 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Activity, DollarSign, TrendingUp } from "lucide-react"
+import { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toQueryString } from '@/lib/helpFunctions';
+import { getAllItems } from '@/services/restApiServices';
+import { ICreatMainItem } from '@/interfaces';
+import { CustomBadge } from '@/components/ui/custom-badge';
 
-const stats = [
-  {
-    title: "Total Users",
-    value: "2,543",
-    description: "+12% from last month",
-    icon: Users,
-  },
-  {
-    title: "Active Sessions",
-    value: "1,234",
-    description: "+5% from last hour",
-    icon: Activity,
-  },
-  {
-    title: "Revenue",
-    value: "$45,231",
-    description: "+20% from last month",
-    icon: DollarSign,
-  },
-  {
-    title: "Growth Rate",
-    value: "12.5%",
-    description: "+2% from last quarter",
-    icon: TrendingUp,
-  },
-]
+const initialQuery = { page: 1, limit: 25, total: 0 }
 
 export default function DashboardHome() {
+  const [items, setItems] = useState<ICreatMainItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState(initialQuery);
+  const [hasMore, setHasMore] = useState(true);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const fetchItems = useCallback(async (page: number, limit: number) => {
+    if (loading) return;
+    
+    setLoading(true);
+    try {
+      const query = toQueryString({ page, limit });
+      const response = await getAllItems(query);
+      setItems(prev => page === 1 ? response.result : [...prev, ...response.result]);
+      setPagination({
+        page,
+        limit,
+        total: response.pagination.total
+      });
+      setHasMore(response.result.length === limit);
+    } catch (error) {
+      console.error('Error fetching items:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    fetchItems(pagination.page, pagination.limit);
+  }, []);
+
+  // Infinite scroll effect
+  useEffect(() => {
+    const container = tableContainerRef.current;
+    if (!container || loading || !hasMore) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      // Load more when we're within 200px of the bottom
+      if (scrollHeight - (scrollTop + clientHeight) < 200) {
+        fetchItems(pagination.page + 1, pagination.limit);
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [loading, hasMore, pagination, fetchItems]);
+
+const getStatusBadge = (status: 'active' | 'pending' | 'blocked') => {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome to your SHFLI admin dashboard</p>
-      </div>
+    <CustomBadge 
+      variant={status} 
+      size="sm"
+      className="whitespace-nowrap"
+    >
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </CustomBadge>
+  );
+};
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">{stat.description}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+const getItemTypeBadge = (itemAs: 'shop' | 'used' | 'job') => {
+  const labels = {
+    shop: 'Shop Item',
+    used: 'Used Item',
+    job: 'Job Offer',
+  };
+  
+  return (
+    <CustomBadge 
+      variant={itemAs} 
+      size="sm"
+      className="whitespace-nowrap"
+    >
+      {labels[itemAs]}
+    </CustomBadge>
+  );
+};
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest activities in your dashboard</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-primary rounded-full" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Activity {i}</p>
-                    <p className="text-xs text-muted-foreground">{i} minutes ago</p>
-                  </div>
+const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
+  const labels = {
+    sale: 'For Sale',
+    rent: 'For Rent',
+    trade: 'For Trade',
+    service: 'Service',
+  };
+  
+  return (
+    <CustomBadge 
+      variant={itemFor} 
+      size="sm"
+      className="whitespace-nowrap"
+    >
+      {labels[itemFor]}
+    </CustomBadge>
+  );
+};
+
+  return (
+        <div className="container mx-auto py-8">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Items Management</h1>
+      </div>
+      
+      <div className="bg-white rounded-lg shadow p-6">
+    <div 
+      ref={tableContainerRef}
+      className="rounded-md border overflow-auto" 
+      style={{ maxHeight: 'calc(100vh - 200px)' }}
+    >
+      <Table>
+        <TableHeader className="sticky top-0 bg-background">
+          <TableRow>
+            <TableHead>Item</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Location</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((item,index) => (
+            <TableRow key={`${index}`}>
+              <TableCell className="flex items-center gap-4">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage 
+                    src={item.thumbnail || (item.images && item.images[0]?.url)} 
+                    alt={item.title}
+                  />
+                  <AvatarFallback>
+                    {item.title.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="space-y-1">
+                  <p className="font-medium">{item.title}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-1">
+                    {item.description.substring(0, 50)}...
+                  </p>
                 </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex flex-col gap-1">
+                  {getItemTypeBadge(item.item_as)}
+                  {item.item_for && getItemForBadge(item.item_for)}
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="space-y-1">
+                  <p>{item.category_name?.en || 'N/A'}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {item.subcategory_name?.en || 'N/A'}
+                  </p>
+                </div>
+              </TableCell>
+              <TableCell>
+                {item.price ? (
+                  <div className="space-y-1">
+                    <p className="font-medium">
+                      {item.price.toLocaleString()} {item.currency}
+                    </p>
+                    {item.discount > 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        Discount: {item.discount}%
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  'N/A'
+                )}
+              </TableCell>
+              <TableCell>
+                <div className="space-y-1">
+                  <p>{item.city}</p>
+                  <p className="text-sm text-muted-foreground">{item.state}</p>
+                </div>
+              </TableCell>
+              <TableCell>
+                {getStatusBadge(item.is_active)}
+              </TableCell>
+              <TableCell>
+                <button className="text-sm text-primary hover:underline">
+                  View
+                </button>
+              </TableCell>
+            </TableRow>
+          ))}
+          {loading && (
+            <>
+              {[...Array(pagination.limit)].map((_, i) => (
+                <TableRow key={`loading-${i}`}>
+                  <TableCell colSpan={7}>
+                    <div className="flex items-center space-x-4 p-4">
+                      <Skeleton className="h-12 w-12 rounded-full" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-[250px]" />
+                        <Skeleton className="h-4 w-[200px]" />
+                      </div>
+                    </div>
+                  </TableCell>
+                </TableRow>
               ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common tasks and shortcuts</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
-                <p className="text-sm font-medium">Add New User</p>
-              </div>
-              <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
-                <p className="text-sm font-medium">Generate Report</p>
-              </div>
-              <div className="p-3 border rounded-lg hover:bg-muted cursor-pointer">
-                <p className="text-sm font-medium">System Settings</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </>
+          )}
+        </TableBody>
+      </Table>
+      {!hasMore && items.length > 0 && (
+        <div className="p-4 text-center text-muted-foreground">
+          No more items to load
+        </div>
+      )}
+      {!loading && items.length === 0 && (
+        <div className="p-4 text-center text-muted-foreground">
+          No items found
+        </div>
+      )}
     </div>
-  )
+          </div>
+    </div>
+  );
 }

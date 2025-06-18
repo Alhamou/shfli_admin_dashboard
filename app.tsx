@@ -1,5 +1,3 @@
-"use client"
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import { useState, createContext, useContext, type ReactNode } from "react"
 import DashboardLayout from "./src/components/dashboard-layout"
@@ -13,6 +11,7 @@ import { signin } from "@/services/authServices"
 import { ILogin, IObjectToken } from "@/interfaces"
 import { saveTokenInLocalStorage } from "@/lib/helpFunctions"
 import {jwtDecode} from 'jwt-decode';
+import storageController from "@/controllers/storageController"
 
 interface AuthContextType {
   isAuthenticated: boolean
@@ -32,7 +31,7 @@ export const useAuth = () => {
 }
 
 function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(storageController.has('token'))
   const [user, setUser] = useState<IObjectToken | null>(null)
 
   const login = async (data : ILogin) => {
