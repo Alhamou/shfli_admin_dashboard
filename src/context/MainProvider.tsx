@@ -28,7 +28,6 @@ export const COUNTRIES: countryCode[] = [
   { code: "JO", name: "Jordan", dialCode: "+962", flag: "🇯🇴" },
   { code: "LB", name: "Lebanon", dialCode: "+961", flag: "🇱🇧" },
   { code: "US", name: "United States", dialCode: "+1", flag: "🇺🇸" },
-  { code: "CA", name: "Canada", dialCode: "+1", flag: "🇨🇦" },
   { code: "GB", name: "United Kingdom", dialCode: "+44", flag: "🇬🇧" },
   { code: "DE", name: "Germany", dialCode: "+49", flag: "🇩🇪" },
   { code: "TR", name: "Turkey", dialCode: "+90", flag: "🇹🇷" },

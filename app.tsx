@@ -35,11 +35,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState<IObjectToken | null>(null)
 
-  const login = async (data : ILogin,asGuest = false) => {
+  const login = async (data : ILogin) => {
     try{
-    if (asGuest) {
-      setUser({ roles : ["user"], phone_number: "+123456789",uuid : '1',account_type : 'individual',email : '',id : 1,phone_verified : true})
-    } else {
 const res = await signin(data)
         if (res.token) {
           saveTokenInLocalStorage(res.token);
@@ -47,7 +44,6 @@ const res = await signin(data)
           setUser(jwtDecode<IObjectToken>(res.token));
         }
           setIsAuthenticated(true)
-    }
     }catch (err){
 
     }

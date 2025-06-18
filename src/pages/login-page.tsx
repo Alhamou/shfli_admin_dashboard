@@ -96,7 +96,7 @@ export const LoginPage = () => {
         </SelectTrigger>
         <SelectContent className="max-h-[300px] overflow-y-auto">
           {countriesDialCodes.map(country => (
-            <SelectItem key={country.code + country.flag} value={country.dialCode}>
+            <SelectItem key={country.code} value={country.dialCode}>
               {country.dialCode} {country.flag}
             </SelectItem>
           ))}
