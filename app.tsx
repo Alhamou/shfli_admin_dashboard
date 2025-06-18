@@ -2,17 +2,22 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import { useState, createContext, useContext, type ReactNode } from "react"
-import DashboardLayout from "./components/dashboard-layout"
-import LoginPage from "./pages/login-page"
-import DashboardHome from "./pages/dashboard-home"
-import UsersPage from "./pages/users-page"
-import AnalyticsPage from "./pages/analytics-page"
-import SettingsPage from "./pages/settings-page"
+import DashboardLayout from "./src/components/dashboard-layout"
+import DashboardHome from "./src/pages/dashboard-home"
+import UsersPage from "./src/pages/users-page"
+import AnalyticsPage from "./src/pages/analytics-page"
+import SettingsPage from "./src/pages/settings-page"
+import { LoginPage } from "./src/pages/login-page"
+import Provider from './src/context/MainProvider';
+import { signin } from "@/services/authServices"
+import { ILogin, IObjectToken } from "@/interfaces"
+import { saveTokenInLocalStorage } from "@/lib/helpFunctions"
+import {jwtDecode} from 'jwt-decode';
 
 interface AuthContextType {
   isAuthenticated: boolean
-  user: { name: string; email: string } | null
-  login: (asGuest?: boolean) => void
+  user: IObjectToken | null
+  login: (data: ILogin, asGuest?: boolean) => Promise<void>
   logout: () => void
 }
 
@@ -28,15 +33,25 @@ export const useAuth = () => {
 
 function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null)
+  const [user, setUser] = useState<IObjectToken | null>(null)
 
-  const login = (asGuest = false) => {
-    setIsAuthenticated(true)
+  const login = async (data : ILogin,asGuest = false) => {
+    try{
     if (asGuest) {
-      setUser({ name: "Guest User", email: "guest@example.com" })
+      setUser({ roles : ["user"], phone_number: "+123456789",uuid : '1',account_type : 'individual',email : '',id : 1,phone_verified : true})
     } else {
-      setUser({ name: "Admin User", email: "admin@shfli.com" })
+const res = await signin(data)
+        if (res.token) {
+          saveTokenInLocalStorage(res.token);
+          setIsAuthenticated(true);
+          setUser(jwtDecode<IObjectToken>(res.token));
+        }
+          setIsAuthenticated(true)
     }
+    }catch (err){
+
+    }
+
   }
 
   const logout = () => {
@@ -55,6 +70,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 export default function App() {
   return (
     <AuthProvider>
+          <Provider>
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -73,6 +89,7 @@ export default function App() {
           </Route>
         </Routes>
       </Router>
+      </Provider>
     </AuthProvider>
   )
 }

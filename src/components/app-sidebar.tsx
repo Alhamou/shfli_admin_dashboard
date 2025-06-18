@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useAuth } from "../app"
+import { useAuth } from "../../app"
 import { Home, Users, BarChart3, Settings, Shield, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -76,8 +76,8 @@ export function AppSidebar() {
       <SidebarFooter className="border-t p-4">
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-sm font-medium">{user?.name}</span>
-            <span className="text-xs text-muted-foreground">{user?.email}</span>
+            <span className="text-sm font-medium">{user?.uuid}</span>
+            <span className="text-xs text-muted-foreground">{user?.phone_number}</span>
           </div>
           <Button variant="ghost" size="sm" onClick={logout}>
             <LogOut className="h-4 w-4" />
