@@ -14,6 +14,7 @@ import { getAllItems } from '@/services/restApiServices';
 import { ICreatMainItem } from '@/interfaces';
 import { CustomBadge } from '@/components/ui/custom-badge';
 import { Eye } from 'lucide-react';
+import { ItemDetailView } from '@/components/ViewItem';
 
 const initialQuery = { page: 1, limit: 25, total: 0 }
 
@@ -23,6 +24,7 @@ export default function DashboardHome() {
   const [pagination, setPagination] = useState(initialQuery);
   const [hasMore, setHasMore] = useState(true);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
 
   const fetchItems = useCallback(async (page: number, limit: number) => {
     if (loading) return;
@@ -245,9 +247,12 @@ const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
                 </div>
               </TableCell>
               <TableCell>
-                <button className="text-sm text-primary hover:underline">
-                  View
-                </button>
+<button 
+  className="text-sm text-primary hover:underline"
+  onClick={() => setSelectedItemUuid(item.uuid)}
+>
+  View
+</button>
               </TableCell>
             </TableRow>
           ))}
@@ -282,6 +287,11 @@ const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
       )}
     </div>
   </div>
+<ItemDetailView
+  uuid={selectedItemUuid || ''}
+  open={!!selectedItemUuid}
+  onClose={() => setSelectedItemUuid(null)}
+/>
 </div>
   );
 }

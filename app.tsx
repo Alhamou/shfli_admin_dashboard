@@ -12,6 +12,7 @@ import { ILogin, IObjectToken } from "@/interfaces"
 import { saveTokenInLocalStorage } from "@/lib/helpFunctions"
 import {jwtDecode} from 'jwt-decode';
 import storageController from "@/controllers/storageController"
+import { Toaster } from "sonner"
 
 interface AuthContextType {
   isAuthenticated: boolean
@@ -66,6 +67,7 @@ export default function App() {
   return (
     <AuthProvider>
           <Provider>
+            
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -84,6 +86,7 @@ export default function App() {
           </Route>
         </Routes>
       </Router>
+                    <Toaster position="top-right" richColors closeButton />
       </Provider>
     </AuthProvider>
   )

@@ -106,7 +106,7 @@ export interface IBaseItem {
   is_active: 'active' | 'pending' | 'blocked';
   item_as: 'shop' | 'used' | 'job';
   section: 1 | 2;
-  images: any; // JSONB field, adjust as needed
+  images: {posistion : number,title : string,url : string}[]; // JSONB field, adjust as needed
   thumbnail?: string | null;
   activated_at: Date;
   deleted_at?: Date | null;
