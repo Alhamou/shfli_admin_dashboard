@@ -9,12 +9,14 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { toQueryString } from '@/lib/helpFunctions';
+import { toQueryString, updateItemInArray } from '@/lib/helpFunctions';
 import { getAllItems } from '@/services/restApiServices';
 import { ICreatMainItem } from '@/interfaces';
 import { CustomBadge } from '@/components/ui/custom-badge';
 import { Eye } from 'lucide-react';
 import { ItemDetailView } from '@/components/ViewItem';
+import { connectSocket, socket } from '@/controllers/requestController';
+import storageController from '@/controllers/storageController';
 
 const initialQuery = { page: 1, limit: 25, total: 0 }
 
@@ -51,6 +53,18 @@ export default function DashboardHome() {
     fetchItems(pagination.page, pagination.limit);
   }, []);
 
+  const handleItemUpdate = useCallback((updatedItem: ICreatMainItem) => {
+  // Update items in the table
+  setItems(prev => updateItemInArray(prev, updatedItem));
+  
+  // If the updated item is currently being viewed, update it in the dialog
+  if (selectedItemUuid === updatedItem.uuid) {
+    // This will trigger a refetch in ItemDetailView
+    setSelectedItemUuid(null);
+    setTimeout(() => setSelectedItemUuid(updatedItem.uuid), 0);
+  }
+}, [selectedItemUuid]);
+
   // Infinite scroll effect
   useEffect(() => {
     const container = tableContainerRef.current;
@@ -67,6 +81,32 @@ export default function DashboardHome() {
     container.addEventListener('scroll', handleScroll);
     return () => container.removeEventListener('scroll', handleScroll);
   }, [loading, hasMore, pagination, fetchItems]);
+
+     useEffect(() => {
+    connectSocket();
+
+    // Set up event listeners
+    socket.on("connect", () => {
+      console.log("Connected to socket server");
+    });
+
+    socket.on("message", (message) => {
+      console.log('new item added')
+       setItems(prev => [message, ...prev]);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from socket server");
+    });
+
+    // Clean up on unmount
+    return () => {
+      socket.off("connect");
+      socket.off("message");
+      socket.off("disconnect");
+      socket.disconnect();
+    };
+  }, []);
 
 const getStatusBadge = (status: 'active' | 'pending' | 'blocked') => {
   return (
@@ -291,6 +331,7 @@ const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
   uuid={selectedItemUuid || ''}
   open={!!selectedItemUuid}
   onClose={() => setSelectedItemUuid(null)}
+  onItemUpdate={handleItemUpdate}
 />
 </div>
   );

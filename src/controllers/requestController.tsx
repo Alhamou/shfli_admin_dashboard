@@ -134,7 +134,7 @@ export const socket: Socket = io("wss://team.shfli.com", {
 });
 
 // Utility function to connect with auth if needed
-export const connectSocket = (token: string) => {
+export const connectSocket = () => {
 
     socket.auth = {token : storageController.get('token') };
   socket.connect();

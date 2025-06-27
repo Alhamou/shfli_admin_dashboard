@@ -41,3 +41,10 @@ export function toQueryString(parserObject: Record<string, unknown>) {
 
   return params.toString();
 }
+
+export const updateItemInArray = <T extends { uuid: string }>(
+  array: T[],
+  updatedItem: T
+): T[] => {
+  return array.map(item => item.uuid === updatedItem.uuid ? updatedItem : item);
+};

@@ -18,7 +18,10 @@ export function getItem(uuid: string){
 }
 
 export function updateItem(uuid: string, status_note : string, is_active : string){
-  return put<ICreatMainItem>(`/items/${uuid}`,{status_note : is_active === 'active' ? null : status_note,is_active})
+  return put<ICreatMainItem>(`/items/${uuid}`, {
+    ...(is_active === "active" ? {} : { status_note }),
+    is_active,
+  });
 }
 
 export function getReasons(){

@@ -1,5 +1,8 @@
 {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": null,
-    "editor.formatOnSaveMode": "modificationsIfAvailable"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }
