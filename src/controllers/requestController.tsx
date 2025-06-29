@@ -124,19 +124,29 @@ export async function handleError(
   }
 }
 
+const token = storageController.get("token");
+
 export const socket: Socket = io("wss://team.shfli.com", {
-  transports: ["websocket"], // Force WebSocket transport
-  autoConnect: false, // We'll manually connect
-  reconnection: true,
-  secure : true,
+  transports: ["polling"],
+  autoConnect: false,
   reconnectionAttempts: 5,
-  reconnectionDelay: 1000,
+  extraHeaders: {
+    Authorization: `Bearer ${token}`,
+  },
+  reconnection: false,
 });
 
 // Utility function to connect with auth if needed
 export const connectSocket = () => {
+  if (!token) {
+    console.error("No token exists in storage");
+    return false;
+  }
 
-    socket.auth = {token : storageController.get('token') };
+  // Close any existing connection
+  if (socket.connected) socket.disconnect();
+
+  socket.auth = { token };
   socket.connect();
 };
 

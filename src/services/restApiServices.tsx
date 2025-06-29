@@ -14,7 +14,7 @@ export function getAllItems(queries: string){
 }
 
 export function getItem(uuid: string){
-  return get<{result : ICreatMainItem[]}>(`/items?uuid=${uuid}`)
+  return get<ICreatMainItem[]>(`/items/details?uuid=${uuid}`);
 }
 
 export function updateItem(uuid: string, status_note : string, is_active : string){

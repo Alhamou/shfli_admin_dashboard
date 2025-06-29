@@ -16,7 +16,6 @@ import { CustomBadge } from '@/components/ui/custom-badge';
 import { Eye } from 'lucide-react';
 import { ItemDetailView } from '@/components/ViewItem';
 import { connectSocket, socket } from '@/controllers/requestController';
-import storageController from '@/controllers/storageController';
 
 const initialQuery = { page: 1, limit: 25, total: 0 }
 
@@ -78,32 +77,37 @@ export default function DashboardHome() {
       }
     };
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
   }, [loading, hasMore, pagination, fetchItems]);
 
-     useEffect(() => {
+  console.log(items);
+
+  // In your component
+  useEffect(() => {
+    // Connect with error handling
     connectSocket();
 
-    // Set up event listeners
-    socket.on("connect", () => {
-      console.log("Connected to socket server");
-    });
+    // Debug events
+    const onConnect = () => {
+      console.log("Connected socket");
+    };
 
-    socket.on("message", (message) => {
-      console.log('new item added')
-       setItems(prev => [message, ...prev]);
-    });
+    const onError = (err: Error) => {
+      console.error("Socket error:", err.message);
+    };
+    const onMessage = (message: ICreatMainItem) => {
+      console.log("new item received", message);
+      setItems((prev) => [message, ...prev]);
+    };
 
-    socket.on("disconnect", () => {
-      console.log("Disconnected from socket server");
-    });
+    socket.on("connect", onConnect);
+    socket.on("connect_error", onError);
+    socket.on("message", onMessage);
 
-    // Clean up on unmount
     return () => {
-      socket.off("connect");
-      socket.off("message");
-      socket.off("disconnect");
+      socket.off("connect", onConnect);
+      socket.off("connect_error", onError);
       socket.disconnect();
     };
   }, []);

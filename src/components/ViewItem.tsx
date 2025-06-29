@@ -43,8 +43,8 @@ export function ItemDetailView({
     setError(null);
     try {
       const data = await getItem(uuid);
-      setItem(data.result[0]);
-      return data.result[0];
+      setItem(data[0]);
+      return data[0];
     } catch (err) {
       setError("Failed to load item details");
       toast.error("Could not fetch item details");
