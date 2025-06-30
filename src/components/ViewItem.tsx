@@ -117,12 +117,14 @@ export function ItemDetailView({
 
     setUpdatingStatus(true);
     try {
-      let description = item.description;
+      let description : string | null = item.description;
 
       if (newStatus === "blocked") {
         description = `${
           selectedReason === "Other" ? customReason : selectedReason
         }`;
+      }else{
+        description = null;
       }
 
       await updateItem(item.uuid,{status_note : description,is_active : newStatus});

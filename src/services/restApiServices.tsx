@@ -18,9 +18,12 @@ export function getItem(uuid: string){
 }
 
 export function updateItem(uuid: string, body : ICreatMainItem | Partial<ICreatMainItem>){
-  console.log(body)
+  console.log({
+    ...(body.is_active === "active" ? {status_note : null} : { status_note : body.status_note }),
+    ...body
+  })
   return put<ICreatMainItem>(`/items/${uuid}`, {
-    ...(body.is_active === "active" ? {} : { status_note : body.status_note }),
+    ...(body.is_active === "active" ? {status_note : null} : { status_note : body.status_note }),
     ...body
   });
 }
