@@ -17,10 +17,11 @@ export function getItem(uuid: string){
   return get<ICreatMainItem[]>(`/items/details?uuid=${uuid}`);
 }
 
-export function updateItem(uuid: string, status_note : string, is_active : string){
+export function updateItem(uuid: string, body : ICreatMainItem | Partial<ICreatMainItem>){
+  console.log(body)
   return put<ICreatMainItem>(`/items/${uuid}`, {
-    ...(is_active === "active" ? {} : { status_note }),
-    is_active,
+    ...(body.is_active === "active" ? {} : { status_note : body.status_note }),
+    ...body
   });
 }
 

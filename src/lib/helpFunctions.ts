@@ -48,3 +48,31 @@ export const updateItemInArray = <T extends { uuid: string }>(
 ): T[] => {
   return array.map(item => item.uuid === updatedItem.uuid ? updatedItem : item);
 };
+
+export async function playAudioWithWebAudio(url: string): Promise<void> {
+    try {
+        // Create audio context
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        
+        // Fetch the audio file
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        
+        // Decode the audio data
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        
+        // Create a source node
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        
+        // Connect to destination (speakers)
+        source.connect(audioContext.destination);
+        
+        // Start playing
+        source.start(0);
+        
+        console.log('Audio is playing with Web Audio API');
+    } catch (error) {
+        console.error('Error with Web Audio API:', error);
+    }
+}

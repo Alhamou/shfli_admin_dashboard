@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { toQueryString, updateItemInArray } from '@/lib/helpFunctions';
+import { playAudioWithWebAudio, toQueryString, updateItemInArray } from '@/lib/helpFunctions';
 import { getAllItems } from '@/services/restApiServices';
 import { ICreatMainItem } from '@/interfaces';
 import { CustomBadge } from '@/components/ui/custom-badge';
@@ -83,34 +83,47 @@ export default function DashboardHome() {
 
   console.log(items);
 
-  // In your component
-  useEffect(() => {
-    // Connect with error handling
-    connectSocket();
+useEffect(() => {
+  // Connect with error handling
+  connectSocket();
 
-    // Debug events
-    const onConnect = () => {
-      console.log("Connected socket");
-    };
+  // Debug events
+  const onConnect = () => {
+    console.log("Connected socket");
+  };
 
-    const onError = (err: Error) => {
-      console.error("Socket error:", err.message);
-    };
-    const onMessage = (message: ICreatMainItem) => {
-      console.log("new item received", message);
-      setItems((prev) => [message, ...prev]);
-    };
+  const onError = (err: Error) => {
+    console.error("Socket error:", err.message);
+  };
 
-    socket.on("connect", onConnect);
-    socket.on("connect_error", onError);
-    socket.on("message", onMessage);
+  const onMessage = (message: ICreatMainItem) => {
+    console.log("new item received", message);
+    setItems((prev) => [message, ...prev]);
+    playAudioWithWebAudio('/twinkle.mp3');
+  };
 
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("connect_error", onError);
-      socket.disconnect();
-    };
-  }, []);
+  // Connection check interval
+  const checkConnectionInterval = setInterval(() => {
+    if (!socket.connected) {
+      console.log('Socket disconnected, attempting to reconnect...');
+      socket.connect();
+    }
+  }, 5000); // Check every 5 seconds
+
+  // Setup event listeners
+  socket.on("connect", onConnect);
+  socket.on("connect_error", onError);
+  socket.on("message", onMessage);
+
+  return () => {
+    // Cleanup
+    clearInterval(checkConnectionInterval);
+    socket.off("connect", onConnect);
+    socket.off("connect_error", onError);
+    socket.off("message", onMessage);
+    socket.disconnect();
+  };
+}, []);
 
 const getStatusBadge = (status: 'active' | 'pending' | 'blocked') => {
   return (
