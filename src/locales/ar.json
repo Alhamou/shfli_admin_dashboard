@@ -1,0 +1,129 @@
+{
+  "dashboard": {
+    "title": "إدارة العناصر",
+    "searchPlaceholder": "ابحث عن العناصر...",
+    "tableHeaders": {
+      "item": "العنصر",
+      "type": "النوع",
+      "category": "الفئة",
+      "price": "السعر",
+      "location": "الموقع",
+      "stats": "الإحصائيات",
+      "status": "الحالة",
+      "actions": "الإجراءات"
+    },
+    "statusTypes": {
+      "active": "نشط",
+      "pending": "قيد الانتظار",
+      "blocked": "محظور"
+    },
+    "itemTypes": {
+      "shop": "متجر",
+      "used": "مستعمل",
+      "job": "عرض عمل"
+    },
+    "itemFor": {
+      "sale": "للبيع",
+      "rent": "للإيجار",
+      "trade": "للتجارة",
+      "service": "خدمة"
+    },
+    "messages": {
+      "noMoreItems": "لا توجد عناصر أخرى",
+      "noItemsFound": "لم يتم العثور على عناصر",
+      "view": "عرض",
+      "discount": "خصم",
+      "user": "المستخدم",
+      "notAvailable": "غير متوفر"
+    }
+  },
+  "dialog": {
+    "itemDetails": "تفاصيل العنصر",
+    "buttons": {
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "edit": "تعديل",
+      "retry": "إعادة المحاولة",
+      "confirm": "تأكيد",
+      "block": "حظر الإعلان",
+      "unblock": "إلغاء حظر الإعلان",
+      "message": "رسالة",
+      "share": "مشاركة",
+      "report": "الإبلاغ"
+    },
+    "labels": {
+      "title": "العنوان",
+      "description": "الوصف",
+      "location": "الموقع",
+      "whatsappContact": "واتساب للتواصل",
+      "stats": "الإحصائيات",
+      "views": "المشاهدات",
+      "favorites": "المفضلة",
+      "created": "تاريخ الإنشاء",
+      "jobDetails": "تفاصيل الوظيفة",
+      "jobType": "نوع الوظيفة",
+      "remoteJob": "وظيفة عن بعد",
+      "companyName": "اسم الشركة",
+      "companyWebsite": "موقع الشركة",
+      "companyPhone": "هاتف الشركة",
+      "companyEmail": "بريد الشركة",
+      "employeeLooking": "موظف يبحث عن عمل",
+      "companyLooking": "شركة تبحث عن موظف",
+      "itemDetails": "تفاصيل العنصر",
+      "storage": "التخزين",
+      "ram": "الذاكرة العشوائية",
+      "operatingSystem": "نظام التشغيل",
+      "screenSize": "حجم الشاشة",
+      "battery": "البطارية",
+      "camera": "الكاميرا",
+      "color": "اللون",
+      "condition": "الحالة",
+      "mileage": "المسافة المقطوعة",
+      "transmission": "ناقل الحركة",
+      "year": "السنة",
+      "fuelType": "نوع الوقود",
+      "area": "المساحة",
+      "bedrooms": "غرف النوم",
+      "bathrooms": "الحمامات",
+      "floor": "الطابق",
+      "yearBuilt": "سنة البناء",
+      "furnished": "مفروشة",
+      "price": "السعر",
+      "reserved": "محجوز",
+      "discountEndDate": "تاريخ انتهاء الخصم",
+      "status": "الحالة",
+      "selectReason": "اختر سبب الحظر",
+      "specifyReason": "الرجاء تحديد السبب..."
+    },
+    "messages": {
+      "noImages": "لا توجد صور",
+      "yes": "نعم",
+      "no": "لا",
+      "loading": "جاري التحميل...",
+      "blockReason": {
+        "title": "اختر سبب الحظر",
+        "other": "أخرى"
+      }
+    }
+  },
+  "messages": {
+    "loadingError": "فشل تحميل تفاصيل العنصر",
+    "fetchError": "تعذر جلب تفاصيل العنصر",
+    "updateSuccess": "تم تحديث العنصر بنجاح",
+    "updateError": "فشل تحديث العنصر",
+    "reasonsError": "تعذر جلب أسباب الحظر",
+    "statusUpdateSuccess": "تم تحديث حالة العنصر",
+    "statusUpdateError": "فشل تحديث حالة العنصر"
+  },
+    "editableField": {
+    "employeeLooking": "موظف يبحث عن عمل",
+    "companyLooking": "شركة تبحث عن موظف",
+    "notAvailable": "غير متوفر"
+  },
+  "theme": {
+    "toggle": "تبديل اللون",
+    "light": "ساطع",
+    "dark": "غامق",
+    "system": "لون النظام"
+  }
+}

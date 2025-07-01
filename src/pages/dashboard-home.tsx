@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -6,33 +6,44 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
-import { playAudioWithWebAudio, toQueryString, updateItemInArray } from '@/lib/helpFunctions';
-import { getAllItems } from '@/services/restApiServices';
-import { ICreatMainItem } from '@/interfaces';
-import { CustomBadge } from '@/components/ui/custom-badge';
-import { Eye } from 'lucide-react';
-import { ItemDetailView } from '@/components/ViewItem';
-import { connectSocket, socket } from '@/controllers/requestController';
+} from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  isUUIDv4,
+  playAudioWithWebAudio,
+  toQueryString,
+  updateItemInArray,
+} from "@/lib/helpFunctions";
+import { getAllItems } from "@/services/restApiServices";
+import { ICreatMainItem } from "@/interfaces";
+import { CustomBadge } from "@/components/ui/custom-badge";
+import { Eye } from "lucide-react";
+import { ItemDetailView } from "@/components/ViewItem";
+import { connectSocket, socket } from "@/controllers/requestController";
+import { Input } from "@/components/ui/input";
+import {useTranslation} from 'react-i18next'
 
-const initialQuery = { page: 1, limit: 25, total: 0 }
+const initialQuery = { page: 1, limit: 25, total: 0 };
 
 export default function DashboardHome() {
+    const { t } = useTranslation();
   const [items, setItems] = useState<ICreatMainItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState(initialQuery);
   const [hasMore, setHasMore] = useState(true);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const searchTimeoutRef = useRef<any>(); 
 
-  const fetchItems = useCallback(async (page: number, limit: number) => {
+  const fetchItems = useCallback(async (page: number, limit: number, search : string = '') => {
     if (loading) return;
     
     setLoading(true);
     try {
-      const query = toQueryString({ page, limit });
+
+      const query = toQueryString({ page, limit, ...(search !== '' ? isUUIDv4(search) ? {uuid : search} : {id : search} : {}) });
       const response = await getAllItems(query);
       setItems(prev => page === 1 ? response.result : [...prev, ...response.result]);
       setPagination({
@@ -48,21 +59,51 @@ export default function DashboardHome() {
     }
   }, [loading]);
 
+  // Handle search input change with debounce
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    // Set new timeout
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchItems(1, pagination.limit, value);
+    }, 500);
+  };
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Initial fetch
   useEffect(() => {
     fetchItems(pagination.page, pagination.limit);
   }, []);
 
-  const handleItemUpdate = useCallback((updatedItem: ICreatMainItem) => {
-  // Update items in the table
-  setItems(prev => updateItemInArray(prev, updatedItem));
-  
-  // If the updated item is currently being viewed, update it in the dialog
-  if (selectedItemUuid === updatedItem.uuid) {
-    // This will trigger a refetch in ItemDetailView
-    setSelectedItemUuid(null);
-    setTimeout(() => setSelectedItemUuid(updatedItem.uuid), 0);
-  }
-}, [selectedItemUuid]);
+
+  const handleItemUpdate = useCallback(
+    (updatedItem: ICreatMainItem) => {
+      // Update items in the table
+      setItems((prev) => updateItemInArray(prev, updatedItem));
+
+      // If the updated item is currently being viewed, update it in the dialog
+      if (selectedItemUuid === updatedItem.uuid) {
+        // This will trigger a refetch in ItemDetailView
+        setSelectedItemUuid(null);
+        setTimeout(() => setSelectedItemUuid(updatedItem.uuid), 0);
+      }
+    },
+    [selectedItemUuid]
+  );
 
   // Infinite scroll effect
   useEffect(() => {
@@ -83,273 +124,242 @@ export default function DashboardHome() {
 
   console.log(items);
 
-useEffect(() => {
-  // Connect with error handling
-  connectSocket();
+  useEffect(() => {
+    // Connect with error handling
+    connectSocket();
 
-  // Debug events
-  const onConnect = () => {
-    console.log("Connected socket");
+    // Debug events
+    const onConnect = () => {
+      console.log("Connected socket");
+    };
+
+    const onError = (err: Error) => {
+      console.error("Socket error:", err.message);
+    };
+
+    const onMessage = (message: ICreatMainItem) => {
+      console.log("new item received", message);
+      setItems((prev) => [message, ...prev]);
+      playAudioWithWebAudio("/twinkle.mp3");
+    };
+
+    // Connection check interval
+    const checkConnectionInterval = setInterval(() => {
+      if (!socket.connected) {
+        console.log("Socket disconnected, attempting to reconnect...");
+        socket.connect();
+      }
+    }, 5000); // Check every 5 seconds
+
+    // Setup event listeners
+    socket.on("connect", onConnect);
+    socket.on("connect_error", onError);
+    socket.on("message", onMessage);
+
+    return () => {
+      // Cleanup
+      clearInterval(checkConnectionInterval);
+      socket.off("connect", onConnect);
+      socket.off("connect_error", onError);
+      socket.off("message", onMessage);
+      socket.disconnect();
+    };
+  }, []);
+
+  const getStatusBadge = (status: "active" | "pending" | "blocked") => {
+    return (
+      <CustomBadge variant={status} size="lg" className="whitespace-nowrap">
+        {t(`dashboard.statusTypes.${status}`)}
+      </CustomBadge>
+    );
   };
-
-  const onError = (err: Error) => {
-    console.error("Socket error:", err.message);
-  };
-
-  const onMessage = (message: ICreatMainItem) => {
-    console.log("new item received", message);
-    setItems((prev) => [message, ...prev]);
-    playAudioWithWebAudio('/twinkle.mp3');
-  };
-
-  // Connection check interval
-  const checkConnectionInterval = setInterval(() => {
-    if (!socket.connected) {
-      console.log('Socket disconnected, attempting to reconnect...');
-      socket.connect();
-    }
-  }, 5000); // Check every 5 seconds
-
-  // Setup event listeners
-  socket.on("connect", onConnect);
-  socket.on("connect_error", onError);
-  socket.on("message", onMessage);
-
-  return () => {
-    // Cleanup
-    clearInterval(checkConnectionInterval);
-    socket.off("connect", onConnect);
-    socket.off("connect_error", onError);
-    socket.off("message", onMessage);
-    socket.disconnect();
-  };
-}, []);
-
-const getStatusBadge = (status: 'active' | 'pending' | 'blocked') => {
-  return (
-    <CustomBadge 
-      variant={status} 
-      size="lg"
-      className="whitespace-nowrap"
-    >
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </CustomBadge>
-  );
-};
-
-const getItemTypeBadge = (itemAs: 'shop' | 'used' | 'job') => {
-  const labels = {
-    shop: 'Shop Item',
-    used: 'Used Item',
-    job: 'Job Offer',
-  };
-  
-  return (
-    <CustomBadge 
-      variant={itemAs} 
-      size="lg"
-      className="whitespace-nowrap"
-    >
-      {labels[itemAs]}
-    </CustomBadge>
-  );
-};
-
-const getItemForBadge = (itemFor: 'sale' | 'rent' | 'trade' | 'service') => {
-  const labels = {
-    sale: 'For Sale',
-    rent: 'For Rent',
-    trade: 'For Trade',
-    service: 'Service',
-  };
-  
-  return (
-    <CustomBadge 
-      variant={itemFor} 
-      size="lg"
-      className="whitespace-nowrap"
-    >
-      {labels[itemFor]}
-    </CustomBadge>
-  );
-};
 
   return (
-<div className="mx-auto py-8">
-  <div className="flex items-center justify-between mb-6">
-    <h1 className="text-2xl font-bold">Items Management</h1>
-  </div>
-  
-  <div className="bg-white rounded-lg shadow p-6">
-    <div 
-      ref={tableContainerRef}
-      className="rounded-md border overflow-auto" 
-      style={{ maxHeight: 'calc(100vh - 200px)' }}
-    >
-      <Table>
-        <TableHeader className="sticky top-0 bg-background">
-          <TableRow>
-            <TableHead>Item</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Stats</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map((item, index) => (
-            <TableRow key={`${index}`}>
-              <TableCell className="flex items-center gap-4">
-                {item.item_as === 'job' ? (
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage 
-                      src={item.thumbnail || (item.images && item.images[0]?.url)} 
-                      alt={item.title}
-                    />
-                    <AvatarFallback>
-                      {item.title.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <div className="relative h-40 w-40 flex-shrink-0">
-                    <img
-                      className="h-full w-full rounded-md object-cover"
-                      src={item.thumbnail || (item.images && item.images[0]?.url)}
-                      alt={item.title}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/placeholder-item.png';
-                      }}
-                    />
-                  </div>
-                )}
-                <div className="space-y-1 flex-1 min-w-0">
-                  <p className="font-medium truncate">{item.title}</p>
-                  <p className={`text-sm text-muted-foreground ${
-                    item.item_as === 'job' ? 'line-clamp-3' : 'line-clamp-2'
-                  }`}>
-                    {item.description}
-                  </p>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-col gap-1">
-                  {getItemTypeBadge(item.item_as)}
-                  {item.item_for && getItemForBadge(item.item_for)}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="space-y-1">
-                  <p>{item.category_name?.en || 'N/A'}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {item.subcategory_name?.en || 'N/A'}
-                  </p>
-                </div>
-              </TableCell>
-              <TableCell>
-                {item.price ? (
-                  <div className="space-y-1">
-                    <p className="font-medium">
-                      {item.price.toLocaleString()} {item.currency}
-                    </p>
-                    {item.discount > 0 && (
-                      <p className="text-xs text-muted-foreground">
-                        Discount: {item.discount}%
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  'N/A'
-                )}
-              </TableCell>
-              <TableCell>
-                <div className="space-y-1">
-                  <p>{item.city}</p>
-                  <p className="text-sm text-muted-foreground">{item.state}</p>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                    <span>{item.view_count || 0}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(item.activated_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    User: {item.uuid}
-                  </p>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-col gap-1">
-                  {getStatusBadge(item.is_active)}
-                  {item.account_type && (
-    <CustomBadge 
-      variant={'unknown'} 
-      size="lg"
-      className="whitespace-nowrap"
-    >
-                      {item.account_type}
-                    </CustomBadge>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell>
-<button 
-  className="text-sm text-primary hover:underline"
-  onClick={() => setSelectedItemUuid(item.uuid)}
->
-  View
-</button>
-              </TableCell>
-            </TableRow>
-          ))}
-          {loading && (
-            <>
-              {[...Array(pagination.limit)].map((_, i) => (
-                <TableRow key={`loading-${i}`}>
-                  <TableCell colSpan={8}>
-                    <div className="flex items-center space-x-4 p-4">
-                      <Skeleton className="h-12 w-12 rounded-full" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-[250px]" />
-                        <Skeleton className="h-4 w-[200px]" />
+    <div className="mx-auto py-8">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
+      </div>
+
+      <div className="rounded-lg shadow p-6">
+        <div className="mb-4">
+          <Input
+            placeholder={t("dashboard.searchPlaceholder")}
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="max-w-md"
+          />
+        </div>
+        
+        <div 
+          ref={tableContainerRef}
+          className="rounded-md border overflow-auto" 
+          style={{ maxHeight: 'calc(100vh - 200px)' }}
+        >
+          <Table>
+            <TableHeader className="sticky top-0 bg-background">
+              <TableRow>
+                <TableHead>{t("dashboard.tableHeaders.item")}</TableHead>
+                <TableHead>{t("dashboard.tableHeaders.category")}</TableHead>
+                <TableHead>{t("dashboard.tableHeaders.price")}</TableHead>
+                <TableHead>{t("dashboard.tableHeaders.location")}</TableHead>
+                <TableHead>{t("dashboard.tableHeaders.stats")}</TableHead>
+                <TableHead>{t("dashboard.tableHeaders.status")}</TableHead>
+                <TableHead>{t("dashboard.tableHeaders.actions")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {items.map((item, index) => (
+                <TableRow key={`${index}`}>
+                  <TableCell className="flex items-center gap-4">
+                    {item.item_as === "job" ? (
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage
+                          src={
+                            item.thumbnail ||
+                            (item.images && item.images[0]?.url)
+                          }
+                          alt={item.title}
+                        />
+                        <AvatarFallback>
+                          {item.title.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    ) : (
+                      <div className="relative h-40 w-40 flex-shrink-0">
+                        <img
+                          className="h-full w-full rounded-md object-cover"
+                          src={
+                            item.thumbnail ||
+                            (item.images && item.images[0]?.url)
+                          }
+                          alt={item.title}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/placeholder-item.png";
+                          }}
+                        />
                       </div>
+                    )}
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <p className="font-medium truncate">{item.title}</p>
+                      <p
+                        className={`text-sm text-muted-foreground ${
+                          item.item_as === "job"
+                            ? "line-clamp-3"
+                            : "line-clamp-2"
+                        }`}
+                      >
+                        {item.description}
+                      </p>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <p>{item.category_name?.en || t("dashboard.messages.notAvailable")}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {item.subcategory_name?.en || t("dashboard.messages.notAvailable")}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {item.price ? (
+                      <div className="space-y-1">
+                        <p className="font-medium">
+                          {item.price.toLocaleString()} {item.currency}
+                        </p>
+                        {item.discount > 0 && (
+                          <p className="text-xs text-muted-foreground">
+                            {t("dashboard.messages.discount")}: {item.discount}%
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      t("dashboard.messages.notAvailable")
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <p>{item.city}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {item.state}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                        <span>{item.view_count || 0}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(item.activated_at).toLocaleDateString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {t("dashboard.messages.user")}: {item.uuid}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      {getStatusBadge(item.is_active)}
+                      {item.account_type && (
+                        <CustomBadge
+                          variant={"unknown"}
+                          size="lg"
+                          className="whitespace-nowrap"
+                        >
+                          {item.account_type}
+                        </CustomBadge>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <button
+                      className="text-sm text-primary hover:underline"
+                      onClick={() => setSelectedItemUuid(item.uuid)}
+                    >
+                      {t("dashboard.messages.view")}
+                    </button>
                   </TableCell>
                 </TableRow>
               ))}
-            </>
+              {loading && (
+                <>
+                  {[...Array(pagination.limit)].map((_, i) => (
+                    <TableRow key={`loading-${i}`}>
+                      <TableCell colSpan={8}>
+                        <div className="flex items-center space-x-4 p-4">
+                          <Skeleton className="h-12 w-12 rounded-full" />
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-[250px]" />
+                            <Skeleton className="h-4 w-[200px]" />
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </>
+              )}
+            </TableBody>
+          </Table>
+          {!hasMore && items.length > 0 && (
+            <div className="p-4 text-center text-muted-foreground">
+              {t("dashboard.messages.noMoreItems")}
+            </div>
           )}
-        </TableBody>
-      </Table>
-      {!hasMore && items.length > 0 && (
-        <div className="p-4 text-center text-muted-foreground">
-          No more items to load
+          {!loading && items.length === 0 && (
+            <div className="p-4 text-center text-muted-foreground">
+              {t("dashboard.messages.noItemsFound")}
+            </div>
+          )}
         </div>
-      )}
-      {!loading && items.length === 0 && (
-        <div className="p-4 text-center text-muted-foreground">
-          No items found
-        </div>
-      )}
+      </div>
+      <ItemDetailView
+        uuid={selectedItemUuid || ""}
+        open={!!selectedItemUuid}
+        onClose={() => setSelectedItemUuid(null)}
+        onItemUpdate={handleItemUpdate}
+      />
     </div>
-  </div>
-<ItemDetailView
-  uuid={selectedItemUuid || ''}
-  open={!!selectedItemUuid}
-  onClose={() => setSelectedItemUuid(null)}
-  onItemUpdate={handleItemUpdate}
-/>
-</div>
   );
 }

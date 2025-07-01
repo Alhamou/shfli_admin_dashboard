@@ -3,6 +3,8 @@ import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Bell, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { ThemeToggle } from "./ThemeToggle"
+import { LanguageSwitcher } from "./LanguageSwitcher"
 
 export function DashboardHeader() {
   return (
@@ -15,6 +17,8 @@ export function DashboardHeader() {
           <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Search..." className="pl-8" />
         </div>
+      <ThemeToggle />
+      <LanguageSwitcher />
       </div>
 
       <div className="flex items-center gap-2">

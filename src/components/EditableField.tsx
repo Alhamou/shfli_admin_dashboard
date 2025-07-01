@@ -2,6 +2,7 @@ import { ICreatMainItem } from "@/interfaces";
 import { Textarea } from "./ui/textarea";
 import { Dispatch, SetStateAction } from "react";
 import { Input } from "./ui/input";
+import { useTranslation } from "react-i18next";
 
 export const EditableField = ({
   label,
@@ -17,7 +18,7 @@ export const EditableField = ({
   isEditing,
 }: {
   label: string;
-  value: string | number | null | undefined;
+  value: string | number | boolean | null | undefined;
   fieldName: keyof ICreatMainItem;
   isTextarea?: boolean;
   type?: string;
@@ -28,7 +29,9 @@ export const EditableField = ({
   originalItem: ICreatMainItem | null;
   isEditing: boolean;
 }) => {
-  const handleFieldChange = (field: keyof ICreatMainItem, value: any) => {
+  const { t } = useTranslation();
+
+  const handleFieldChange = (field: keyof ICreatMainItem, value: string | number | undefined | null) => {
     if (!item) return;
 
     setItem({ ...item, [field]: value });
@@ -42,6 +45,59 @@ export const EditableField = ({
       setEditedFields(rest);
     }
   };
+
+  const handleFieldChangeRadio = (field: keyof ICreatMainItem, value: boolean | string) => {
+    if (!item) return;
+
+    setItem({ ...item, [field]: value });
+
+    // Track changed fields by comparing with original
+    if (originalItem && originalItem[field] !== value) {
+      setEditedFields((prev) => ({ ...prev, [field]: value }));
+    } else {
+      // If value matches original, remove from changed fields
+      const { [field]: _, ...rest } = editedFields;
+      setEditedFields(rest);
+    }
+  };
+
+  if (fieldName === "need") {
+    return (
+      <div className="space-y-1">
+        <label className="text-sm font-medium">{label}</label>
+        {isEditing ? (
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name={fieldName}
+                checked={value === true}
+                onChange={() => {
+                  handleFieldChangeRadio(fieldName, true)
+                }}
+                className="h-4 w-4"
+              />
+              {t("editableField.employeeLooking")}
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name={fieldName}
+                checked={value === false}
+                onChange={() => {
+                  handleFieldChangeRadio(fieldName, false)
+                }}
+                className="h-4 w-4"
+              />
+              {t("editableField.companyLooking")}
+            </label>
+          </div>
+        ) : (
+          <p>{value ? t("editableField.employeeLooking") : t("editableField.companyLooking")}</p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-1">
@@ -67,7 +123,7 @@ export const EditableField = ({
           />
         )
       ) : (
-        <p>{value || "N/A"}</p>
+        <p>{value || t("editableField.notAvailable")}</p>
       )}
     </div>
   );
