@@ -199,7 +199,7 @@ export default function DashboardHome() {
             <TableHeader className="sticky top-0 bg-background">
               <TableRow>
                 <TableHead>{t("dashboard.tableHeaders.item")}</TableHead>
-                <TableHead>{t("dashboard.tableHeaders.category")}</TableHead>
+                {/* <TableHead>{t("dashboard.tableHeaders.category")}</TableHead> */}
                 <TableHead>{t("dashboard.tableHeaders.price")}</TableHead>
                 <TableHead>{t("dashboard.tableHeaders.location")}</TableHead>
                 <TableHead>{t("dashboard.tableHeaders.stats")}</TableHead>
@@ -253,14 +253,14 @@ export default function DashboardHome() {
                       </p>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <div className="space-y-1">
                       <p>{item.category_name?.en || t("dashboard.messages.notAvailable")}</p>
                       <p className="text-sm text-muted-foreground">
                         {item.subcategory_name?.en || t("dashboard.messages.notAvailable")}
                       </p>
                     </div>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     {item.price ? (
                       <div className="space-y-1">
@@ -295,7 +295,7 @@ export default function DashboardHome() {
                         {new Date(item.activated_at).toLocaleDateString()}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
-                        {t("dashboard.messages.user")}: {item.uuid}
+                        {t("dashboard.messages.user")}: <br/> {item.uuid}
                       </p>
                     </div>
                   </TableCell>

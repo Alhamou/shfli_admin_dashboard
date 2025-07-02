@@ -93,13 +93,18 @@
       "discountEndDate": "Discount End Date",
       "status": "Status",
       "selectReason": "Select a reason for blocking",
-      "specifyReason": "Please specify the reason..."
+      "specifyReason": "Please specify the reason...",
+      "categoryInfo": "Category Information",
+      "category": "Category",
+      "subcategory": "Subcategory",
+      "model": "Model"
     },
     "messages": {
       "noImages": "No Images",
       "yes": "Yes",
       "no": "No",
       "loading": "Loading...",
+      "notAvailable": "N/A",
       "blockReason": {
         "title": "Select a reason for blocking",
         "other": "Other"
@@ -112,7 +117,7 @@
     "updateSuccess": "Item updated successfully",
     "updateError": "Failed to update item",
     "reasonsError": "Could not fetch block reasons",
-    "statusUpdateSuccess": "Item has been {{status}}",
+    "statusUpdateSuccess": "Item has been updated",
     "statusUpdateError": "Failed to update item status"
   },
   "editableField": {
@@ -125,5 +130,26 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "chat": {
+    "title": "Chat Messages",
+    "unknown": "Unknown",
+    "buyer": "Buyer",
+    "seller": "Seller",
+    "uuidPlaceholder": "Enter chat UUID",
+    "loading": "Loading...",
+    "getMessages": "Get Messages",
+    "conversation": "Chat Conversation",
+    "betweenBuyer": "Between Buyer",
+    "andSeller": "and seller",
+    "itemId": "Item ID",
+    "lastMessage": "Last message",
+    "messageCount": "messages",
+    "uuid": "Chat UUID",
+    "noChatSelected" : "No Chat Selected"
+  },
+  "erros": {
+    "emptyUUID": "Please enter a valid UUID",
+    "invalidUUID": "Invalid UUID or chat not found"
   }
 }

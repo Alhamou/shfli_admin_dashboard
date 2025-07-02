@@ -86,7 +86,7 @@ export function ItemDetailView({
 
     try {
       await updateItem(item.uuid, editedFields);
-    
+
       // For now, just log the changed fields
       console.log("Changed fields:", editedFields);
 
@@ -341,6 +341,66 @@ export function ItemDetailView({
                 setEditedFields={setEditedFields}
                 setItem={setItem}
               />
+
+              <div className="space-y-2">
+                <h3 className="font-semibold">
+                  {t("dialog.labels.categoryInfo")}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Category */}
+                  <div>
+                    <p className="text-sm font-medium">
+                      {t("dialog.labels.category")}
+                    </p>
+                    <p>
+                      {item.category_name?.en ||
+                        item.category_name?.ar ||
+                        t("dialog.messages.notAvailable")}
+                    </p>
+                    {item.category_name?.ar && (
+                      <p className="text-xs text-muted-foreground">
+                        ({item.category_name.ar})
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Subcategory */}
+                  <div>
+                    <p className="text-sm font-medium">
+                      {t("dialog.labels.subcategory")}
+                    </p>
+                    <p>
+                      {item.subcategory_name?.en ||
+                        item.subcategory_name?.ar ||
+                        t("dialog.messages.notAvailable")}
+                    </p>
+                    {item.subcategory_name?.ar && (
+                      <p className="text-xs text-muted-foreground">
+                        ({item.subcategory_name.ar})
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Model (if exists) */}
+                  {item.model_name && (
+                    <div>
+                      <p className="text-sm font-medium">
+                        {t("dialog.labels.model")}
+                      </p>
+                      <p>
+                        {item.model_name.en ||
+                          item.model_name.ar ||
+                          t("dialog.messages.notAvailable")}
+                      </p>
+                      {item.model_name.ar && (
+                        <p className="text-xs text-muted-foreground">
+                          ({item.model_name.ar})
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">

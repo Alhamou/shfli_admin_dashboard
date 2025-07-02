@@ -68,7 +68,7 @@ export const EditableField = ({
         {isEditing ? (
           <div className="flex flex-col gap-2">
             <label className="flex items-center gap-2">
-              <input
+              <Input
                 type="radio"
                 name={fieldName}
                 checked={value === true}
@@ -80,7 +80,7 @@ export const EditableField = ({
               {t("editableField.employeeLooking")}
             </label>
             <label className="flex items-center gap-2">
-              <input
+              <Input
                 type="radio"
                 name={fieldName}
                 checked={value === false}
@@ -107,12 +107,13 @@ export const EditableField = ({
           <Textarea
             value={value?.toString() || ""}
             onChange={(e) => handleFieldChange(fieldName, e.target.value)}
-            className="min-h-[100px]"
+            className="min-h-[100px] bg-slate-800"
           />
         ) : (
           <Input
             type={type}
             value={value?.toString() || ""}
+            className="bg-slate-800"
             onChange={(e) => {
               const val =
                 type === "number"

@@ -93,13 +93,18 @@
       "discountEndDate": "تاريخ انتهاء الخصم",
       "status": "الحالة",
       "selectReason": "اختر سبب الحظر",
-      "specifyReason": "الرجاء تحديد السبب..."
+      "specifyReason": "الرجاء تحديد السبب...",
+      "categoryInfo": "معلومات الفئة",
+      "category": "الفئة",
+      "subcategory": "الفئة الفرعية",
+      "model": "الموديل"
     },
     "messages": {
       "noImages": "لا توجد صور",
       "yes": "نعم",
       "no": "لا",
       "loading": "جاري التحميل...",
+      "notAvailable": "غير متوفر",
       "blockReason": {
         "title": "اختر سبب الحظر",
         "other": "أخرى"
@@ -115,7 +120,7 @@
     "statusUpdateSuccess": "تم تحديث حالة العنصر",
     "statusUpdateError": "فشل تحديث حالة العنصر"
   },
-    "editableField": {
+  "editableField": {
     "employeeLooking": "موظف يبحث عن عمل",
     "companyLooking": "شركة تبحث عن موظف",
     "notAvailable": "غير متوفر"
@@ -125,5 +130,26 @@
     "light": "ساطع",
     "dark": "غامق",
     "system": "لون النظام"
+  },
+  "chat": {
+    "title": "رسائل الدردشة",
+    "unknown": "غير معروف",
+    "buyer": "المشتري",
+    "seller": "البائع",
+    "uuidPlaceholder": "أدخل UUID المحادثة",
+    "loading": "جار التحميل...",
+    "getMessages": "الحصول على الرسائل",
+    "conversation": "محادثة الدردشة",
+    "betweenBuyer": "بين المشتري",
+    "andSeller": "والبائع",
+    "itemId": "معرف العنصر",
+    "lastMessage": "آخر رسالة",
+    "messageCount": "رسائل",
+    "uuid": "UUID المحادثة",
+    "noChatSelected": "لم يتم تحديد الدردشة"
+  },
+  "erros": {
+    "emptyUUID": "الرجاء إدخال UUID صالح",
+    "invalidUUID": "UUID غير صالح أو المحادثة غير موجودة"
   }
 }

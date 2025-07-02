@@ -1,4 +1,4 @@
-import { CountriesInfo, ICreatMainItem, IResultAndPagination } from '@/interfaces';
+import { CountriesInfo, ICreatMainItem, IMessageThread, IResultAndPagination } from '@/interfaces';
 import { get, post, put } from '../controllers/requestController';
 
 export function insertItem(payload: object): Promise<object> {
@@ -30,4 +30,8 @@ export function updateItem(uuid: string, body : ICreatMainItem | Partial<ICreatM
 
 export function getReasons(){
   return get<{items : string[],jobs : string[]}>(`/team/get_reasons`)
+}
+
+export function getChatLogs(uuid : string){
+  return get<IMessageThread>(`/team/messages?uuid=${uuid}`)
 }

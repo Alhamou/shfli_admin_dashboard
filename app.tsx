@@ -3,7 +3,7 @@ import { useState, createContext, useContext, type ReactNode } from "react"
 import DashboardLayout from "./src/components/dashboard-layout"
 import DashboardHome from "./src/pages/dashboard-home"
 import UsersPage from "./src/pages/users-page"
-import AnalyticsPage from "./src/pages/analytics-page"
+import {ChatLogs} from "./src/pages/ChatLogs"
 import SettingsPage from "./src/pages/settings-page"
 import { LoginPage } from "./src/pages/login-page"
 import Provider from './src/context/MainProvider';
@@ -81,7 +81,7 @@ export default function App() {
           >
             <Route index element={<DashboardHome />} />
             <Route path="users" element={<UsersPage />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="chats" element={<ChatLogs />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Routes>

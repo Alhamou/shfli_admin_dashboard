@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useAuth } from "../../app"
-import { Home, Users, BarChart3, Settings, Shield, LogOut } from "lucide-react"
+import { Home, Users, BarChart3, Settings, Shield, LogOut, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const menuItems = [
@@ -29,9 +29,9 @@ const menuItems = [
     icon: Users,
   },
   {
-    title: "Analytics",
-    url: "/analytics",
-    icon: BarChart3,
+    title: "Chats",
+    url: "/Chats",
+    icon: MessageCircle,
   },
   {
     title: "Settings",
