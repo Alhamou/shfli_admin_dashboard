@@ -146,10 +146,53 @@
     "lastMessage": "Last message",
     "messageCount": "messages",
     "uuid": "Chat UUID",
-    "noChatSelected" : "No Chat Selected"
+    "noChatSelected": "No Chat Selected"
+  },
+  "userInfo": {
+    "title": "User Information",
+    "userIdPlaceholder": "Enter User ID or UUID",
+    "getUser": "Get User",
+    "loading": "Loading...",
+    "noUserSelected": "No user selected. Enter a user ID to fetch information.",
+    "basicInfo": "Basic Information",
+    "businessInfo": "Business Information",
+    "accountStatus": "Account Status",
+    "additionalInfo": "Additional Information",
+    "email": "Email",
+    "phone": "Phone",
+    "birthDate": "Birth Date",
+    "createdAt": "Created At",
+    "businessType": "Business Type",
+    "businessEmail": "Business Email",
+    "businessPhone": "Business Phone",
+    "taxNumber": "Tax Number",
+    "verified": "Verified",
+    "phoneVerified": "Phone Verified",
+    "blocked": "Blocked",
+    "deleted": "Deleted",
+    "roles": "Roles",
+    "contactData": "Contact Data",
+    "userId": "User ID",
+    "notAvailable": "Not Available",
+    "yes": "Yes",
+    "no": "No",
+    "individual": "Individual",
+    "business": "Business",
+    "name": "Full Name",
+    "businessAddress": "Business Address",
+    "websiteUrl": "Website URL",
+    "businessDescription": "Business Description"
   },
   "erros": {
-    "emptyUUID": "Please enter a valid UUID",
-    "invalidUUID": "Invalid UUID or chat not found"
+    "emptyUUID": "Please enter a valid ID",
+    "invalidUUID": "Invalid UUID or chat not found",
+    "emptyUserID": "Please enter a user ID",
+    "invalidUserID": "Invalid user ID. Please try again."
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "chats": "Chats",
+    "settings": "Settings"
   }
 }

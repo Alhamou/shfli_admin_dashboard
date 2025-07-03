@@ -25,7 +25,7 @@ interface ItemDetailViewProps {
   uuid: string;
   open: boolean;
   onClose: () => void;
-  onStatusChange?: () => void; // Optional callback when status changes
+  onStatusChange?: () => void;
   onItemUpdate: (updatedItem: ICreatMainItem) => void;
 }
 
@@ -49,14 +49,13 @@ export function ItemDetailView({
   const [editedFields, setEditedFields] = useState<Partial<ICreatMainItem>>({});
   const [originalItem, setOriginalItem] = useState<ICreatMainItem | null>(null);
 
-  // Modify fetchItem to store original item
   const fetchItem = async (uuid: string) => {
     setLoading(true);
     setError(null);
     try {
       const data = await getItem(uuid);
       setItem(data[0]);
-      setOriginalItem(data[0]); // Store original item for comparison
+      setOriginalItem(data[0]);
       return data[0];
     } catch (err) {
       setError(t("messages.loadingError"));
@@ -68,12 +67,10 @@ export function ItemDetailView({
 
   const handleEditToggle = () => {
     if (isEditing) {
-      // Cancel editing
       setIsEditing(false);
       setEditedFields({});
       if (originalItem) setItem(originalItem);
     } else {
-      // Start editing
       setIsEditing(true);
     }
   };
@@ -86,16 +83,10 @@ export function ItemDetailView({
 
     try {
       await updateItem(item.uuid, editedFields);
-
-      // For now, just log the changed fields
-      console.log("Changed fields:", editedFields);
-
       toast.success(t("messages.updateSuccess"));
       setIsEditing(false);
-      setOriginalItem(item); // Update original item after save
+      setOriginalItem(item);
       setEditedFields({});
-
-      // Refresh the item data
       const updatedItem = await fetchItem(uuid);
       if (updatedItem) {
         onItemUpdate(updatedItem);
@@ -186,18 +177,21 @@ export function ItemDetailView({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] w-full max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-[85vw] w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex justify-between items-center">
-            <span>{t("dialog.itemDetails")}</span>
+          <DialogTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <span className="text-lg sm:text-xl">
+              {t("dialog.itemDetails")}
+            </span>
             {item && (
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 {isEditing ? (
                   <>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={handleEditToggle}
+                      className="flex-1 sm:flex-none"
                     >
                       <X className="h-4 w-4 mr-2" />{" "}
                       {t("dialog.buttons.cancel")}
@@ -207,19 +201,14 @@ export function ItemDetailView({
                       size="sm"
                       onClick={handleSave}
                       disabled={Object.keys(editedFields).length === 0}
+                      className="flex-1 sm:flex-none"
                     >
                       <Save className="h-4 w-4 mr-2" />{" "}
                       {t("dialog.buttons.save")}
                     </Button>
                   </>
                 ) : (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleEditToggle}
-                  >
-                    <Edit className="h-4 w-4 mr-2" /> {t("dialog.buttons.edit")}
-                  </Button>
+                  <></>
                 )}
               </div>
             )}
@@ -245,10 +234,10 @@ export function ItemDetailView({
             </Button>
           </div>
         ) : item ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
             {/* Left Column - Images */}
-            <div className="lg:col-span-3">
-              <div className="flex flex-col gap-4 max-h-[80vh] overflow-y-auto pr-2">
+            <div className="lg:col-span-4 xl:col-span-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2 sm:gap-4 max-h-[60vh] overflow-y-auto pr-2">
                 {item.images?.length > 0 ? (
                   item.images.map((image, index) => (
                     <div key={index} className="relative aspect-square">
@@ -264,7 +253,7 @@ export function ItemDetailView({
                     </div>
                   ))
                 ) : item.thumbnail ? (
-                  <div className="relative aspect-square">
+                  <div className="relative aspect-square col-span-2 sm:col-span-3 lg:col-span-1">
                     <img
                       src={item.thumbnail}
                       alt={item.title}
@@ -276,7 +265,7 @@ export function ItemDetailView({
                     />
                   </div>
                 ) : (
-                  <div className="bg-gray-100 dark:bg-gray-800 aspect-square rounded-lg flex items-center justify-center">
+                  <div className="bg-gray-100 dark:bg-gray-800 aspect-square rounded-lg flex items-center justify-center col-span-2 sm:col-span-3 lg:col-span-1">
                     <span className="text-gray-500">
                       {t("dialog.messages.noImages")}
                     </span>
@@ -286,7 +275,7 @@ export function ItemDetailView({
             </div>
 
             {/* Middle Column - Details */}
-            <div className="lg:col-span-8 space-y-4">
+            <div className="lg:col-span-7 xl:col-span-8 space-y-4">
               <div className="space-y-2">
                 <EditableField
                   label={t("dialog.labels.title")}
@@ -346,8 +335,7 @@ export function ItemDetailView({
                 <h3 className="font-semibold">
                   {t("dialog.labels.categoryInfo")}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Category */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
                   <div>
                     <p className="text-sm font-medium">
                       {t("dialog.labels.category")}
@@ -364,7 +352,6 @@ export function ItemDetailView({
                     )}
                   </div>
 
-                  {/* Subcategory */}
                   <div>
                     <p className="text-sm font-medium">
                       {t("dialog.labels.subcategory")}
@@ -381,7 +368,6 @@ export function ItemDetailView({
                     )}
                   </div>
 
-                  {/* Model (if exists) */}
                   {item.model_name && (
                     <div>
                       <p className="text-sm font-medium">
@@ -402,7 +388,7 @@ export function ItemDetailView({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                 <div className="space-y-2">
                   <h3 className="font-semibold">
                     {t("dialog.labels.location")}
@@ -447,7 +433,7 @@ export function ItemDetailView({
                   <h3 className="font-semibold">
                     {t("dialog.labels.jobDetails")}
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                     <div className="space-y-2">
                       <p className="text-sm font-medium">
                         {t("dialog.labels.jobType")}
@@ -557,7 +543,7 @@ export function ItemDetailView({
                   <h3 className="font-semibold">
                     {t("dialog.labels.itemDetails")}
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                     {/* Mobile-specific details */}
                     {(item.item_as === "shop" || item.item_as === "used") &&
                       item.storage_capacity && (
@@ -833,16 +819,24 @@ export function ItemDetailView({
             </div>
 
             {/* Right Column - Actions */}
-            <div className="lg:col-span-1 space-y-2">
-              <Button variant="outline" className="w-full">
+            <div className="lg:col-span-1 flex flex-row lg:flex-col gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleEditToggle}
+                className="flex-1 sm:flex-none"
+              >
+                <Edit className="h-4 w-4 mr-2" /> {t("dialog.buttons.edit")}
+              </Button>
+              <Button variant="outline" className="flex-1 lg:flex-none">
                 {t("dialog.buttons.message")}
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="flex-1 lg:flex-none">
                 {t("dialog.buttons.share")}
               </Button>
               <Button
                 variant="outline"
-                className="w-full"
+                className="flex-1 lg:flex-none"
                 disabled={updatingStatus}
               >
                 {t("dialog.buttons.report")}
@@ -850,8 +844,8 @@ export function ItemDetailView({
             </div>
 
             {/* Bottom Status Bar */}
-            <div className="col-span-full border-t pt-4 mt-4 flex justify-between items-center">
-              <div className="flex items-center gap-2">
+            <div className="col-span-full border-t pt-4 mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-medium">
                   {t("dialog.labels.status")}:
                 </span>
@@ -862,7 +856,9 @@ export function ItemDetailView({
                 >
                   {item.is_active}
                 </Badge>
-                <span>{item.status_note ? item.status_note : ""}</span>
+                <span className="text-sm">
+                  {item.status_note ? item.status_note : ""}
+                </span>
               </div>
               <Button
                 onClick={handleBlockAction}
@@ -870,6 +866,7 @@ export function ItemDetailView({
                   item.is_active === "active" ? "destructive" : "default"
                 }
                 disabled={updatingStatus}
+                className="w-full sm:w-auto"
               >
                 {updatingStatus ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />

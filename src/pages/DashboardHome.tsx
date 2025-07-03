@@ -22,53 +22,66 @@ import { Eye } from "lucide-react";
 import { ItemDetailView } from "@/components/ViewItem";
 import { connectSocket, socket } from "@/controllers/requestController";
 import { Input } from "@/components/ui/input";
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from "react-i18next";
+import storageController from "@/controllers/storageController";
 
 const initialQuery = { page: 1, limit: 25, total: 0 };
 
 export default function DashboardHome() {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const [items, setItems] = useState<ICreatMainItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState(initialQuery);
   const [hasMore, setHasMore] = useState(true);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const searchTimeoutRef = useRef<any>(); 
+  const [searchTerm, setSearchTerm] = useState("");
+  const searchTimeoutRef = useRef<any>();
 
-  const fetchItems = useCallback(async (page: number, limit: number, search : string = '') => {
-    if (loading) return;
-    
-    setLoading(true);
-    try {
+  const fetchItems = useCallback(
+    async (page: number, limit: number, search: string = "") => {
+      if (loading) return;
 
-      const query = toQueryString({ page, limit, ...(search !== '' ? isUUIDv4(search) ? {uuid : search} : {id : search} : {}) });
-      const response = await getAllItems(query);
-      setItems(prev => page === 1 ? response.result : [...prev, ...response.result]);
-      setPagination({
-        page,
-        limit,
-        total: response.pagination.total
-      });
-      setHasMore(response.result.length === limit);
-    } catch (error) {
-      console.error('Error fetching items:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [loading]);
+      setLoading(true);
+      try {
+        const query = toQueryString({
+          page,
+          limit,
+          ...(search !== ""
+            ? isUUIDv4(search)
+              ? { uuid: search }
+              : { id: search }
+            : {}),
+        });
+        const response = await getAllItems(query);
+        setItems((prev) =>
+          page === 1 ? response.result : [...prev, ...response.result]
+        );
+        setPagination({
+          page,
+          limit,
+          total: response.pagination.total,
+        });
+        setHasMore(response.result.length === limit);
+      } catch (error) {
+        console.error("Error fetching items:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loading]
+  );
 
   // Handle search input change with debounce
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-    
+
     // Clear previous timeout
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
-    
+
     // Set new timeout
     searchTimeoutRef.current = setTimeout(() => {
       fetchItems(1, pagination.limit, value);
@@ -88,7 +101,6 @@ export default function DashboardHome() {
   useEffect(() => {
     fetchItems(pagination.page, pagination.limit);
   }, []);
-
 
   const handleItemUpdate = useCallback(
     (updatedItem: ICreatMainItem) => {
@@ -140,7 +152,11 @@ export default function DashboardHome() {
     const onMessage = (message: ICreatMainItem) => {
       console.log("new item received", message);
       setItems((prev) => [message, ...prev]);
-      playAudioWithWebAudio("/twinkle.mp3");
+      const muted = storageController.get("audio");
+      if (muted && muted === "muted") {
+      } else {
+        playAudioWithWebAudio("/twinkle.mp3");
+      }
     };
 
     // Connection check interval
@@ -189,11 +205,11 @@ export default function DashboardHome() {
             className="max-w-md"
           />
         </div>
-        
-        <div 
+
+        <div
           ref={tableContainerRef}
-          className="rounded-md border overflow-auto" 
-          style={{ maxHeight: 'calc(100vh - 200px)' }}
+          className="rounded-md border overflow-auto"
+          style={{ maxHeight: "calc(100vh - 200px)" }}
         >
           <Table>
             <TableHeader className="sticky top-0 bg-background">
@@ -295,7 +311,7 @@ export default function DashboardHome() {
                         {new Date(item.activated_at).toLocaleDateString()}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
-                        {t("dashboard.messages.user")}: <br/> {item.uuid}
+                        {t("dashboard.messages.user")}: <br /> {item.uuid}
                       </p>
                     </div>
                   </TableCell>

@@ -14,27 +14,28 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useAuth } from "../../app"
-import { Home, Users, BarChart3, Settings, Shield, LogOut, MessageCircle } from "lucide-react"
+import { Home, Users, Settings, Shield, LogOut, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslation } from "react-i18next"
 
 const menuItems = [
   {
-    title: "Dashboard",
+    title: "dashboard",
     url: "/",
     icon: Home,
   },
   {
-    title: "Users",
+    title: "users",
     url: "/users",
     icon: Users,
   },
   {
-    title: "Chats",
-    url: "/Chats",
+    title: "chats",
+    url: "/chats",
     icon: MessageCircle,
   },
   {
-    title: "Settings",
+    title: "settings",
     url: "/settings",
     icon: Settings,
   },
@@ -43,11 +44,12 @@ const menuItems = [
 export function AppSidebar() {
   const location = useLocation()
   const { user, logout } = useAuth()
+  const { t } = useTranslation()
 
   return (
     <Sidebar>
       <SidebarHeader className="border-b px-6 py-4">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 rtl:space-x-reverse">
           <Shield className="h-6 w-6 text-primary" />
           <span className="text-xl font-bold">SHFLI Admin</span>
         </div>
@@ -55,15 +57,14 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={location.pathname === item.url}>
-                    <Link to={item.url}>
+                    <Link to={item.url} className="flex items-center gap-3">
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <span>{t(`sidebar.${item.title}`)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -74,12 +75,17 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex flex-col">
             <span className="text-sm font-medium">{user?.uuid}</span>
             <span className="text-xs text-muted-foreground">{user?.phone_number}</span>
           </div>
-          <Button variant="ghost" size="sm" onClick={logout}>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={logout}
+            className="flex items-center gap-2"
+          >
             <LogOut className="h-4 w-4" />
           </Button>
         </div>

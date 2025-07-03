@@ -1,3 +1,4 @@
+import storageController from "@/controllers/storageController"
 import { createContext, useContext, useEffect, useState } from "react"
 
 type Theme = "dark" | "light" | "system"
@@ -26,13 +27,12 @@ export function ThemeProvider({
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  )
+  const [theme, setTheme] = useState<Theme>(() => {
+    return storageController.get<Theme>(storageKey) ?? defaultTheme
+  })
 
   useEffect(() => {
     const root = window.document.documentElement
-
     root.classList.remove("light", "dark")
 
     if (theme === "system") {
@@ -40,7 +40,6 @@ export function ThemeProvider({
         .matches
         ? "dark"
         : "light"
-
       root.classList.add(systemTheme)
       return
     }
@@ -51,7 +50,7 @@ export function ThemeProvider({
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme)
+      storageController.set(storageKey, theme)
       setTheme(theme)
     },
   }

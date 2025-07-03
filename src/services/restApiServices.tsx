@@ -1,4 +1,4 @@
-import { CountriesInfo, ICreatMainItem, IMessageThread, IResultAndPagination } from '@/interfaces';
+import { CountriesInfo, ICreatMainItem, IMessageThread, IResultAndPagination, IUser } from '@/interfaces';
 import { get, post, put } from '../controllers/requestController';
 
 export function insertItem(payload: object): Promise<object> {
@@ -34,4 +34,8 @@ export function getReasons(){
 
 export function getChatLogs(uuid : string){
   return get<IMessageThread>(`/team/messages?uuid=${uuid}`)
+}
+
+export function getUserInfo(uuid : string){
+  return get<IUser>(`/team/user?id=${uuid}`)
 }

@@ -1,12 +1,20 @@
-import { Button } from './ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
-import { useTranslation } from 'react-i18next';
+import { useEffect } from "react";
+import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { useTranslation } from "react-i18next";
+import storageController from "@/controllers/storageController";
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    storageController.set("language", lng);
   };
 
   return (
@@ -17,10 +25,10 @@ export function LanguageSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => changeLanguage('en')}>
+        <DropdownMenuItem onClick={() => changeLanguage("en")}>
           English
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => changeLanguage('ar')}>
+        <DropdownMenuItem onClick={() => changeLanguage("ar")}>
           العربية
         </DropdownMenuItem>
         {/* Add more languages as needed */}

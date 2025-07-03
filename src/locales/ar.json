@@ -148,8 +148,51 @@
     "uuid": "UUID المحادثة",
     "noChatSelected": "لم يتم تحديد الدردشة"
   },
+  "userInfo": {
+    "title": "معلومات المستخدم",
+    "userIdPlaceholder": "أدخل ID",
+    "getUser": "الحصول على المستخدم",
+    "loading": "جاري التحميل...",
+    "noUserSelected": "لا يوجد مستخدم محدد. أدخل معرف المستخدم لجلب المعلومات.",
+    "basicInfo": "المعلومات الأساسية",
+    "businessInfo": "معلومات العمل",
+    "accountStatus": "حالة الحساب",
+    "additionalInfo": "معلومات إضافية",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "birthDate": "تاريخ الميلاد",
+    "createdAt": "تاريخ الإنشاء",
+    "businessType": "نوع العمل",
+    "businessEmail": "بريد العمل الإلكتروني",
+    "businessPhone": "هاتف العمل",
+    "taxNumber": "الرقم الضريبي",
+    "verified": "موثق",
+    "phoneVerified": "الهاتف موثق",
+    "blocked": "محظور",
+    "deleted": "محذوف",
+    "roles": "الأدوار",
+    "contactData": "بيانات الاتصال",
+    "userId": "ID",
+    "notAvailable": "غير متوفر",
+    "yes": "نعم",
+    "no": "لا",
+    "individual": "فردي",
+    "business": "عمل",
+    "name": "الاسم",
+    "businessAddress": "العنوان",
+    "websiteUrl": "الموقع الإلكتروني",
+    "businessDescription": "وصف العمل"
+  },
   "erros": {
     "emptyUUID": "الرجاء إدخال UUID صالح",
-    "invalidUUID": "UUID غير صالح أو المحادثة غير موجودة"
+    "invalidUUID": "UUID غير صالح أو المحادثة غير موجودة",
+    "emptyUserID": "الرجاء إدخال ID المستخدم",
+    "invalidUserID": "ID غير صالح. يُرجى المحاولة مرة أخرى."
+  },
+  "sidebar": {
+    "dashboard": "لوحة التحكم",
+    "users": "المستخدمين",
+    "chats": "المحادثات",
+    "settings": "الإعدادات"
   }
 }
