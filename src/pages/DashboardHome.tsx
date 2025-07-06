@@ -36,46 +36,54 @@ export default function DashboardHome() {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [uuidSearchTerm, setUuidSearchTerm] = useState("");
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
   const searchTimeoutRef = useRef<any>();
+  const uuidSearchTimeoutRef = useRef<any>();
 
-  const fetchItems = useCallback(
-    async (page: number, limit: number, search: string = "") => {
-      if (loading) return;
+const fetchItems = useCallback(
+  async (page: number, limit: number, search: string = "", clientUuid: string = "") => {
+    if (loading) return;
 
-      setLoading(true);
-      try {
-        const query = toQueryString({
-          page,
-          limit,
-          ...(search !== ""
-            ? isUUIDv4(search)
-              ? { uuid: search }
-              : { id: search }
-            : {}),
-        });
-        const response = await getAllItems(query);
-        setItems((prev) =>
-          page === 1 ? response.result : [...prev, ...response.result]
-        );
-        setPagination({
-          page,
-          limit,
-          total: response.pagination.total,
-        });
-        setHasMore(response.result.length === limit);
-      } catch (error) {
-        console.error("Error fetching items:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [loading]
-  );
-
+    setLoading(true);
+    try {
+      const query = toQueryString({
+        page,
+        limit,
+        ...(search !== ""
+          ? isUUIDv4(search)
+            ? { uuid: search }
+            : { id: search }
+          : {}),
+        ...(clientUuid !== "" 
+          ? isUUIDv4(clientUuid)
+            ? { uuid_client: clientUuid }
+            : { user_id: clientUuid }
+          : {}),
+      });
+      const response = await getAllItems(query);
+      setItems((prev) =>
+        page === 1 ? response.result : [...prev, ...response.result]
+      );
+      setPagination({
+        page,
+        limit,
+        total: response.pagination.total,
+      });
+      setHasMore(response.result.length === limit);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+    } finally {
+      setLoading(false);
+    }
+  },
+  [loading]
+);
   // Handle search input change with debounce
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
+    setUuidSearchTerm(""); // Clear UUID search when using regular search
 
     // Clear previous timeout
     if (searchTimeoutRef.current) {
@@ -84,15 +92,35 @@ export default function DashboardHome() {
 
     // Set new timeout
     searchTimeoutRef.current = setTimeout(() => {
-      fetchItems(1, pagination.limit, value);
-    }, 500);
+      fetchItems(1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
+    }, 1000);
   };
 
-  // Clear timeout on unmount
+  // Handle UUID search input change with debounce
+  const handleUuidSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUuidSearchTerm(value);
+    setSearchTerm(""); // Clear regular search when using UUID search
+
+    // Clear previous timeout
+    if (uuidSearchTimeoutRef.current) {
+      clearTimeout(uuidSearchTimeoutRef.current);
+    }
+
+    // Set new timeout
+    uuidSearchTimeoutRef.current = setTimeout(() => {
+      fetchItems(1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
+    }, 1000);
+  };
+
+  // Clear timeouts on unmount
   useEffect(() => {
     return () => {
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current);
+      }
+      if (uuidSearchTimeoutRef.current) {
+        clearTimeout(uuidSearchTimeoutRef.current);
       }
     };
   }, []);
@@ -126,15 +154,13 @@ export default function DashboardHome() {
       const { scrollTop, scrollHeight, clientHeight } = container;
       // Load more when we're within 200px of the bottom
       if (scrollHeight - (scrollTop + clientHeight) < 200) {
-        fetchItems(pagination.page + 1, pagination.limit);
+        fetchItems(pagination.page + 1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
       }
     };
 
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore, pagination, fetchItems]);
-
-  console.log(items);
+  }, [loading, hasMore, pagination, fetchItems, searchTerm, uuidSearchTerm]);
 
   useEffect(() => {
     // Connect with error handling
@@ -143,10 +169,17 @@ export default function DashboardHome() {
     // Debug events
     const onConnect = () => {
       console.log("Connected socket");
+      setIsSocketConnected(true);
+    };
+
+    const onDisconnect = () => {
+      console.log("Socket disconnected");
+      setIsSocketConnected(false);
     };
 
     const onError = (err: Error) => {
       console.error("Socket error:", err.message);
+      setIsSocketConnected(false);
     };
 
     const onMessage = (message: ICreatMainItem) => {
@@ -169,6 +202,7 @@ export default function DashboardHome() {
 
     // Setup event listeners
     socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
     socket.on("connect_error", onError);
     socket.on("message", onMessage);
 
@@ -176,6 +210,7 @@ export default function DashboardHome() {
       // Cleanup
       clearInterval(checkConnectionInterval);
       socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
       socket.off("connect_error", onError);
       socket.off("message", onMessage);
       socket.disconnect();
@@ -193,17 +228,39 @@ export default function DashboardHome() {
   return (
     <div className="mx-auto py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
+          <div
+            className={`w-3 h-3 rounded-full ${
+              isSocketConnected ? "bg-green-500" : "bg-red-500"
+            }`}
+            title={
+              isSocketConnected
+                ? t("dashboard.socketConnected")
+                : t("dashboard.socketDisconnected")
+            }
+          />
+        </div>
       </div>
 
       <div className="rounded-lg shadow p-6">
-        <div className="mb-4">
-          <Input
-            placeholder={t("dashboard.searchPlaceholder")}
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="max-w-md"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <Input
+              placeholder={t("dashboard.searchPlaceholder")}
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <Input
+              placeholder={t("dashboard.uuidSearchPlaceholder")}
+              value={uuidSearchTerm}
+              onChange={handleUuidSearchChange}
+              className="w-full"
+            />
+          </div>
         </div>
 
         <div
@@ -215,7 +272,7 @@ export default function DashboardHome() {
             <TableHeader className="sticky top-0 bg-background">
               <TableRow>
                 <TableHead>{t("dashboard.tableHeaders.item")}</TableHead>
-                {/* <TableHead>{t("dashboard.tableHeaders.category")}</TableHead> */}
+                <TableHead>{t("dashboard.tableHeaders.category")}</TableHead>
                 <TableHead>{t("dashboard.tableHeaders.price")}</TableHead>
                 <TableHead>{t("dashboard.tableHeaders.location")}</TableHead>
                 <TableHead>{t("dashboard.tableHeaders.stats")}</TableHead>
@@ -256,7 +313,10 @@ export default function DashboardHome() {
                         />
                       </div>
                     )}
-                    <div className="space-y-1 flex-1 min-w-0">
+                    <div className="space-y-1 flex-1 min-w-0 max-w-40">
+                      {item.item_as === 'job' ? <p className="font-medium truncate">{item.need
+                            ? t("dialog.labels.employeeLooking")
+                            : t("dialog.labels.companyLooking")}</p> : <></>}
                       <p className="font-medium truncate">{item.title}</p>
                       <p
                         className={`text-sm text-muted-foreground ${
@@ -269,14 +329,14 @@ export default function DashboardHome() {
                       </p>
                     </div>
                   </TableCell>
-                  {/* <TableCell>
+                  <TableCell>
                     <div className="space-y-1">
                       <p>{item.category_name?.en || t("dashboard.messages.notAvailable")}</p>
                       <p className="text-sm text-muted-foreground">
                         {item.subcategory_name?.en || t("dashboard.messages.notAvailable")}
                       </p>
                     </div>
-                  </TableCell> */}
+                  </TableCell>
                   <TableCell>
                     {item.price ? (
                       <div className="space-y-1">
@@ -311,7 +371,10 @@ export default function DashboardHome() {
                         {new Date(item.activated_at).toLocaleDateString()}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
-                        {t("dashboard.messages.user")}: <br /> {item.uuid}
+                        {t("dashboard.messages.user")}: <br /> {item.user_id}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        UUID : <br /> {item.uuid_client}
                       </p>
                     </div>
                   </TableCell>

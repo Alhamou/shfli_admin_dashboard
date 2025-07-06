@@ -7,20 +7,25 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { getUserInfo } from "@/services/restApiServices";
+import { getUserInfo, putUserInfo } from "@/services/restApiServices";
 import { IUser } from "@/interfaces";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Edit, Save, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CustomBadge } from "@/components/ui/custom-badge";
+import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export const UserInfo = () => {
   const { t, i18n } = useTranslation();
   const [userId, setUserId] = useState("");
   const [userData, setUserData] = useState<IUser | null>(null);
+  const [editData, setEditData] = useState<Partial<IUser>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleFetchUser = async () => {
     if (!userId.trim()) {
@@ -30,6 +35,8 @@ export const UserInfo = () => {
 
     setIsLoading(true);
     setError(null);
+    setIsEditing(false);
+    setEditData({});
 
     try {
       const data = await getUserInfo(userId);
@@ -37,6 +44,31 @@ export const UserInfo = () => {
     } catch (error) {
       setError(t("errors.invalidUserID"));
       console.error("Error fetching user data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (field: keyof IUser, value: any) => {
+    setEditData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSaveChanges = async () => {
+    if (!userData) return;
+
+    setIsLoading(true);
+    try {
+      const updatedUser = await putUserInfo({ ...editData, id: userData.id });
+      handleFetchUser();
+      setEditData({});
+      setIsEditing(false);
+      toast.success(t("userInfo.updateSuccess"));
+    } catch (error) {
+      toast.error(t("errors.updateFailed"));
+      console.error("Error updating user data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -81,6 +113,7 @@ export const UserInfo = () => {
             setError(null);
           }}
           className="flex-1"
+          style={{ direction: "ltr" }}
         />
         <Button onClick={handleFetchUser} disabled={isLoading}>
           {isLoading ? t("userInfo.loading") : t("userInfo.getUser")}
@@ -95,35 +128,68 @@ export const UserInfo = () => {
       )}
 
       {userData ? (
-        <div className="lg:flex lg:flex-row flex flex-col w-full">
+        <div className="lg:flex lg:flex-row flex flex-col w-full gap-4">
           {/* User Information Card */}
           <Card className="flex-grow mb-4">
             <CardHeader>
-              <div className="flex items-center gap-4">
-                {userData.image && (
-                  <img
-                    src={userData.image}
-                    alt="User"
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                )}
-                <div>
-                  <h2 className="text-xl font-semibold">
-                    {userData.first_name} {userData.last_name}
-                  </h2>
-                  <div className="flex gap-2 mt-1">
-                    {getAccountTypeBadge(userData.account_type)}
-                    {userData.blocked && (
-                      <Badge variant="destructive">
-                        {t("userInfo.blocked")}
-                      </Badge>
-                    )}
-                    {userData.account_verified && (
-                      <CustomBadge variant="active">
-                        {t("userInfo.verified")}
-                      </CustomBadge>
-                    )}
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-4">
+                  {userData.image && (
+                    <img
+                      src={userData.image}
+                      alt="User"
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                  )}
+                  <div>
+                    <h2 className="text-xl font-semibold">
+                      {userData.first_name ?? ""} {userData.last_name ?? ""}
+                    </h2>
+                    <div className="flex gap-2 mt-1">
+                      {getAccountTypeBadge(userData.account_type)}
+                      {userData.blocked && (
+                        <Badge variant="destructive">
+                          {t("userInfo.blocked")}
+                        </Badge>
+                      )}
+                      {userData.account_verified && (
+                        <CustomBadge variant="active">
+                          {t("userInfo.verified")}
+                        </CustomBadge>
+                      )}
+                    </div>
                   </div>
+                </div>
+                <div className="flex gap-2">
+                  {!isEditing ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      {t("userInfo.edit")}
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsEditing(false)}
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        {t("userInfo.cancel")}
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={handleSaveChanges}
+                        disabled={isLoading}
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        {t("userInfo.save")}
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </CardHeader>
@@ -131,12 +197,6 @@ export const UserInfo = () => {
               <div className="space-y-2">
                 <h3 className="font-medium">{t("userInfo.basicInfo")}</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      {t("userInfo.name")}
-                    </p>
-                    <p>{`${userData.first_name ?? ''} ${userData.last_name ?? ''}`}</p>
-                  </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.email")}
@@ -147,7 +207,24 @@ export const UserInfo = () => {
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.phone")}
                     </p>
-                    <p style={{direction : 'ltr',textAlign : i18n.language === 'ar' ? 'right' : 'left'}}>{userData.phone_number || t("userInfo.notAvailable")}</p>
+                    {isEditing ? (
+                      <Input
+                        defaultValue={userData.phone_number || ""}
+                        onChange={(e) =>
+                          handleInputChange("phone_number", e.target.value)
+                        }
+                        dir="ltr"
+                      />
+                    ) : (
+                      <p
+                        style={{
+                          direction: "ltr",
+                          textAlign: i18n.language === "ar" ? "right" : "left",
+                        }}
+                      >
+                        {userData.phone_number || t("userInfo.notAvailable")}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
@@ -171,29 +248,115 @@ export const UserInfo = () => {
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.verified")}
                     </p>
-                    <p>{formatBoolean(userData.account_verified)}</p>
+                    {isEditing ? (
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="account-verified"
+                          checked={
+                            editData.account_verified ??
+                            userData.account_verified ??
+                            false
+                          }
+                          onCheckedChange={(checked) =>
+                            handleInputChange("account_verified", checked)
+                          }
+                          style={{ direction: "ltr" }}
+                        />
+                        <Label htmlFor="account-verified">
+                          {formatBoolean(
+                            editData.account_verified ??
+                              userData.account_verified
+                          )}
+                        </Label>
+                      </div>
+                    ) : (
+                      <p>{formatBoolean(userData.account_verified)}</p>
+                    )}
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.phoneVerified")}
                     </p>
-                    <p>{formatBoolean(userData.phone_verified)}</p>
+                    {isEditing ? (
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="phone-verified"
+                          checked={
+                            editData.phone_verified ??
+                            userData.phone_verified ??
+                            false
+                          }
+                          onCheckedChange={(checked) =>
+                            handleInputChange("phone_verified", checked)
+                          }
+                          style={{ direction: "ltr" }}
+                        />
+                        <Label htmlFor="phone-verified">
+                          {formatBoolean(
+                            editData.phone_verified ?? userData.phone_verified
+                          )}
+                        </Label>
+                      </div>
+                    ) : (
+                      <p>{formatBoolean(userData.phone_verified)}</p>
+                    )}
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.blocked")}
                     </p>
-                    <p>{formatBoolean(userData.blocked)}</p>
+                    {isEditing ? (
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="blocked"
+                          checked={
+                            editData.blocked ?? userData.blocked ?? false
+                          }
+                          onCheckedChange={(checked) =>
+                            handleInputChange("blocked", checked)
+                          }
+                          style={{ direction: "ltr" }}
+                        />
+                        <Label htmlFor="blocked">
+                          {formatBoolean(editData.blocked ?? userData.blocked)}
+                        </Label>
+                      </div>
+                    ) : (
+                      <p>{formatBoolean(userData.blocked)}</p>
+                    )}
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.deleted")}
                     </p>
-                    <p>
-                      {userData.deleted_at
-                        ? t("userInfo.yes")
-                        : t("userInfo.no")}
-                    </p>
+                    {isEditing ? (
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="deleted"
+                          checked={
+editData.deleted ?? userData.deleted 
+                          }
+                          onCheckedChange={(checked) =>
+                            handleInputChange(
+                              "deleted",
+                              checked
+                            )
+                          }
+                          style={{ direction: "ltr" }}
+                        />
+                        <Label htmlFor="deleted">
+                          {formatBoolean(
+editData.deleted ?? userData.deleted 
+                          )}
+                        </Label>
+                      </div>
+                    ) : (
+                      <p>
+                        {userData.deleted
+                          ? t("userInfo.yes")
+                          : t("userInfo.no")}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -225,7 +388,8 @@ export const UserInfo = () => {
               </div>
             </CardContent>
             <CardFooter className="text-sm text-muted-foreground">
-              {t("userInfo.userId")}: {userData.id} | UUID: {userData.uuid}
+              {t("userInfo.userId")}: {userData.id} | <br /> UUID:{" "}
+              {userData.uuid}
             </CardFooter>
           </Card>
 
@@ -265,19 +429,24 @@ export const UserInfo = () => {
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.businessPhone")}
                     </p>
-                    <p>
+                    <p
+                      style={{
+                        direction: "ltr",
+                        textAlign: i18n.language === "ar" ? "right" : "left",
+                      }}
+                    >
                       {userData.business_phone_number ||
                         t("userInfo.notAvailable")}
                     </p>
                   </div>
-                </div>
-                <div className="space-y-2">
                   <div>
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.taxNumber")}
                     </p>
                     <p>{userData.tax_number || t("userInfo.notAvailable")}</p>
                   </div>
+                </div>
+                <div className="space-y-2">
                   <div>
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.businessAddress")}

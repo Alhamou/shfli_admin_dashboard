@@ -183,35 +183,6 @@ export function ItemDetailView({
             <span className="text-lg sm:text-xl">
               {t("dialog.itemDetails")}
             </span>
-            {item && (
-              <div className="flex gap-2 w-full sm:w-auto">
-                {isEditing ? (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleEditToggle}
-                      className="flex-1 sm:flex-none"
-                    >
-                      <X className="h-4 w-4 mr-2" />{" "}
-                      {t("dialog.buttons.cancel")}
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={handleSave}
-                      disabled={Object.keys(editedFields).length === 0}
-                      className="flex-1 sm:flex-none"
-                    >
-                      <Save className="h-4 w-4 mr-2" />{" "}
-                      {t("dialog.buttons.save")}
-                    </Button>
-                  </>
-                ) : (
-                  <></>
-                )}
-              </div>
-            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -760,7 +731,7 @@ export function ItemDetailView({
                         {selectedReason || t("dialog.labels.selectReason")}
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
+                    <DropdownMenuContent className="w-96 max-h-80 overflow-y-scroll">
                       {blockReasons.map((reason) => (
                         <DropdownMenuItem
                           key={reason}
@@ -819,8 +790,31 @@ export function ItemDetailView({
             </div>
 
             {/* Right Column - Actions */}
-            <div className="lg:col-span-1 flex flex-row lg:flex-col gap-2">
-              <Button
+            <div className="md:col-span-1 flex flex-row md:flex-col gap-2">
+                {isEditing ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleEditToggle}
+                      className="flex-1 sm:flex-none"
+                    >
+                      <X className="h-4 w-4 mr-2" />{" "}
+                      {t("dialog.buttons.cancel")}
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={handleSave}
+                      disabled={Object.keys(editedFields).length === 0}
+                      className="flex-1 sm:flex-none"
+                    >
+                      <Save className="h-4 w-4 mr-2" />{" "}
+                      {t("dialog.buttons.save")}
+                    </Button>
+                  </>
+                ) : (
+                               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleEditToggle}
@@ -828,6 +822,7 @@ export function ItemDetailView({
               >
                 <Edit className="h-4 w-4 mr-2" /> {t("dialog.buttons.edit")}
               </Button>
+                )}
               <Button variant="outline" className="flex-1 lg:flex-none">
                 {t("dialog.buttons.message")}
               </Button>

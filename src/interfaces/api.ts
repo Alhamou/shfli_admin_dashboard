@@ -3,7 +3,7 @@ export interface UploadedImage {
   position: number;
   title: string;
 }
-interface IName{
+interface IName {
   en: string;
   ar: string;
 }
@@ -19,7 +19,7 @@ export interface IAPI_KEY {
 }
 
 interface ItemAd extends IBaseItem {
-  main_item_id: number,
+  main_item_id: number;
   category_id: number;
   category_name?: IName;
   subcategory_id: number;
@@ -27,12 +27,11 @@ interface ItemAd extends IBaseItem {
   category_model_id?: number | null;
   price: number;
   currency: string;
-  item_for: 'sale' | 'rent' | 'trade' | 'service';
+  item_for: "sale" | "rent" | "trade" | "service";
   reserved: boolean;
-  discount:  number;
-  date_end_discount : string
+  discount: number;
+  date_end_discount: string;
 }
-
 
 // MOBILES SQL Interface.
 interface IMobileDetails extends IBaseItem {
@@ -43,10 +42,9 @@ interface IMobileDetails extends IBaseItem {
   battery_capacity?: number;
   camera_resolution?: string;
   color?: string;
-  condition?: 'new' | 'used' | 'refurbished';
+  condition?: "new" | "used" | "refurbished";
   network_type?: string;
 }
-
 
 // PROPERTIES SQL Interface.
 interface IPropertyDetails extends IBaseItem {
@@ -58,7 +56,6 @@ interface IPropertyDetails extends IBaseItem {
   is_furnished?: boolean;
 }
 
-
 // CARS SQL Interface.
 interface ICarDetails extends IBaseItem {
   type_id?: number;
@@ -66,9 +63,8 @@ interface ICarDetails extends IBaseItem {
   mileage?: number;
   series?: string;
   year?: number;
-  transmission_type: 'Manual' | 'Automatic' | 'Manual + Automatic';
+  transmission_type: "Manual" | "Automatic" | "Manual + Automatic";
 }
-
 
 // JOBS SQL Interface.
 export interface JobItem {
@@ -89,9 +85,8 @@ export interface JobItem {
   remote_job: boolean;
   benefits?: string | null;
   uuid: string;
-  need : boolean
+  need: boolean;
 }
-
 
 export interface IBaseItem {
   id: number;
@@ -103,10 +98,10 @@ export interface IBaseItem {
   ai_description?: string | null;
   description_filtered?: string | null;
   archived: boolean;
-  is_active: 'active' | 'pending' | 'blocked';
-  item_as: 'shop' | 'used' | 'job';
+  is_active: "active" | "pending" | "blocked";
+  item_as: "shop" | "used" | "job";
   section: 1 | 2;
-  images: {posistion : number,title : string,url : string}[]; // JSONB field, adjust as needed
+  images: { posistion: number; title: string; url: string }[]; // JSONB field, adjust as needed
   thumbnail?: string | null;
   activated_at: Date;
   deleted_at?: Date | null;
@@ -123,48 +118,53 @@ export interface IBaseItem {
   state: string;
   city: string;
   address: string;
-  delivery_available : boolean
-  status_note? : string | null
-  contact_whatsapp : string | null
-  installment : boolean
-  obo : boolean
+  delivery_available: boolean;
+  status_note?: string | null;
+  contact_whatsapp: string | null;
+  installment: boolean;
+  obo: boolean;
 }
 
-
-export interface ICreatMainItem extends IBaseItem, ItemAd, ICarDetails, IPropertyDetails, IMobileDetails, JobItem {
-client_details?: IUser;
-  account_type: 'individual' | 'business';
-  model_name : {en : string, ar : string}
+export interface ICreatMainItem
+  extends IBaseItem,
+    ItemAd,
+    ICarDetails,
+    IPropertyDetails,
+    IMobileDetails,
+    JobItem {
+  client_details?: IUser;
+  account_type: "individual" | "business";
+  model_name: { en: string; ar: string };
+  uuid_client: string;
 }
-export interface Pagination{
-    total: number;
-    current_page: number;
-    total_pages: number;
-    limit_page: number;
-    has_more: boolean;
+export interface Pagination {
+  total: number;
+  current_page: number;
+  total_pages: number;
+  limit_page: number;
+  has_more: boolean;
 }
-export interface IResultAndPagination  {
+export interface IResultAndPagination {
   result: ICreatMainItem[];
-  pagination: Pagination
+  pagination: Pagination;
 }
 
-export interface ISignup{
-  identifier: string,
-  password: string
+export interface ISignup {
+  identifier: string;
+  password: string;
 }
-export interface ILogin extends ISignup{
+export interface ILogin extends ISignup {}
+export interface IVerifyOtp {
+  otp_code: string;
+  identifier: string;
 }
-export interface IVerifyOtp{
-  otp_code: string,
-  identifier: string
+export interface ISendOTP {
+  identifier: string;
 }
-export interface ISendOTP{
-  identifier: string,
-}
-export interface IRequestResetPassword{
-  identifier: string,
-  otp_code: string,
-  new_password: string
+export interface IRequestResetPassword {
+  identifier: string;
+  otp_code: string;
+  new_password: string;
 }
 
 export interface IBusinessAccount {
@@ -176,11 +176,11 @@ export interface IBusinessAccount {
   business_phone_number?: string | null;
   account_verified?: boolean | null;
   business_email?: string | null;
-  business_type?: {ar : string, en : string} | null;
-  business_type_id? : string | null
+  business_type?: { ar: string; en: string } | null;
+  business_type_id?: string | null;
   website_url?: string | null;
   tax_number?: string | null;
-  register_phone_number? : string | null
+  register_phone_number?: string | null;
 }
 
 export interface IUser {
@@ -201,11 +201,12 @@ export interface IUser {
   otp_code: string;
   contact_data: string;
   firebase_token: string | null;
-  account_type: 'individual' | 'business';
+  account_type: "individual" | "business";
   password_reset_token: string | null;
   password_reset_expires: Date | null;
   password_reset_code: string | null;
   deleted_at: Date | null;
+  deleted: boolean;
   created_at: Date;
   updated_at: Date;
   uuid: string;
@@ -216,7 +217,7 @@ export interface IUser {
   business_address?: string | null;
   business_phone_number?: string | null;
   business_email?: string | null;
-  business_type?: {ar : string, en : string} | null;
+  business_type?: { ar: string; en: string } | null;
   website_url?: string | null;
   tax_number?: string | null;
   business_account?: IBusinessAccount;
@@ -231,10 +232,10 @@ export interface IChatMessage {
 export interface Business {
   banner_image: string | null;
   business_name: string | null;
-  business_type: {en : string, ar : string} | null;
+  business_type: { en: string; ar: string } | null;
   client_uuid: string;
   account_verified: boolean;
-  items_count: number
+  items_count: number;
 }
 
 export interface BusinessesList {
@@ -251,7 +252,7 @@ export interface IMessageThread {
   last_chat: IChatMessage;
   sent_at: Date;
   uuid: string;
-  status: 'unread' | 'read';
+  status: "unread" | "read";
   title: string;
   first_name: string;
   last_name: string;
@@ -259,7 +260,7 @@ export interface IMessageThread {
   last_name_seller: string;
   first_name_buyer: string;
   first_name_seller: string;
-  item_as: 'job' | 'new' | 'used';
+  item_as: "job" | "new" | "used";
   thumbnail: string | null;
   images: string[];
   main_items_uuid: string;
@@ -271,14 +272,17 @@ export interface ICreateMessageInput {
   buyer_id: number;
   seller_id: number;
   main_items_id: number;
-  content: Array<{
-    chat: string;
-  } | {image : string}>;
+  content: Array<
+    | {
+        chat: string;
+      }
+    | { image: string }
+  >;
 }
 
-export interface IResultAndPaginationMessages  {
+export interface IResultAndPaginationMessages {
   result: IMessageThread[];
-  pagination: Pagination
+  pagination: Pagination;
 }
 
 export interface IObjectToken {
@@ -308,8 +312,8 @@ export interface ItemForSale {
   description: string;
   price: number;
   currency: string;
-  item_for: 'sale' | 'rent' | 'trade' | 'service';
-  condition?: 'new' | 'used' | 'refurbished';
+  item_for: "sale" | "rent" | "trade" | "service";
+  condition?: "new" | "used" | "refurbished";
   city: string;
   state: string;
   address: string;
@@ -343,7 +347,7 @@ export interface ItemForSale {
   // Car specific
   mileage?: number;
   year?: number;
-  transmission_type?: 'Manual' | 'Automatic' | 'Manual + Automatic';
+  transmission_type?: "Manual" | "Automatic" | "Manual + Automatic";
   fuel_type_id?: number;
 }
 export interface CountriesInfo {

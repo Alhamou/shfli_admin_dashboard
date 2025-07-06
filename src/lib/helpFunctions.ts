@@ -50,9 +50,18 @@ export const updateItemInArray = <T extends { uuid: string }>(
 };
 
 export async function playAudioWithWebAudio(url: string): Promise<void> {
+    // First check if we're in Safari
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
     try {
-        // Create audio context
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        // Create audio context (with Safari prefix fallback)
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        const audioContext = new AudioContext();
+        
+        // Safari requires resuming the audio context on user interaction
+        if (isSafari && audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
         
         // Fetch the audio file
         const response = await fetch(url);
@@ -74,6 +83,14 @@ export async function playAudioWithWebAudio(url: string): Promise<void> {
         console.log('Audio is playing with Web Audio API');
     } catch (error) {
         console.error('Error with Web Audio API:', error);
+        
+        // Fallback to HTML5 Audio if Web Audio fails
+        try {
+            const audio = new Audio(url);
+            audio.play().catch(e => console.error('HTML5 Audio fallback failed:', e));
+        } catch (fallbackError) {
+            console.error('Both Web Audio and HTML5 Audio failed:', fallbackError);
+        }
     }
 }
 
