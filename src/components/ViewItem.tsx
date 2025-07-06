@@ -734,6 +734,7 @@ export function ItemDetailView({
                         <DropdownMenuItem
                           key={reason}
                           onClick={() => setSelectedReason(reason)}
+                          style={{ direction: "rtl" }}
                         >
                           {reason}
                         </DropdownMenuItem>
@@ -744,6 +745,7 @@ export function ItemDetailView({
                             t("dialog.messages.blockReason.other")
                           )
                         }
+                        style={{ direction: "rtl" }}
                       >
                         {t("dialog.messages.blockReason.other")}
                       </DropdownMenuItem>
