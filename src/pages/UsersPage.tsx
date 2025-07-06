@@ -61,7 +61,21 @@ export const UserInfo = () => {
 
     setIsLoading(true);
     try {
-      const updatedUser = await putUserInfo({ ...editData, id: userData.id });
+      // Prepare the data to send
+      const dataToSend = {
+        ...editData,
+        id: userData.id,
+        // If deleted_at is being set, ensure we send it
+        ...(editData.deleted_at !== undefined && {
+          deleted_at: editData.deleted_at
+        }),
+        // Also update the deleted flag if we're changing deleted_at
+        ...(editData.deleted_at !== undefined && {
+          deleted: !!editData.deleted_at
+        })
+      };
+
+      const updatedUser = await putUserInfo(dataToSend);
       handleFetchUser();
       setEditData({});
       setIsEditing(false);
@@ -156,6 +170,11 @@ export const UserInfo = () => {
                         <CustomBadge variant="active">
                           {t("userInfo.verified")}
                         </CustomBadge>
+                      )}
+                      {userData.deleted_at && (
+                        <Badge variant="destructive">
+                          {t("userInfo.deleted")}
+                        </Badge>
                       )}
                     </div>
                   </div>
@@ -333,27 +352,23 @@ export const UserInfo = () => {
                       <div className="flex items-center space-x-2">
                         <Switch
                           id="deleted"
-                          checked={
-editData.deleted ?? userData.deleted 
-                          }
-                          onCheckedChange={(checked) =>
+                          checked={!!(editData.deleted_at ?? userData.deleted_at)}
+                          onCheckedChange={(checked) => {
                             handleInputChange(
-                              "deleted",
-                              checked
-                            )
-                          }
+                              "deleted_at",
+                              checked ? new Date() : null
+                            );
+                          }}
                           style={{ direction: "ltr" }}
                         />
                         <Label htmlFor="deleted">
-                          {formatBoolean(
-editData.deleted ?? userData.deleted 
-                          )}
+                          {formatBoolean(!!(editData.deleted_at ?? userData.deleted_at))}
                         </Label>
                       </div>
                     ) : (
                       <p>
-                        {userData.deleted
-                          ? t("userInfo.yes")
+                        {userData.deleted_at
+                          ? `${t("userInfo.yes")} (${formatDate(userData.deleted_at)})`
                           : t("userInfo.no")}
                       </p>
                     )}

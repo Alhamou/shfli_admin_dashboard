@@ -62,6 +62,7 @@ export const ChatLogs = () => {
             setError(null); // Clear error when typing
           }}
           className="flex-1"
+          style={{direction : 'ltr'}}
         />
         <Button onClick={handleFetchMessages} disabled={isLoading}>
           {isLoading ? t('chat.loading') : t('chat.getMessages')}

@@ -24,6 +24,7 @@ import { connectSocket, socket } from "@/controllers/requestController";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
 import storageController from "@/controllers/storageController";
+import { Button } from "@/components/ui/button";
 
 const initialQuery = { page: 1, limit: 25, total: 0 };
 
@@ -38,92 +39,61 @@ export default function DashboardHome() {
   const [searchTerm, setSearchTerm] = useState("");
   const [uuidSearchTerm, setUuidSearchTerm] = useState("");
   const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const searchTimeoutRef = useRef<any>();
-  const uuidSearchTimeoutRef = useRef<any>();
 
-const fetchItems = useCallback(
-  async (page: number, limit: number, search: string = "", clientUuid: string = "") => {
-    if (loading) return;
+  const fetchItems = useCallback(
+    async (
+      page: number,
+      limit: number,
+      search: string = "",
+      clientUuid: string = ""
+    ) => {
+      if (loading) return;
 
-    setLoading(true);
-    try {
-      const query = toQueryString({
-        page,
-        limit,
-        ...(search !== ""
-          ? isUUIDv4(search)
-            ? { uuid: search }
-            : { id: search }
-          : {}),
-        ...(clientUuid !== "" 
-          ? isUUIDv4(clientUuid)
-            ? { uuid_client: clientUuid }
-            : { user_id: clientUuid }
-          : {}),
-      });
-      const response = await getAllItems(query);
-      setItems((prev) =>
-        page === 1 ? response.result : [...prev, ...response.result]
-      );
-      setPagination({
-        page,
-        limit,
-        total: response.pagination.total,
-      });
-      setHasMore(response.result.length === limit);
-    } catch (error) {
-      console.error("Error fetching items:", error);
-    } finally {
-      setLoading(false);
-    }
-  },
-  [loading]
-);
-  // Handle search input change with debounce
+      setLoading(true);
+      try {
+        const query = toQueryString({
+          page,
+          limit,
+          ...(search !== ""
+            ? isUUIDv4(search)
+              ? { uuid: search }
+              : { id: search }
+            : {}),
+          ...(clientUuid !== ""
+            ? isUUIDv4(clientUuid)
+              ? { uuid_client: clientUuid }
+              : { user_id: clientUuid }
+            : {}),
+        });
+        const response = await getAllItems(query);
+        setItems((prev) =>
+          page === 1 ? response.result : [...prev, ...response.result]
+        );
+        setPagination({
+          page,
+          limit,
+          total: response.pagination.total,
+        });
+        setHasMore(response.result.length === limit);
+      } catch (error) {
+        console.error("Error fetching items:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loading]
+  );
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    setUuidSearchTerm(""); // Clear UUID search when using regular search
-
-    // Clear previous timeout
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    // Set new timeout
-    searchTimeoutRef.current = setTimeout(() => {
-      fetchItems(1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
-    }, 1000);
+    setSearchTerm(e.target.value);
   };
 
-  // Handle UUID search input change with debounce
   const handleUuidSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setUuidSearchTerm(value);
-    setSearchTerm(""); // Clear regular search when using UUID search
-
-    // Clear previous timeout
-    if (uuidSearchTimeoutRef.current) {
-      clearTimeout(uuidSearchTimeoutRef.current);
-    }
-
-    // Set new timeout
-    uuidSearchTimeoutRef.current = setTimeout(() => {
-      fetchItems(1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
-    }, 1000);
+    setUuidSearchTerm(e.target.value);
   };
 
-  // Clear timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-      if (uuidSearchTimeoutRef.current) {
-        clearTimeout(uuidSearchTimeoutRef.current);
-      }
-    };
-  }, []);
+  const handleFetchClick = () => {
+    fetchItems(1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
+  };
 
   // Initial fetch
   useEffect(() => {
@@ -139,7 +109,6 @@ const fetchItems = useCallback(
       if (selectedItemUuid === updatedItem.uuid) {
         // This will trigger a refetch in ItemDetailView
         setSelectedItemUuid(null);
-        setTimeout(() => setSelectedItemUuid(updatedItem.uuid), 0);
       }
     },
     [selectedItemUuid]
@@ -154,7 +123,12 @@ const fetchItems = useCallback(
       const { scrollTop, scrollHeight, clientHeight } = container;
       // Load more when we're within 200px of the bottom
       if (scrollHeight - (scrollTop + clientHeight) < 200) {
-        fetchItems(pagination.page + 1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
+        fetchItems(
+          pagination.page + 1,
+          pagination.limit,
+          searchTerm.trim(),
+          uuidSearchTerm.trim()
+        );
       }
     };
 
@@ -244,7 +218,7 @@ const fetchItems = useCallback(
       </div>
 
       <div className="rounded-lg shadow p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
             <Input
               placeholder={t("dashboard.searchPlaceholder")}
@@ -260,6 +234,11 @@ const fetchItems = useCallback(
               onChange={handleUuidSearchChange}
               className="w-full"
             />
+          </div>
+          <div>
+            <Button onClick={handleFetchClick} disabled={loading}>
+              {loading ? t("dashboard.loading") : t("dashboard.loadItems")}
+            </Button>
           </div>
         </div>
 
@@ -314,9 +293,15 @@ const fetchItems = useCallback(
                       </div>
                     )}
                     <div className="space-y-1 flex-1 min-w-0 max-w-40">
-                      {item.item_as === 'job' ? <p className="font-medium truncate">{item.need
+                      {item.item_as === "job" ? (
+                        <p className="font-medium truncate">
+                          {item.need
                             ? t("dialog.labels.employeeLooking")
-                            : t("dialog.labels.companyLooking")}</p> : <></>}
+                            : t("dialog.labels.companyLooking")}
+                        </p>
+                      ) : (
+                        <></>
+                      )}
                       <p className="font-medium truncate">{item.title}</p>
                       <p
                         className={`text-sm text-muted-foreground ${
@@ -331,9 +316,13 @@ const fetchItems = useCallback(
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">
-                      <p>{item.category_name?.en || t("dashboard.messages.notAvailable")}</p>
+                      <p>
+                        {item.category_name?.en ||
+                          t("dashboard.messages.notAvailable")}
+                      </p>
                       <p className="text-sm text-muted-foreground">
-                        {item.subcategory_name?.en || t("dashboard.messages.notAvailable")}
+                        {item.subcategory_name?.en ||
+                          t("dashboard.messages.notAvailable")}
                       </p>
                     </div>
                   </TableCell>

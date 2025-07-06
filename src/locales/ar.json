@@ -1,10 +1,12 @@
 {
   "dashboard": {
-        "socketConnected": "الاتصال نشط",
+    "socketConnected": "الاتصال نشط",
     "socketDisconnected": "الاتصال غير نشط",
     "uuidSearchPlaceholder": "البحث باستخدام UUID المستخدم...",
     "title": "إدارة العناصر",
     "searchPlaceholder": "ابحث عن العناصر...",
+    "loadItems": "تحميل العناصر",
+    "loading": "تحميل...",
     "tableHeaders": {
       "item": "العنصر",
       "type": "النوع",
@@ -100,7 +102,8 @@
       "categoryInfo": "معلومات الفئة",
       "category": "الفئة",
       "subcategory": "الفئة الفرعية",
-      "model": "الموديل"
+      "model": "الموديل",
+      "position": "الترتيب"
     },
     "messages": {
       "noImages": "لا توجد صور",

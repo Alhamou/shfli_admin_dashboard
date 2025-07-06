@@ -101,6 +101,7 @@ export interface IBaseItem {
   is_active: "active" | "pending" | "blocked";
   item_as: "shop" | "used" | "job";
   section: 1 | 2;
+  position: number;
   images: { posistion: number; title: string; url: string }[]; // JSONB field, adjust as needed
   thumbnail?: string | null;
   activated_at: Date;
@@ -206,7 +207,6 @@ export interface IUser {
   password_reset_expires: Date | null;
   password_reset_code: string | null;
   deleted_at: Date | null;
-  deleted: boolean;
   created_at: Date;
   updated_at: Date;
   uuid: string;

@@ -271,21 +271,6 @@ export function ItemDetailView({
                   >
                     {item.is_active}
                   </Badge>
-                  {item.delivery_available && (
-                    <Badge variant="secondary">
-                      {t("dashboard.itemFor.delivery")}
-                    </Badge>
-                  )}
-                  {item.installment && (
-                    <Badge variant="secondary">
-                      {t("dashboard.itemFor.installment")}
-                    </Badge>
-                  )}
-                  {item.obo && (
-                    <Badge variant="secondary">
-                      {t("dashboard.itemFor.obo")}
-                    </Badge>
-                  )}
                 </div>
               </div>
 
@@ -294,6 +279,19 @@ export function ItemDetailView({
                 value={item.description}
                 fieldName="description"
                 isTextarea
+                editedFields={editedFields}
+                isEditing={isEditing}
+                item={item}
+                originalItem={originalItem}
+                setEditedFields={setEditedFields}
+                setItem={setItem}
+              />
+
+              <EditableField
+                label={t("dialog.labels.position")}
+                value={item.position?.toString() || ""}
+                fieldName="position"
+                type="number"
                 editedFields={editedFields}
                 isEditing={isEditing}
                 item={item}
@@ -731,7 +729,7 @@ export function ItemDetailView({
                         {selectedReason || t("dialog.labels.selectReason")}
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-96 max-h-80 overflow-y-scroll">
+                    <DropdownMenuContent className="max-h-80 overflow-y-scroll">
                       {blockReasons.map((reason) => (
                         <DropdownMenuItem
                           key={reason}
@@ -791,38 +789,36 @@ export function ItemDetailView({
 
             {/* Right Column - Actions */}
             <div className="md:col-span-1 flex flex-row md:flex-col gap-2">
-                {isEditing ? (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleEditToggle}
-                      className="flex-1 sm:flex-none"
-                    >
-                      <X className="h-4 w-4 mr-2" />{" "}
-                      {t("dialog.buttons.cancel")}
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={handleSave}
-                      disabled={Object.keys(editedFields).length === 0}
-                      className="flex-1 sm:flex-none"
-                    >
-                      <Save className="h-4 w-4 mr-2" />{" "}
-                      {t("dialog.buttons.save")}
-                    </Button>
-                  </>
-                ) : (
-                               <Button
-                variant="outline"
-                size="sm"
-                onClick={handleEditToggle}
-                className="flex-1 sm:flex-none"
-              >
-                <Edit className="h-4 w-4 mr-2" /> {t("dialog.buttons.edit")}
-              </Button>
-                )}
+              {isEditing ? (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleEditToggle}
+                    className="flex-1 sm:flex-none"
+                  >
+                    <X className="h-4 w-4 mr-2" /> {t("dialog.buttons.cancel")}
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={Object.keys(editedFields).length === 0}
+                    className="flex-1 sm:flex-none"
+                  >
+                    <Save className="h-4 w-4 mr-2" /> {t("dialog.buttons.save")}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleEditToggle}
+                  className="flex-1 sm:flex-none"
+                >
+                  <Edit className="h-4 w-4 mr-2" /> {t("dialog.buttons.edit")}
+                </Button>
+              )}
               <Button variant="outline" className="flex-1 lg:flex-none">
                 {t("dialog.buttons.message")}
               </Button>
