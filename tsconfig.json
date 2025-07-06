@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noEmit": true,
     "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
@@ -24,6 +25,6 @@
   "references": [
     {
       "path": "./tsconfig.node.json"
-    },
+    }
   ]
 }
