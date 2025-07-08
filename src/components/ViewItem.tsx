@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { EditableField } from "./EditableField";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 
 interface ItemDetailViewProps {
   uuid: string;
@@ -185,7 +186,6 @@ export function ItemDetailView({
             </span>
           </DialogTitle>
         </DialogHeader>
-
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Loader2 className="h-8 w-8 animate-spin" />
@@ -205,10 +205,10 @@ export function ItemDetailView({
             </Button>
           </div>
         ) : item ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+          <div className={`flex flex-col ${i18n.language === 'ar' ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
             {/* Left Column - Images */}
             <div className="lg:col-span-4 xl:col-span-3">
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2 sm:gap-4 max-h-[60vh] overflow-y-auto pr-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2 sm:gap-4 max-h-[100vh] overflow-y-auto pr-2">
                 {item.images?.length > 0 ? (
                   item.images.map((image, index) => (
                     <div key={index} className="relative aspect-square">
@@ -246,7 +246,7 @@ export function ItemDetailView({
             </div>
 
             {/* Middle Column - Details */}
-            <div className="lg:col-span-7 xl:col-span-8 space-y-4">
+            <div className="flex-grow space-y-4 space-x-4">
               <div className="space-y-2">
                 <EditableField
                   label={t("dialog.labels.title")}
@@ -304,46 +304,36 @@ export function ItemDetailView({
                 <h3 className="font-semibold">
                   {t("dialog.labels.categoryInfo")}
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+                <div>
                   <div>
-                    <p className="text-sm font-medium">
+                    {/* <p className="text-sm font-medium">
                       {t("dialog.labels.category")}
-                    </p>
+                    </p> */}
                     <p>
-                      {item.category_name?.en ||
+                      {
                         item.category_name?.ar ||
                         t("dialog.messages.notAvailable")}
                     </p>
-                    {item.category_name?.ar && (
-                      <p className="text-xs text-muted-foreground">
-                        ({item.category_name.ar})
-                      </p>
-                    )}
                   </div>
 
                   <div>
-                    <p className="text-sm font-medium">
+                    {/* <p className="text-sm font-medium">
                       {t("dialog.labels.subcategory")}
-                    </p>
+                    </p> */}
                     <p>
-                      {item.subcategory_name?.en ||
+                      {
                         item.subcategory_name?.ar ||
                         t("dialog.messages.notAvailable")}
                     </p>
-                    {item.subcategory_name?.ar && (
-                      <p className="text-xs text-muted-foreground">
-                        ({item.subcategory_name.ar})
-                      </p>
-                    )}
                   </div>
 
                   {item.model_name && (
                     <div>
-                      <p className="text-sm font-medium">
+                      {/* <p className="text-sm font-medium">
                         {t("dialog.labels.model")}
-                      </p>
+                      </p> */}
                       <p>
-                        {item.model_name.en ||
+                        {
                           item.model_name.ar ||
                           t("dialog.messages.notAvailable")}
                       </p>
@@ -357,7 +347,7 @@ export function ItemDetailView({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+              <div>
                 <div className="space-y-2">
                   <h3 className="font-semibold">
                     {t("dialog.labels.location")}
@@ -402,13 +392,13 @@ export function ItemDetailView({
                   <h3 className="font-semibold">
                     {t("dialog.labels.jobDetails")}
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+                  <div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium">
                         {t("dialog.labels.jobType")}
                       </p>
                       {isEditing ? (
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col">
                           <label className="flex items-center gap-2">
                             <input
                               type="radio"
@@ -512,7 +502,7 @@ export function ItemDetailView({
                   <h3 className="font-semibold">
                     {t("dialog.labels.itemDetails")}
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+                  <div className="min-w-40 max-w-80">
                     {/* Mobile-specific details */}
                     {(item.item_as === "shop" || item.item_as === "used") &&
                       item.storage_capacity && (
@@ -690,9 +680,9 @@ export function ItemDetailView({
 
                     {/* General item details */}
                     <div>
-                      <p className="text-sm font-medium">
+                      <h3 className="text-lg font-bold">
                         {t("dialog.labels.reserved")}
-                      </p>
+                      </h3>
                       <p>
                         {item.reserved
                           ? t("dialog.messages.yes")
@@ -700,7 +690,7 @@ export function ItemDetailView({
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium">
+                      <p className="text-lg font-bold">
                         {t("dialog.labels.discountEndDate")}
                       </p>
                       <p>
@@ -714,83 +704,10 @@ export function ItemDetailView({
                   </div>
                 </div>
               )}
-
-              {showReasonInput && (
-                <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                  <h3 className="font-medium">
-                    {t("dialog.labels.selectReason")}
-                  </h3>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start whitespace-normal text-left h-auto min-h-[40px] py-2"
-                      >
-                        {selectedReason || t("dialog.labels.selectReason")}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="max-h-80 overflow-y-scroll">
-                      {blockReasons.map((reason) => (
-                        <DropdownMenuItem
-                          key={reason}
-                          onClick={() => setSelectedReason(reason)}
-                          style={{ direction: "rtl" }}
-                        >
-                          {reason}
-                        </DropdownMenuItem>
-                      ))}
-                      <DropdownMenuItem
-                        onClick={() =>
-                          setSelectedReason(
-                            t("dialog.messages.blockReason.other")
-                          )
-                        }
-                        style={{ direction: "rtl" }}
-                      >
-                        {t("dialog.messages.blockReason.other")}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  {selectedReason ===
-                    t("dialog.messages.blockReason.other") && (
-                    <Textarea
-                      placeholder={t("dialog.labels.specifyReason")}
-                      value={customReason}
-                      onChange={(e) => setCustomReason(e.target.value)}
-                    />
-                  )}
-
-                  <div className="flex gap-2 justify-end">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setShowReasonInput(false);
-                        setSelectedReason("");
-                        setCustomReason("");
-                      }}
-                    >
-                      {t("dialog.buttons.cancel")}
-                    </Button>
-                    <Button
-                      onClick={() => handleStatusToggle("blocked")}
-                      disabled={
-                        !selectedReason ||
-                        (selectedReason ===
-                          t("dialog.messages.blockReason.other") &&
-                          !customReason) ||
-                        updatingStatus
-                      }
-                    >
-                      {t("dialog.buttons.confirm")}
-                    </Button>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Right Column - Actions */}
-            <div className="md:col-span-1 flex flex-row md:flex-col gap-2">
+            <div className="flex flex-row md:flex-col lg:min-w-32 lg:max-w-40 min-w-full mx-8">
               {isEditing ? (
                 <>
                   <Button
@@ -835,42 +752,100 @@ export function ItemDetailView({
                 {t("dialog.buttons.report")}
               </Button>
             </div>
-
-            {/* Bottom Status Bar */}
-            <div className="col-span-full border-t pt-4 mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-medium">
-                  {t("dialog.labels.status")}:
-                </span>
-                <Badge
-                  variant={
-                    item.is_active === "active" ? "default" : "destructive"
-                  }
+          </div>
+        ) : null}
+        {showReasonInput && (
+          <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+            <h3 className="font-medium">{t("dialog.labels.selectReason")}</h3>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start whitespace-normal text-left h-auto min-h-[40px] py-2"
                 >
-                  {item.is_active}
-                </Badge>
-                <span className="text-sm">
-                  {item.status_note ? item.status_note : ""}
-                </span>
-              </div>
+                  {selectedReason || t("dialog.labels.selectReason")}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="max-h-80 overflow-y-scroll">
+                {blockReasons.map((reason) => (
+                  <DropdownMenuItem
+                    key={reason}
+                    onClick={() => setSelectedReason(reason)}
+                    style={{ direction: "rtl" }}
+                  >
+                    {reason}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuItem
+                  onClick={() =>
+                    setSelectedReason(t("dialog.messages.blockReason.other"))
+                  }
+                  style={{ direction: "rtl" }}
+                >
+                  {t("dialog.messages.blockReason.other")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {selectedReason === t("dialog.messages.blockReason.other") && (
+              <Textarea
+                placeholder={t("dialog.labels.specifyReason")}
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+              />
+            )}
+
+            <div className="flex gap-2 justify-end">
               <Button
-                onClick={handleBlockAction}
-                variant={
-                  item.is_active === "active" ? "destructive" : "default"
-                }
-                disabled={updatingStatus}
-                className="w-full sm:w-auto"
+                variant="outline"
+                onClick={() => {
+                  setShowReasonInput(false);
+                  setSelectedReason("");
+                  setCustomReason("");
+                }}
               >
-                {updatingStatus ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : null}
-                {item.is_active === "active"
-                  ? t("dialog.buttons.block")
-                  : t("dialog.buttons.unblock")}
+                {t("dialog.buttons.cancel")}
+              </Button>
+              <Button
+                onClick={() => handleStatusToggle("blocked")}
+                disabled={
+                  !selectedReason ||
+                  (selectedReason === t("dialog.messages.blockReason.other") &&
+                    !customReason) ||
+                  updatingStatus
+                }
+              >
+                {t("dialog.buttons.confirm")}
               </Button>
             </div>
           </div>
-        ) : null}
+        )}{" "}
+        <div className="col-span-full border-t pt-4 mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-medium">{t("dialog.labels.status")}:</span>
+            <Badge
+              variant={item?.is_active === "active" ? "default" : "destructive"}
+            >
+              {item?.is_active}
+            </Badge>
+            <span className="text-sm">
+              {item?.status_note ? item?.status_note : ""}
+            </span>
+          </div>
+          <Button
+            onClick={handleBlockAction}
+            variant={item?.is_active === "active" ? "destructive" : "default"}
+            disabled={updatingStatus}
+            className="w-full sm:w-auto"
+          >
+            {updatingStatus ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : null}
+            {item?.is_active === "active"
+              ? t("dialog.buttons.block")
+              : t("dialog.buttons.unblock")}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -2,7 +2,7 @@
   "dashboard": {
     "socketConnected": "الاتصال نشط",
     "socketDisconnected": "الاتصال غير نشط",
-    "uuidSearchPlaceholder": "البحث باستخدام UUID المستخدم...",
+    "uuidSearchPlaceholder": "البحث حسب المستخدم...",
     "title": "إدارة العناصر",
     "searchPlaceholder": "ابحث عن العناصر...",
     "loadItems": "تحميل العناصر",

@@ -1,5 +1,6 @@
 import storageController from '@/controllers/storageController';
 import CryptoJS from 'crypto-js';
+import i18next, { t } from 'i18next';
 import { jwtDecode } from 'jwt-decode';
 
 export const doSignature = ()=>{
@@ -97,4 +98,73 @@ export async function playAudioWithWebAudio(url: string): Promise<void> {
 export const isUUIDv4 = (str : string) => {
   const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   return uuidv4Regex.test(str);
+}
+
+export function getPriceDiscount(price: number, discount: number) {
+  return Math.round(price * (1 - discount / 100));
+}
+
+function checkIfPriceEmpty(price: number | undefined) {
+  let formatted;
+  switch (price) {
+    case null:
+    case undefined:
+    case 0:
+      return t('addAd.$51');
+    default:
+      formatted = price.toLocaleString('en-US');
+
+      return formatted;
+  }
+}
+
+
+export function formatPrice(price: number | undefined, currency: string) {
+  let cu = setCurrencyFormat(currency);
+  let pr = checkIfPriceEmpty(price);
+
+  if (!price || !currency) {
+    if (currency === 'FREE') {
+      pr = '';
+    } else {
+      cu = '';
+    }
+  }
+
+  return `${pr} ${cu}`;
+}
+
+export function setCurrencyFormat(currency: string, isLabel: boolean = false) {
+  let formatted: string;
+  const lang = i18next.language;
+
+  switch (currency) {
+    case 'SY':
+      formatted =
+        lang === 'ar'
+          ? isLabel
+            ? 'ليرة سورية'
+            : 'ليرة'
+          : isLabel
+          ? 'Syrian Pound'
+          : 'SY';
+      break;
+    case 'USD':
+      formatted = lang === 'ar' ? 'دولار' : 'USD';
+      break;
+    case 'TRY':
+      formatted = lang === 'ar' ? 'تركي' : 'TRY';
+      break;
+    case 'FREE':
+      formatted = t('addAd.gift');
+      break;
+    case null:
+    case 'null':
+      formatted = '';
+      break;
+    default:
+      formatted = currency;
+  }
+
+  return formatted;
 }

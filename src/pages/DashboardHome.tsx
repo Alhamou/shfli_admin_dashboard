@@ -9,12 +9,16 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import moment from "moment";
 import {
+  formatPrice,
+  getPriceDiscount,
   isUUIDv4,
   playAudioWithWebAudio,
   toQueryString,
   updateItemInArray,
 } from "@/lib/helpFunctions";
+import 'moment';
 import { getAllItems } from "@/services/restApiServices";
 import { ICreatMainItem } from "@/interfaces";
 import { CustomBadge } from "@/components/ui/custom-badge";
@@ -29,7 +33,7 @@ import { Button } from "@/components/ui/button";
 const initialQuery = { page: 1, limit: 25, total: 0 };
 
 export default function DashboardHome() {
-  const { t } = useTranslation();
+  const { t,i18n } = useTranslation();
   const [items, setItems] = useState<ICreatMainItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState(initialQuery);
@@ -135,6 +139,25 @@ export default function DashboardHome() {
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
   }, [loading, hasMore, pagination, fetchItems, searchTerm, uuidSearchTerm]);
+
+  useEffect(() =>{
+moment.updateLocale('ar', {
+  relativeTime: {
+    future: 'في %s',
+    past: 'منذ %s',
+    s: 'ثوان',
+    m: 'دقيقة',
+    mm: '%d دقائق',
+    h: 'ساعة',
+    hh: '%d ساعات',
+    d: 'يوم',
+    dd: '%d أيام',
+    M: 'شهر',
+    MM: '%d أشهر',
+    y: 'سنة',
+    yy: '%d سنوات'
+  }})
+  },[])
 
   useEffect(() => {
     // Connect with error handling
@@ -256,146 +279,151 @@ export default function DashboardHome() {
                 <TableHead>{t("dashboard.tableHeaders.location")}</TableHead>
                 <TableHead>{t("dashboard.tableHeaders.stats")}</TableHead>
                 <TableHead>{t("dashboard.tableHeaders.status")}</TableHead>
-                <TableHead>{t("dashboard.tableHeaders.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((item, index) => (
-                <TableRow key={`${index}`}>
-                  <TableCell className="flex items-center gap-4">
-                    {item.item_as === "job" ? (
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage
-                          src={
-                            item.thumbnail ||
-                            (item.images && item.images[0]?.url)
-                          }
-                          alt={item.title}
-                        />
-                        <AvatarFallback>
-                          {item.title.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    ) : (
-                      <div className="relative h-40 w-40 flex-shrink-0">
-                        <img
-                          className="h-full w-full rounded-md object-cover"
-                          src={
-                            item.thumbnail ||
-                            (item.images && item.images[0]?.url)
-                          }
-                          alt={item.title}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/placeholder-item.png";
-                          }}
-                        />
-                      </div>
-                    )}
-                    <div className="space-y-1 flex-1 min-w-0 max-w-40">
-                      {item.item_as === "job" ? (
-                        <p className="font-medium truncate">
-                          {item.need
-                            ? t("dialog.labels.employeeLooking")
-                            : t("dialog.labels.companyLooking")}
-                        </p>
-                      ) : (
-                        <></>
-                      )}
-                      <p className="font-medium truncate">{item.title}</p>
-                      <p
-                        className={`text-sm text-muted-foreground ${
-                          item.item_as === "job"
-                            ? "line-clamp-3"
-                            : "line-clamp-2"
-                        }`}
-                      >
-                        {item.description}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <p>
-                        {item.category_name?.en ||
-                          t("dashboard.messages.notAvailable")}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {item.subcategory_name?.en ||
-                          t("dashboard.messages.notAvailable")}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {item.price ? (
-                      <div className="space-y-1">
-                        <p className="font-medium">
-                          {item.price.toLocaleString()} {item.currency}
-                        </p>
-                        {item.discount > 0 && (
-                          <p className="text-xs text-muted-foreground">
-                            {t("dashboard.messages.discount")}: {item.discount}%
-                          </p>
-                        )}
-                      </div>
-                    ) : (
-                      t("dashboard.messages.notAvailable")
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <p>{item.city}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {item.state}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                        <span>{item.view_count || 0}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(item.activated_at).toLocaleDateString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {t("dashboard.messages.user")}: <br /> {item.user_id}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        UUID : <br /> {item.uuid_client}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col gap-1">
-                      {getStatusBadge(item.is_active)}
-                      {item.account_type && (
-                        <CustomBadge
-                          variant={"unknown"}
-                          size="lg"
-                          className="whitespace-nowrap"
-                        >
-                          {item.account_type}
-                        </CustomBadge>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <button
-                      className="text-sm text-primary hover:underline"
+              {items.map((item, index) => {
+                const activated_at = moment(item.activated_at).locale(i18n.language).fromNow()
+                return (
+                  <TableRow key={`${index}`}>
+                    <TableCell
+                      className="flex items-center gap-4 cursor-pointer hover:bg-muted/50"
                       onClick={() => setSelectedItemUuid(item.uuid)}
                     >
-                      {t("dashboard.messages.view")}
-                    </button>
-                  </TableCell>
-                </TableRow>
-              ))}
+                      {item.item_as === "job" ? (
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage
+                            src={
+                              item.thumbnail ||
+                              (item.images && item.images[0]?.url)
+                            }
+                            alt={item.title}
+                          />
+                          <AvatarFallback>
+                            {item.title.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      ) : (
+                        <div className="relative h-40 w-40 flex-shrink-0">
+                          <img
+                            className="h-full w-full rounded-md object-cover"
+                            src={
+                              item.thumbnail ||
+                              (item.images && item.images[0]?.url)
+                            }
+                            alt={item.title}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/placeholder-item.png";
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-1 flex-1 min-w-0 max-w-40">
+                        {item.item_as === "job" ? (
+                          <p className="font-medium truncate">
+                            {item.need
+                              ? t("dialog.labels.employeeLooking")
+                              : t("dialog.labels.companyLooking")}
+                          </p>
+                        ) : (
+                          <></>
+                        )}
+                        <p className="font-medium truncate">{item.title}</p>
+                        <p
+                          className={`text-sm text-muted-foreground ${
+                            item.item_as === "job"
+                              ? "line-clamp-3"
+                              : "line-clamp-2"
+                          }`}
+                        >
+                          {item.description}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <p>
+                          {item.category_name?.ar ||
+                            t("dashboard.messages.notAvailable")}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.subcategory_name?.ar ||
+                            t("dashboard.messages.notAvailable")}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {item.price ? (
+                        <div className="space-y-1">
+                          <p className="font-medium">
+                            {formatPrice(
+                      item.discount
+                        ? getPriceDiscount(item.price, item.discount)
+                        : item.price,
+                      item?.currency,
+                    )}
+                          </p>
+                          {item.discount > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                              {t("dashboard.messages.discount")}:{" "}
+                              {item.discount}%
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        t("dashboard.messages.notAvailable")
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <p>{item.city}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.state}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                          <span>{item.view_count || 0}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {activated_at
+                            .replace(/^منذ\s*/, "")
+                            .replace(/\s*ago$/, "")}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {t("dashboard.messages.user")}: <br /> {item.user_id}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {item.uuid_client}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        {getStatusBadge(item.is_active)}
+                        {item.account_type && (
+                          <CustomBadge
+                            variant={"unknown"}
+                            size="lg"
+                            className="whitespace-nowrap"
+                          >
+                            {item.account_type}
+                          </CustomBadge>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
               {loading && (
                 <>
                   {[...Array(pagination.limit)].map((_, i) => (
                     <TableRow key={`loading-${i}`}>
-                      <TableCell colSpan={8}>
+                      <TableCell colSpan={6}>
                         <div className="flex items-center space-x-4 p-4">
                           <Skeleton className="h-12 w-12 rounded-full" />
                           <div className="space-y-2">

@@ -64,10 +64,10 @@ export const EditableField = ({
   if (fieldName === "need") {
     return (
       <div className="space-y-1">
-        <label className="text-sm font-medium">{label}</label>
+        <div className="text-lg font-bold">{label}</div>
         {isEditing ? (
           <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-2">
+            <h3 className="flex items-center gap-2">
               <Input
                 type="radio"
                 name={fieldName}
@@ -78,8 +78,8 @@ export const EditableField = ({
                 className="h-4 w-4"
               />
               {t("editableField.employeeLooking")}
-            </label>
-            <label className="flex items-center gap-2">
+            </h3>
+            <h3 className="flex items-center gap-2">
               <Input
                 type="radio"
                 name={fieldName}
@@ -90,7 +90,7 @@ export const EditableField = ({
                 className="h-4 w-4"
               />
               {t("editableField.companyLooking")}
-            </label>
+            </h3>
           </div>
         ) : (
           <p>{value ? t("editableField.employeeLooking") : t("editableField.companyLooking")}</p>
@@ -101,7 +101,7 @@ export const EditableField = ({
 
   return (
     <div className="space-y-1">
-      <label className="text-sm font-medium">{label}</label>
+      <h3 className="text-lg font-bold">{label}</h3>
       {isEditing ? (
         isTextarea ? (
           <Textarea

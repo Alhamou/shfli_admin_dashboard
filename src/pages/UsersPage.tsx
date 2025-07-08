@@ -356,7 +356,7 @@ export const UserInfo = () => {
                           onCheckedChange={(checked) => {
                             handleInputChange(
                               "deleted_at",
-                              checked ? new Date() : null
+                              checked ? new Date().getTime() : null
                             );
                           }}
                           style={{ direction: "ltr" }}
@@ -403,7 +403,7 @@ export const UserInfo = () => {
               </div>
             </CardContent>
             <CardFooter className="text-sm text-muted-foreground">
-              {t("userInfo.userId")}: {userData.id} | <br /> UUID:{" "}
+              {userData.id} <br />
               {userData.uuid}
             </CardFooter>
           </Card>
@@ -414,9 +414,9 @@ export const UserInfo = () => {
               <CardHeader>
                 <h2 className="text-xl font-semibold flex items-center gap-2">
                   {t("userInfo.businessInfo")}
-                  {userData.business_name && (
+                  {userData.business_account?.business_name && (
                     <span className="text-muted-foreground">
-                      - {userData.business_name}
+                      - {userData.business_account?.business_name}
                     </span>
                   )}
                 </h2>
@@ -428,7 +428,7 @@ export const UserInfo = () => {
                       {t("userInfo.businessType")}
                     </p>
                     <p>
-                      {userData.business_type?.[i18n.language as "ar" | "en"] ||
+                      {userData.business_account?.business_type?.[i18n.language as "ar" | "en"] ||
                         t("userInfo.notAvailable")}
                     </p>
                   </div>
@@ -437,7 +437,7 @@ export const UserInfo = () => {
                       {t("userInfo.businessEmail")}
                     </p>
                     <p>
-                      {userData.business_email || t("userInfo.notAvailable")}
+                      {userData.business_account?.business_email || t("userInfo.notAvailable")}
                     </p>
                   </div>
                   <div>
@@ -450,7 +450,7 @@ export const UserInfo = () => {
                         textAlign: i18n.language === "ar" ? "right" : "left",
                       }}
                     >
-                      {userData.business_phone_number ||
+                      {userData.business_account?.business_phone_number ||
                         t("userInfo.notAvailable")}
                     </p>
                   </div>
@@ -458,7 +458,7 @@ export const UserInfo = () => {
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.taxNumber")}
                     </p>
-                    <p>{userData.tax_number || t("userInfo.notAvailable")}</p>
+                    <p>{userData.business_account?.tax_number || t("userInfo.notAvailable")}</p>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -467,7 +467,7 @@ export const UserInfo = () => {
                       {t("userInfo.businessAddress")}
                     </p>
                     <p>
-                      {userData.business_address || t("userInfo.notAvailable")}
+                      {userData.business_account?.business_address || t("userInfo.notAvailable")}
                     </p>
                   </div>
                   <div>
@@ -475,14 +475,14 @@ export const UserInfo = () => {
                       {t("userInfo.websiteUrl")}
                     </p>
                     <p>
-                      {userData.website_url ? (
+                      {userData.business_account?.website_url ? (
                         <a
-                          href={userData.website_url}
+                          href={userData.business_account?.website_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-primary hover:underline"
                         >
-                          {userData.website_url}
+                          {userData.business_account?.website_url}
                         </a>
                       ) : (
                         t("userInfo.notAvailable")
@@ -491,12 +491,12 @@ export const UserInfo = () => {
                   </div>
                 </div>
               </CardContent>
-              {userData.business_description && (
+              {userData.business_account?.business_description && (
                 <CardFooter className="flex flex-col items-start gap-2">
                   <p className="text-sm text-muted-foreground">
                     {t("userInfo.businessDescription")}
                   </p>
-                  <p className="text-sm">{userData.business_description}</p>
+                  <p className="text-sm">{userData.business_account?.business_description}</p>
                 </CardFooter>
               )}
             </Card>

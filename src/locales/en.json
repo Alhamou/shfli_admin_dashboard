@@ -156,7 +156,7 @@
   },
   "userInfo": {
     "title": "User Information",
-    "userIdPlaceholder": "Enter User ID or UUID",
+    "userIdPlaceholder": "search by user",
     "getUser": "Get User",
     "loading": "Loading...",
     "noUserSelected": "No user selected. Enter a user ID to view information.",
