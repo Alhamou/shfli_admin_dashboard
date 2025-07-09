@@ -41,6 +41,24 @@ export function getUserInfo(uuid : string){
 }
 
 export function putUserInfo(body : Partial<IUser>){
-  console.log('body',body)
   return put<IUser>(`/team/user`,body)
+}
+
+export function sendNot(body : {
+    message: string;
+    action: {
+        navigate_info: {
+            tab: string;
+            screen: string;
+            params: {
+                uuid: string;
+            };
+        };
+        outside_link?: undefined;
+    } | {
+        outside_link: string; navigate_info?: undefined;
+    };
+    user_id: number;
+}){
+  return put(`/admin/send_not`,body)
 }

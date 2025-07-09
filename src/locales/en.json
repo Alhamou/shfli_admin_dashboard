@@ -5,8 +5,8 @@
     "uuidSearchPlaceholder": "Search by User UUID...",
     "title": "Items Management",
     "searchPlaceholder": "Search items...",
-    "loadItems" : "load Items",
-    "loading" : "loading...",
+    "loadItems": "load Items",
+    "loading": "loading...",
     "tableHeaders": {
       "item": "Item",
       "type": "Type",
@@ -52,7 +52,7 @@
       "confirm": "Confirm",
       "block": "Block Ad",
       "unblock": "Unblock Ad",
-      "message": "Message",
+      "message": "Send Notification",
       "share": "Share",
       "report": "Report"
     },
@@ -104,12 +104,12 @@
       "subcategory": "Subcategory",
       "model": "Model",
       "position": "Position",
-      "phone" : "Phone",
-      "address" : "address",
-      "city" : "city",
-      "state" : "state",
-      "contactInfo" : "contact info",
-      "item" : "Item"
+      "phone": "Phone",
+      "address": "address",
+      "city": "city",
+      "state": "state",
+      "contactInfo": "contact info",
+      "item": "Item"
     },
     "messages": {
       "noImages": "No Images",
@@ -214,5 +214,25 @@
     "users": "Users",
     "chats": "Chats",
     "settings": "Settings"
+  },
+  "notificationPopup": {
+    "title": "Send Notification",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Enter your message",
+    "actionTypeLabel": "Action Type",
+    "navigationOption": "Navigation",
+    "externalLinkOption": "External Link",
+    "tabLabel": "Tab",
+    "tabPlaceholder": "Tab name",
+    "screenLabel": "Screen",
+    "screenPlaceholder": "Screen name",
+    "uuidLabel": "UUID",
+    "uuidPlaceholder": "Item UUID",
+    "linkLabel": "External Link",
+    "linkPlaceholder": "https://example.com",
+    "cancelButton": "Cancel",
+    "sendButton": "Send",
+    "NotificationSuccess": "Notification sent successfully",
+    "NotificationError": "Notification send failed"
   }
 }

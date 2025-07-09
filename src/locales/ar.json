@@ -52,7 +52,7 @@
       "confirm": "تأكيد",
       "block": "حظر الإعلان",
       "unblock": "إلغاء حظر الإعلان",
-      "message": "رسالة",
+      "message": "إرسال إشعار",
       "share": "مشاركة",
       "report": "الإبلاغ"
     },
@@ -214,5 +214,25 @@
     "users": "المستخدمين",
     "chats": "المحادثات",
     "settings": "الإعدادات"
+  },
+  "notificationPopup": {
+    "title": "إرسال إشعار",
+    "messageLabel": "الرسالة",
+    "messagePlaceholder": "أدخل رسالتك",
+    "actionTypeLabel": "نوع الإجراء",
+    "navigationOption": "تنقل",
+    "externalLinkOption": "رابط خارجي",
+    "tabLabel": "تبويب",
+    "tabPlaceholder": "اسم التبويب",
+    "screenLabel": "شاشة",
+    "screenPlaceholder": "اسم الشاشة",
+    "uuidLabel": "معرف",
+    "uuidPlaceholder": "معرف المستخدم",
+    "linkLabel": "رابط خارجي",
+    "linkPlaceholder": "https://example.com",
+    "cancelButton": "إلغاء",
+    "sendButton": "إرسال",
+    "NotificationSuccess": "تم إرسال الإشعار بنجاح",
+    "NotificationError": "فشل إرسال الإخطار"
   }
 }
