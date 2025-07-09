@@ -103,7 +103,13 @@
       "category": "الفئة",
       "subcategory": "الفئة الفرعية",
       "model": "الموديل",
-      "position": "الترتيب"
+      "position": "الترتيب",
+      "phone": "هاتف",
+      "address": "عنوان",
+      "city": "مدينة",
+      "state": "محافظة",
+      "contactInfo": "معلومات الاتصال",
+      "item": "العنصر"
     },
     "messages": {
       "noImages": "لا توجد صور",
@@ -164,7 +170,7 @@
     "yes": "نعم",
     "no": "لا",
     "individual": "فرد",
-    "business": "عمل تجاري",
+    "business": "تاجر",
     "blocked": "محظور",
     "verified": "موثق",
     "basicInfo": "المعلومات الأساسية",

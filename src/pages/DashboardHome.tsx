@@ -411,7 +411,7 @@ moment.updateLocale('ar', {
                             size="lg"
                             className="whitespace-nowrap"
                           >
-                            {item.account_type}
+                            {item.account_type === 'business' ? t('userInfo.business') : t('userInfo.individual')}
                           </CustomBadge>
                         )}
                       </div>

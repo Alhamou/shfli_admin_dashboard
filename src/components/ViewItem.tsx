@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { EditableField } from "./EditableField";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
+import moment from "moment";
 
 interface ItemDetailViewProps {
   uuid: string;
@@ -176,15 +177,16 @@ export function ItemDetailView({
     setIsEditing(false);
   }, [open, uuid]);
 
+  console.log(item);
+
+  const activated_at = moment(item?.activated_at)
+    .locale(i18n.language)
+    .fromNow();
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-[85vw] w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-[85vw] w-full max-h-[100vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <span className="text-lg sm:text-xl">
-              {t("dialog.itemDetails")}
-            </span>
-          </DialogTitle>
         </DialogHeader>
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -205,16 +207,34 @@ export function ItemDetailView({
             </Button>
           </div>
         ) : item ? (
-          <div className={`flex flex-col ${i18n.language === 'ar' ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
+          <div
+            className={`flex flex-col ${
+              i18n.language === "ar" ? "lg:flex-row-reverse" : "lg:flex-row"
+            }`}
+          >
             {/* Left Column - Images */}
-            <div className="lg:col-span-4 xl:col-span-3">
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2 sm:gap-4 max-h-[100vh] overflow-y-auto pr-2">
-                {item.images?.length > 0 ? (
-                  item.images.map((image, index) => (
-                    <div key={index} className="relative aspect-square">
+            {item.item_as !== "job" && (
+              <div className="max-h-[60vh]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2 sm:gap-4 max-h-[60vh] overflow-y-auto pr-2">
+                  {item.images?.length > 0 ? (
+                    item.images.map((image, index) => (
+                      <div key={index} className="relative aspect-square">
+                        <img
+                          src={image.url}
+                          alt={`${item.title} - ${index + 1}`}
+                          className="w-full h-full object-cover rounded-lg"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/placeholder-item.png";
+                          }}
+                        />
+                      </div>
+                    ))
+                  ) : item.thumbnail ? (
+                    <div className="relative aspect-square col-span-2 sm:col-span-3 lg:col-span-1">
                       <img
-                        src={image.url}
-                        alt={`${item.title} - ${index + 1}`}
+                        src={item.thumbnail}
+                        alt={item.title}
                         className="w-full h-full object-cover rounded-lg"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
@@ -222,32 +242,24 @@ export function ItemDetailView({
                         }}
                       />
                     </div>
-                  ))
-                ) : item.thumbnail ? (
-                  <div className="relative aspect-square col-span-2 sm:col-span-3 lg:col-span-1">
-                    <img
-                      src={item.thumbnail}
-                      alt={item.title}
-                      className="w-full h-full object-cover rounded-lg"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/placeholder-item.png";
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="bg-gray-100 dark:bg-gray-800 aspect-square rounded-lg flex items-center justify-center col-span-2 sm:col-span-3 lg:col-span-1">
-                    <span className="text-gray-500">
-                      {t("dialog.messages.noImages")}
-                    </span>
-                  </div>
-                )}
+                  ) : (
+                    <div className="bg-gray-100 dark:bg-gray-800 aspect-square rounded-lg flex items-center justify-center col-span-2 sm:col-span-3 lg:col-span-1">
+                      <span className="text-gray-500">
+                        {t("dialog.messages.noImages")}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Middle Column - Details */}
-            <div className="flex-grow space-y-4 space-x-4">
-              <div className="space-y-2">
+
+            <div
+              className="flex-grow px-4"
+              style={{ direction: i18n.language === "ar" ? "rtl" : "ltr" }}
+            >
+              <div className="my-4">
                 <EditableField
                   label={t("dialog.labels.title")}
                   value={item.title}
@@ -274,127 +286,134 @@ export function ItemDetailView({
                 </div>
               </div>
 
-              <EditableField
-                label={t("dialog.labels.description")}
-                value={item.description}
-                fieldName="description"
-                isTextarea
-                editedFields={editedFields}
-                isEditing={isEditing}
-                item={item}
-                originalItem={originalItem}
-                setEditedFields={setEditedFields}
-                setItem={setItem}
-              />
-
-              <EditableField
-                label={t("dialog.labels.position")}
-                value={item.position?.toString() || ""}
-                fieldName="position"
-                type="number"
-                editedFields={editedFields}
-                isEditing={isEditing}
-                item={item}
-                originalItem={originalItem}
-                setEditedFields={setEditedFields}
-                setItem={setItem}
-              />
-
-              <div className="space-y-2">
-                <h3 className="font-semibold">
-                  {t("dialog.labels.categoryInfo")}
-                </h3>
-                <div>
-                  <div>
-                    {/* <p className="text-sm font-medium">
-                      {t("dialog.labels.category")}
-                    </p> */}
-                    <p>
-                      {
-                        item.category_name?.ar ||
-                        t("dialog.messages.notAvailable")}
-                    </p>
-                  </div>
-
-                  <div>
-                    {/* <p className="text-sm font-medium">
-                      {t("dialog.labels.subcategory")}
-                    </p> */}
-                    <p>
-                      {
-                        item.subcategory_name?.ar ||
-                        t("dialog.messages.notAvailable")}
-                    </p>
-                  </div>
-
-                  {item.model_name && (
-                    <div>
-                      {/* <p className="text-sm font-medium">
-                        {t("dialog.labels.model")}
-                      </p> */}
-                      <p>
-                        {
-                          item.model_name.ar ||
-                          t("dialog.messages.notAvailable")}
-                      </p>
-                      {item.model_name.ar && (
-                        <p className="text-xs text-muted-foreground">
-                          ({item.model_name.ar})
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
+              <div className="my-4">
+                <EditableField
+                  label={t("dialog.labels.description")}
+                  value={item.description}
+                  fieldName="description"
+                  isTextarea
+                  editedFields={editedFields}
+                  isEditing={isEditing}
+                  item={item}
+                  originalItem={originalItem}
+                  setEditedFields={setEditedFields}
+                  setItem={setItem}
+                />
               </div>
+              <div className="flex flex-wrap gap-8">
+                <EditableField
+                  label={t("dialog.labels.position")}
+                  value={item.position?.toString() || ""}
+                  fieldName="position"
+                  type="number"
+                  editedFields={editedFields}
+                  isEditing={isEditing}
+                  item={item}
+                  originalItem={originalItem}
+                  setEditedFields={setEditedFields}
+                  setItem={setItem}
+                />
 
-              <div>
-                <div className="space-y-2">
-                  <h3 className="font-semibold">
-                    {t("dialog.labels.location")}
-                  </h3>
-                  <p>
-                    {item.city}, {item.state}
+                <div>
+                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                    {t("dialog.labels.category")}
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    {item.address}
+                  <p>
+                    {item.category_name?.ar ||
+                      t("dialog.messages.notAvailable")}
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <h3 className="font-semibold">
+                <div>
+                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                    {t("dialog.labels.subcategory")}
+                  </p>
+                  <p>
+                    {item.subcategory_name?.ar ||
+                      t("dialog.messages.notAvailable")}
+                  </p>
+                </div>
+
+                {item.model_name && (
+                  <div className="col-span-2">
+                    <p className="font-semibold text-blue-600 dark:text-blue-400">
+                      {t("dialog.labels.model")}
+                    </p>
+                    <p>
+                      {item.model_name.ar || t("dialog.messages.notAvailable")}
+                    </p>
+                    {item.model_name.ar && (
+                      <p className="text-xs text-muted-foreground">
+                        ({item.model_name.ar})
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <div>
+                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                    {t("dialog.labels.city")}
+                  </p>
+                  <p>{item.city}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                    {t("dialog.labels.state")}
+                  </p>
+                  <p>{item.state}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                    {t("dialog.labels.address")}
+                  </p>
+                  <p>{item.address}</p>
+                </div>
+
+                <div>
+                  <p className="font-semibold text-blue-600 dark:text-blue-400">
                     {t("dialog.labels.whatsappContact")}
-                  </h3>
+                  </p>
                   <p>
                     {item.contact_whatsapp || t("dialog.messages.notAvailable")}
                   </p>
                 </div>
-
-                <div className="space-y-2">
-                  <h3 className="font-semibold">{t("dialog.labels.stats")}</h3>
-                  <div className="flex items-center gap-2">
-                    <span>
-                      {t("dialog.labels.views")}: {item.view_count || 0}
-                    </span>
-                    <span>
-                      {t("dialog.labels.favorites")}: {item.favorite_at ? 1 : 0}
-                    </span>
+                {item.item_as !== "job" && (
+                  <div>
+                    <p className="font-semibold text-blue-600 dark:text-blue-400">
+                      {t("dialog.labels.phone")}
+                    </p>
+                    <p>
+                      {item.contact_phone || t("dialog.messages.notAvailable")}
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {t("dialog.labels.created")}:{" "}
-                    {new Date(item.activated_at).toLocaleDateString()}
+                )}
+
+                <div>
+                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                    {t("dialog.labels.views")}
+                  </p>
+                  <p>{item.view_count || 0}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                    {t("dialog.labels.favorites")}
+                  </p>
+                  <p>{item.favorite_at ? 1 : 0}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                    {t("dialog.labels.created")}
+                  </p>
+                  <p>
+                    {activated_at.replace(/^منذ\s*/, "").replace(/\s*ago$/, "")}
                   </p>
                 </div>
-              </div>
 
-              {/* Job-specific details */}
-              {item.item_as === "job" ? (
-                <div className="space-y-4">
-                  <h3 className="font-semibold">
-                    {t("dialog.labels.jobDetails")}
-                  </h3>
-                  <div>
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">
+                {/* Job-specific details or item details */}
+                {item.item_as === "job" ? (
+                  <>
+                    <div className="col-span-2">
+                      <p className="font-semibold text-blue-600 dark:text-blue-400">
                         {t("dialog.labels.jobType")}
                       </p>
                       {isEditing ? (
@@ -441,7 +460,7 @@ export function ItemDetailView({
                       )}
                     </div>
                     <div>
-                      <p className="text-sm font-medium">
+                      <p className="font-semibold text-blue-600 dark:text-blue-400">
                         {t("dialog.labels.remoteJob")}
                       </p>
                       <p>
@@ -450,77 +469,80 @@ export function ItemDetailView({
                           : t("dialog.messages.no")}
                       </p>
                     </div>
-                    <EditableField
-                      label={t("dialog.labels.companyName")}
-                      value={item.company_name}
-                      fieldName="company_name"
-                      editedFields={editedFields}
-                      isEditing={isEditing}
-                      item={item}
-                      originalItem={originalItem}
-                      setEditedFields={setEditedFields}
-                      setItem={setItem}
-                    />
-                    <EditableField
-                      label={t("dialog.labels.companyWebsite")}
-                      value={item.company_website}
-                      fieldName="company_website"
-                      editedFields={editedFields}
-                      isEditing={isEditing}
-                      item={item}
-                      originalItem={originalItem}
-                      setEditedFields={setEditedFields}
-                      setItem={setItem}
-                    />
-                    <EditableField
-                      label={t("dialog.labels.companyPhone")}
-                      value={item.contact_phone}
-                      fieldName="contact_phone"
-                      editedFields={editedFields}
-                      isEditing={isEditing}
-                      item={item}
-                      originalItem={originalItem}
-                      setEditedFields={setEditedFields}
-                      setItem={setItem}
-                    />
-                    <EditableField
-                      label={t("dialog.labels.companyEmail")}
-                      value={item.contact_email}
-                      fieldName="contact_email"
-                      editedFields={editedFields}
-                      isEditing={isEditing}
-                      item={item}
-                      originalItem={originalItem}
-                      setEditedFields={setEditedFields}
-                      setItem={setItem}
-                    />
-                  </div>
-                </div>
-              ) : (
-                /* Non-job item details */
-                <div className="space-y-4">
-                  <h3 className="font-semibold">
-                    {t("dialog.labels.itemDetails")}
-                  </h3>
-                  <div className="min-w-40 max-w-80">
+                    <div className="col-span-2">
+                      <EditableField
+                        label={t("dialog.labels.companyName")}
+                        value={item.company_name}
+                        fieldName="company_name"
+                        editedFields={editedFields}
+                        isEditing={isEditing}
+                        item={item}
+                        originalItem={originalItem}
+                        setEditedFields={setEditedFields}
+                        setItem={setItem}
+                      />
+                    </div>
+                    <div>
+                      <EditableField
+                        label={t("dialog.labels.companyWebsite")}
+                        value={item.company_website}
+                        fieldName="company_website"
+                        editedFields={editedFields}
+                        isEditing={isEditing}
+                        item={item}
+                        originalItem={originalItem}
+                        setEditedFields={setEditedFields}
+                        setItem={setItem}
+                      />
+                    </div>
+                    <div>
+                      <EditableField
+                        label={t("dialog.labels.companyPhone")}
+                        value={item.contact_phone}
+                        fieldName="contact_phone"
+                        editedFields={editedFields}
+                        isEditing={isEditing}
+                        item={item}
+                        originalItem={originalItem}
+                        setEditedFields={setEditedFields}
+                        setItem={setItem}
+                      />
+                    </div>
+                    <div>
+                      <EditableField
+                        label={t("dialog.labels.companyEmail")}
+                        value={item.contact_email}
+                        fieldName="contact_email"
+                        editedFields={editedFields}
+                        isEditing={isEditing}
+                        item={item}
+                        originalItem={originalItem}
+                        setEditedFields={setEditedFields}
+                        setItem={setItem}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  /* Non-job item details */
+                  <>
                     {/* Mobile-specific details */}
                     {(item.item_as === "shop" || item.item_as === "used") &&
                       item.storage_capacity && (
                         <>
                           <div>
-                            <p className="text-sm font-medium">
+                            <p className="font-semibold text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.storage")}
                             </p>
                             <p>{item.storage_capacity}GB</p>
                           </div>
                           <div>
-                            <p className="text-sm font-medium">
+                            <p className="font-semibold text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.ram")}
                             </p>
                             <p>{item.ram}GB</p>
                           </div>
                           <div>
-                            <p className="text-sm font-medium">
+                            <p className="font-semibold text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.operatingSystem")}
                             </p>
                             <p>
@@ -529,19 +551,19 @@ export function ItemDetailView({
                             </p>
                           </div>
                           <div>
-                            <p className="text-sm font-medium">
+                            <p className="font-semibold text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.screenSize")}
                             </p>
                             <p>{item.screen_size}"</p>
                           </div>
                           <div>
-                            <p className="text-sm font-medium">
+                            <p className="font-semibold text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.battery")}
                             </p>
                             <p>{item.battery_capacity}mAh</p>
                           </div>
                           <div>
-                            <p className="text-sm font-medium">
+                            <p className="font-semibold text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.camera")}
                             </p>
                             <p>
@@ -550,7 +572,7 @@ export function ItemDetailView({
                             </p>
                           </div>
                           <div>
-                            <p className="text-sm font-medium">
+                            <p className="font-semibold text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.color")}
                             </p>
                             <p>
@@ -558,7 +580,7 @@ export function ItemDetailView({
                             </p>
                           </div>
                           <div>
-                            <p className="text-sm font-medium">
+                            <p className="font-semibold text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.condition")}
                             </p>
                             <p>
@@ -573,13 +595,13 @@ export function ItemDetailView({
                     {item.item_as === "used" && item.mileage && (
                       <>
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.mileage")}
                           </p>
                           <p>{item.mileage} km</p>
                         </div>
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.transmission")}
                           </p>
                           <p>
@@ -588,7 +610,7 @@ export function ItemDetailView({
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.year")}
                           </p>
                           <p>
@@ -596,7 +618,7 @@ export function ItemDetailView({
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.fuelType")}
                           </p>
                           <p>
@@ -611,7 +633,7 @@ export function ItemDetailView({
                     {item.item_as === "used" && item.area && (
                       <>
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.area")}
                           </p>
                           <p>
@@ -619,7 +641,7 @@ export function ItemDetailView({
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.bedrooms")}
                           </p>
                           <p>
@@ -627,7 +649,7 @@ export function ItemDetailView({
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.bathrooms")}
                           </p>
                           <p>
@@ -636,7 +658,7 @@ export function ItemDetailView({
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.floor")}
                           </p>
                           <p>
@@ -644,7 +666,7 @@ export function ItemDetailView({
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.yearBuilt")}
                           </p>
                           <p>
@@ -653,7 +675,7 @@ export function ItemDetailView({
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.furnished")}
                           </p>
                           <p>
@@ -677,12 +699,11 @@ export function ItemDetailView({
                       setEditedFields={setEditedFields}
                       setItem={setItem}
                     />
-
                     {/* General item details */}
                     <div>
-                      <h3 className="text-lg font-bold">
+                      <p className="font-semibold text-blue-600 dark:text-blue-400">
                         {t("dialog.labels.reserved")}
-                      </h3>
+                      </p>
                       <p>
                         {item.reserved
                           ? t("dialog.messages.yes")
@@ -690,7 +711,7 @@ export function ItemDetailView({
                       </p>
                     </div>
                     <div>
-                      <p className="text-lg font-bold">
+                      <p className="font-semibold text-blue-600 dark:text-blue-400">
                         {t("dialog.labels.discountEndDate")}
                       </p>
                       <p>
@@ -701,9 +722,31 @@ export function ItemDetailView({
                           : t("dialog.messages.notAvailable")}
                       </p>
                     </div>
-                  </div>
-                </div>
-              )}
+                  </>
+                )}
+                                    <div>
+                      <p className="font-semibold text-blue-600 dark:text-blue-400">
+                        {t("dashboard.messages.user")}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {item.user_id}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {item.client_details?.uuid}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-blue-600 dark:text-blue-400">
+                        {t("dialog.labels.item")}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {item.main_items_id}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {item.uuid}
+                      </p>
+                    </div>
+              </div>
             </div>
 
             {/* Right Column - Actions */}
@@ -756,7 +799,7 @@ export function ItemDetailView({
         ) : null}
         {showReasonInput && (
           <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-            <h3 className="font-medium">{t("dialog.labels.selectReason")}</h3>
+            <p className="font-medium">{t("dialog.labels.selectReason")}</p>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

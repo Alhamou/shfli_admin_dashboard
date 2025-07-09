@@ -103,7 +103,13 @@
       "category": "Category",
       "subcategory": "Subcategory",
       "model": "Model",
-      "position": "Position"
+      "position": "Position",
+      "phone" : "Phone",
+      "address" : "address",
+      "city" : "city",
+      "state" : "state",
+      "contactInfo" : "contact info",
+      "item" : "Item"
     },
     "messages": {
       "noImages": "No Images",

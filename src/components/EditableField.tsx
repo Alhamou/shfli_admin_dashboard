@@ -3,6 +3,7 @@ import { Textarea } from "./ui/textarea";
 import { Dispatch, SetStateAction } from "react";
 import { Input } from "./ui/input";
 import { useTranslation } from "react-i18next";
+import { formatPrice, getPriceDiscount } from "@/lib/helpFunctions";
 
 export const EditableField = ({
   label,
@@ -23,7 +24,7 @@ export const EditableField = ({
   isTextarea?: boolean;
   type?: string;
   setItem: Dispatch<SetStateAction<ICreatMainItem | null>>;
-  item: ICreatMainItem | null;
+  item: ICreatMainItem;
   setEditedFields: Dispatch<SetStateAction<Partial<ICreatMainItem>>>;
   editedFields: Partial<ICreatMainItem>;
   originalItem: ICreatMainItem | null;
@@ -31,7 +32,10 @@ export const EditableField = ({
 }) => {
   const { t } = useTranslation();
 
-  const handleFieldChange = (field: keyof ICreatMainItem, value: string | number | undefined | null) => {
+  const handleFieldChange = (
+    field: keyof ICreatMainItem,
+    value: string | number | undefined | null
+  ) => {
     if (!item) return;
 
     setItem({ ...item, [field]: value });
@@ -46,7 +50,10 @@ export const EditableField = ({
     }
   };
 
-  const handleFieldChangeRadio = (field: keyof ICreatMainItem, value: boolean | string) => {
+  const handleFieldChangeRadio = (
+    field: keyof ICreatMainItem,
+    value: boolean | string
+  ) => {
     if (!item) return;
 
     setItem({ ...item, [field]: value });
@@ -64,7 +71,9 @@ export const EditableField = ({
   if (fieldName === "need") {
     return (
       <div className="space-y-1">
-        <div className="text-lg font-bold">{label}</div>
+        <div className="font-semibold text-blue-600 dark:text-blue-400">
+          {label}
+        </div>
         {isEditing ? (
           <div className="flex flex-col gap-2">
             <h3 className="flex items-center gap-2">
@@ -73,7 +82,7 @@ export const EditableField = ({
                 name={fieldName}
                 checked={value === true}
                 onChange={() => {
-                  handleFieldChangeRadio(fieldName, true)
+                  handleFieldChangeRadio(fieldName, true);
                 }}
                 className="h-4 w-4"
               />
@@ -85,7 +94,7 @@ export const EditableField = ({
                 name={fieldName}
                 checked={value === false}
                 onChange={() => {
-                  handleFieldChangeRadio(fieldName, false)
+                  handleFieldChangeRadio(fieldName, false);
                 }}
                 className="h-4 w-4"
               />
@@ -93,7 +102,11 @@ export const EditableField = ({
             </h3>
           </div>
         ) : (
-          <p>{value ? t("editableField.employeeLooking") : t("editableField.companyLooking")}</p>
+          <p>
+            {value
+              ? t("editableField.employeeLooking")
+              : t("editableField.companyLooking")}
+          </p>
         )}
       </div>
     );
@@ -101,19 +114,21 @@ export const EditableField = ({
 
   return (
     <div className="space-y-1">
-      <h3 className="text-lg font-bold">{label}</h3>
+      <h3 className="font-semibold text-blue-600 dark:text-blue-400">
+        {label}
+      </h3>
       {isEditing ? (
         isTextarea ? (
           <Textarea
             value={value?.toString() || ""}
             onChange={(e) => handleFieldChange(fieldName, e.target.value)}
-            className="min-h-[100px] bg-slate-800"
+            className="min-h-[100px] border-2 border-blue-500"
           />
         ) : (
           <Input
             type={type}
             value={value?.toString() || ""}
-            className="bg-slate-800"
+            className="border-2 border-blue-500"
             onChange={(e) => {
               const val =
                 type === "number"
@@ -124,7 +139,16 @@ export const EditableField = ({
           />
         )
       ) : (
-        <p>{value || t("editableField.notAvailable")}</p>
+        <p>
+          {value
+            ? fieldName === 'price' ? formatPrice(
+                item.discount
+                  ? getPriceDiscount(item.price, item.discount)
+                  : item.price,
+                item.currency
+              )
+            : value : t("editableField.notAvailable")}
+        </p>
       )}
     </div>
   );
