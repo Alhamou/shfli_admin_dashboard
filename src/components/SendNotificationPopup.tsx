@@ -22,7 +22,7 @@ interface MessagePopupProps {
 }
 
 export const SendNotificationPopup = ({ is_public, userId, onSend, children,loading }: MessagePopupProps) => {
-  const { t } = useTranslation();
+  const { t ,i18n} = useTranslation();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [actionType, setActionType] = useState<"navigate" | "link">("navigate");
@@ -65,7 +65,7 @@ export const SendNotificationPopup = ({ is_public, userId, onSend, children,load
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px]" style={{direction : i18n.language === 'ar' ? 'rtl' : 'ltr'}}>
         <DialogHeader>
           <DialogTitle>{t("notificationPopup.title")}</DialogTitle>
         </DialogHeader>

@@ -60,5 +60,5 @@ export function sendNot(body : {
     };
     user_id: number;
 }){
-  return put(`/admin/send_not`,body)
+  return post(`/admin/send_not`,body)
 }
