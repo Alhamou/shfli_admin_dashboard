@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -11,17 +11,30 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { useAuth } from "../../app"
-import { Home, Users, Settings, Shield, LogOut, MessageCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useTranslation } from "react-i18next"
+} from "@/components/ui/sidebar";
+import { useAuth } from "../../app";
+import {
+  Home,
+  Users,
+  Settings,
+  Shield,
+  LogOut,
+  MessageCircle,
+  Tv,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const menuItems = [
   {
     title: "dashboard",
     url: "/",
     icon: Home,
+  },
+  {
+    title: "commercialAds",
+    url: "/commercialAds",
+    icon: Tv,
   },
   {
     title: "users",
@@ -38,12 +51,12 @@ const menuItems = [
     url: "/settings",
     icon: Settings,
   },
-]
+];
 
 export function AppSidebar() {
-  const location = useLocation()
-  const { user, logout } = useAuth()
-  const { t } = useTranslation()
+  const location = useLocation();
+  const { user, logout } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <Sidebar>
@@ -60,7 +73,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location.pathname === item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === item.url}
+                  >
                     <Link to={item.url} className="flex items-center gap-3">
                       <item.icon className="h-4 w-4" />
                       <span>{t(`sidebar.${item.title}`)}</span>
@@ -77,11 +93,13 @@ export function AppSidebar() {
         <div className="flex items-center justify-between gap-2">
           <div className="flex flex-col">
             <span className="text-sm font-medium">{user?.uuid}</span>
-            <span className="text-xs text-muted-foreground">{user?.phone_number}</span>
+            <span className="text-xs text-muted-foreground">
+              {user?.phone_number}
+            </span>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={logout}
             className="flex items-center gap-2"
           >
@@ -90,5 +108,5 @@ export function AppSidebar() {
         </div>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

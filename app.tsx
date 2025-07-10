@@ -25,6 +25,7 @@ import { jwtDecode } from "jwt-decode";
 import storageController from "@/controllers/storageController";
 import { Toaster } from "sonner";
 import { useTranslation } from "react-i18next";
+import Commercial from "@/pages/Commercial";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -138,6 +139,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <SettingsPage />
+                  </ProtectedRoute>
+                }
+              />
+                            <Route
+                path="commercialAds"
+                element={
+                  <ProtectedRoute>
+                    <Commercial />
                   </ProtectedRoute>
                 }
               />

@@ -7,16 +7,17 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { getUserInfo, putUserInfo } from "@/services/restApiServices";
+import { getUserInfo, putUserInfo, sendNot } from "@/services/restApiServices";
 import { IUser } from "@/interfaces";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Edit, Save, X } from "lucide-react";
+import { AlertCircle, Edit, MessageCircle, Save, X, XIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CustomBadge } from "@/components/ui/custom-badge";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { SendNotificationPopup } from "@/components/SendNotificationPopup";
 
 export const UserInfo = () => {
   const { t, i18n } = useTranslation();
@@ -26,6 +27,7 @@ export const UserInfo = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [loadingNotification, setLoadingNotification] = useState(false);
 
   const handleFetchUser = async () => {
     if (!userId.trim()) {
@@ -67,12 +69,12 @@ export const UserInfo = () => {
         id: userData.id,
         // If deleted_at is being set, ensure we send it
         ...(editData.deleted_at !== undefined && {
-          deleted_at: editData.deleted_at
+          deleted_at: editData.deleted_at,
         }),
         // Also update the deleted flag if we're changing deleted_at
         ...(editData.deleted_at !== undefined && {
-          deleted: !!editData.deleted_at
-        })
+          deleted: !!editData.deleted_at,
+        }),
       };
 
       const updatedUser = await putUserInfo(dataToSend);
@@ -115,20 +117,56 @@ export const UserInfo = () => {
       className="mx-auto p-4"
       style={{ direction: i18n.language === "ar" ? "rtl" : "ltr" }}
     >
-      <h1 className="text-2xl font-bold mb-6">{t("userInfo.title")}</h1>
+      <div className="flex flex-row">
+        <h1 className="text-2xl font-bold mb-6">{t("userInfo.title")}</h1>
+        <SendNotificationPopup
+          is_public={true}
+          userId={1}
+          loading={loadingNotification}
+          onSend={async (messageData) => {
+            setLoadingNotification(true);
+            try {
+              await sendNot(messageData);
+              toast.success(t("notificationPopup.NotificationSuccess"));
+            } catch {
+              toast.error(t("notificationPopup.NotificationError"));
+            } finally {
+              setLoadingNotification(false);
+            }
+          }}
+        >
+          <Button variant="outline" className="flex-1 lg:flex-none">
+            <MessageCircle /> {t("notificationPopup.publicTitle")}
+          </Button>
+        </SendNotificationPopup>
+      </div>
 
       <div className="flex gap-2 mb-6">
-        <Input
-          type="text"
-          placeholder={t("userInfo.userIdPlaceholder")}
-          value={userId}
-          onChange={(e) => {
-            setUserId(e.target.value);
-            setError(null);
-          }}
-          className="flex-1"
-          style={{ direction: "ltr" }}
-        />
+        <div className="relative flex-1">
+          <Input
+            type="text"
+            placeholder={t("userInfo.userIdPlaceholder")}
+            value={userId}
+            onChange={(e) => {
+              setUserId(e.target.value);
+              setError(null);
+            }}
+            className="flex-1"
+            style={{ direction: "ltr" }}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+            onClick={() => {
+              setUserId("");
+            }}
+          >
+            <XIcon className="h-4 w-4" color="red" />
+            <span className="sr-only">Clear</span>
+          </Button>
+        </div>
         <Button onClick={handleFetchUser} disabled={isLoading}>
           {isLoading ? t("userInfo.loading") : t("userInfo.getUser")}
         </Button>
@@ -352,7 +390,9 @@ export const UserInfo = () => {
                       <div className="flex items-center space-x-2">
                         <Switch
                           id="deleted"
-                          checked={!!(editData.deleted_at ?? userData.deleted_at)}
+                          checked={
+                            !!(editData.deleted_at ?? userData.deleted_at)
+                          }
                           onCheckedChange={(checked) => {
                             handleInputChange(
                               "deleted_at",
@@ -362,13 +402,17 @@ export const UserInfo = () => {
                           style={{ direction: "ltr" }}
                         />
                         <Label htmlFor="deleted">
-                          {formatBoolean(!!(editData.deleted_at ?? userData.deleted_at))}
+                          {formatBoolean(
+                            !!(editData.deleted_at ?? userData.deleted_at)
+                          )}
                         </Label>
                       </div>
                     ) : (
                       <p>
                         {userData.deleted_at
-                          ? `${t("userInfo.yes")} (${formatDate(userData.deleted_at)})`
+                          ? `${t("userInfo.yes")} (${formatDate(
+                              userData.deleted_at
+                            )})`
                           : t("userInfo.no")}
                       </p>
                     )}
@@ -428,8 +472,9 @@ export const UserInfo = () => {
                       {t("userInfo.businessType")}
                     </p>
                     <p>
-                      {userData.business_account?.business_type?.[i18n.language as "ar" | "en"] ||
-                        t("userInfo.notAvailable")}
+                      {userData.business_account?.business_type?.[
+                        i18n.language as "ar" | "en"
+                      ] || t("userInfo.notAvailable")}
                     </p>
                   </div>
                   <div>
@@ -437,7 +482,8 @@ export const UserInfo = () => {
                       {t("userInfo.businessEmail")}
                     </p>
                     <p>
-                      {userData.business_account?.business_email || t("userInfo.notAvailable")}
+                      {userData.business_account?.business_email ||
+                        t("userInfo.notAvailable")}
                     </p>
                   </div>
                   <div>
@@ -458,7 +504,10 @@ export const UserInfo = () => {
                     <p className="text-sm text-muted-foreground">
                       {t("userInfo.taxNumber")}
                     </p>
-                    <p>{userData.business_account?.tax_number || t("userInfo.notAvailable")}</p>
+                    <p>
+                      {userData.business_account?.tax_number ||
+                        t("userInfo.notAvailable")}
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -467,7 +516,8 @@ export const UserInfo = () => {
                       {t("userInfo.businessAddress")}
                     </p>
                     <p>
-                      {userData.business_account?.business_address || t("userInfo.notAvailable")}
+                      {userData.business_account?.business_address ||
+                        t("userInfo.notAvailable")}
                     </p>
                   </div>
                   <div>
@@ -496,7 +546,9 @@ export const UserInfo = () => {
                   <p className="text-sm text-muted-foreground">
                     {t("userInfo.businessDescription")}
                   </p>
-                  <p className="text-sm">{userData.business_account?.business_description}</p>
+                  <p className="text-sm">
+                    {userData.business_account?.business_description}
+                  </p>
                 </CardFooter>
               )}
             </Card>

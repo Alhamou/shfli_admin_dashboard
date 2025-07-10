@@ -10,6 +10,7 @@ export function getCuntriesData() {
 }
 
 export function getAllItems(queries: string){
+  console.log(queries)
   return get<IResultAndPagination>(`/items?${queries}`)
 }
 
@@ -61,4 +62,8 @@ export function sendNot(body : {
     user_id: number;
 }){
   return post(`/admin/send_not`,body)
+}
+
+export function getAllCommercialItems(queries: string){
+  return get<IResultAndPagination>(`/items/commercial?${queries}`)
 }

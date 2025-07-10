@@ -8,6 +8,7 @@
     "loadItems": "تحميل العناصر",
     "loading": "تحميل...",
     "tableHeaders": {
+      "position": "مميز",
       "item": "العنصر",
       "type": "النوع",
       "category": "الفئة",
@@ -210,29 +211,48 @@
     "invalidUserID": "ID غير صالح. يُرجى المحاولة مرة أخرى."
   },
   "sidebar": {
-    "dashboard": "لوحة التحكم",
+    "dashboard": "أحدث الإعلانات",
     "users": "المستخدمين",
     "chats": "المحادثات",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "commercialAds": "الإعلانات التجارية"
   },
   "notificationPopup": {
     "title": "إرسال إشعار",
     "messageLabel": "الرسالة",
-    "messagePlaceholder": "أدخل رسالتك",
+    "messagePlaceholder": "أدخل رسالة الإشعار...",
     "actionTypeLabel": "نوع الإجراء",
-    "navigationOption": "تنقل",
+    "messageOnlyOption": "رسالة فقط",
+    "navigationOption": "تنقل داخل التطبيق",
     "externalLinkOption": "رابط خارجي",
-    "tabLabel": "تبويب",
-    "tabPlaceholder": "اسم التبويب",
-    "screenLabel": "شاشة",
-    "screenPlaceholder": "اسم الشاشة",
-    "uuidLabel": "معرف",
-    "uuidPlaceholder": "معرف المستخدم",
-    "linkLabel": "رابط خارجي",
+    "tabLabel": "التبويب",
+    "tabPlaceholder": "أدخل اسم التبويب",
+    "screenLabel": "الشاشة",
+    "screenPlaceholder": "أدخل اسم الشاشة",
+    "uuidLabel": "معرّف العنصر",
+    "uuidPlaceholder": "أدخل معرّف العنصر",
+    "linkLabel": "رابط URL",
     "linkPlaceholder": "https://example.com",
+    "withImage": "تضمين صورة",
+    "imageUrlLabel": "رابط الصورة",
+    "imageUrlPlaceholder": "https://example.com/image.jpg",
+    "widthLabel": "العرض (بكسل)",
+    "widthPlaceholder": "300",
+    "heightLabel": "الارتفاع (بكسل)",
+    "heightPlaceholder": "150",
     "cancelButton": "إلغاء",
     "sendButton": "إرسال",
+    "publicTitle": "إرسال إشعار عام",
     "NotificationSuccess": "تم إرسال الإشعار بنجاح",
-    "NotificationError": "فشل إرسال الإخطار"
+    "errors": {
+      "messageRequired": "الرسالة مطلوبة",
+      "tabRequired": "التبويب مطلوب",
+      "screenRequired": "الشاشة مطلوبة",
+      "uuidRequired": "معرّف العنصر مطلوب",
+      "linkRequired": "رابط URL مطلوب",
+      "imageUrlRequired": "رابط الصورة مطلوب",
+      "widthRequired": "العرض مطلوب",
+      "heightRequired": "الارتفاع مطلوب"
+    }
   }
 }

@@ -19,7 +19,7 @@ import {
   updateItemInArray,
 } from "@/lib/helpFunctions";
 import "moment";
-import { getAllItems, updateItem } from "@/services/restApiServices";
+import { getAllCommercialItems, updateItem } from "@/services/restApiServices";
 import { ICreatMainItem } from "@/interfaces";
 import { CustomBadge } from "@/components/ui/custom-badge";
 import { Eye, XIcon } from "lucide-react";
@@ -70,8 +70,7 @@ export default function DashboardHome() {
               : { user_id: clientUuid }
             : {}),
         });
-        const response = await getAllItems(query);
-        console.log(response.result);
+        const response = await getAllCommercialItems(query);
         setItems((prev) =>
           page === 1 ? response.result : [...prev, ...response.result]
         );
@@ -267,7 +266,7 @@ export default function DashboardHome() {
               value={searchTerm}
               onChange={handleSearchChange}
               className="w-full"
-              style={{ direction: "ltr" }}
+              style={{direction : 'ltr'}}
             />
             <Button
               type="button"
@@ -288,7 +287,7 @@ export default function DashboardHome() {
               value={uuidSearchTerm}
               onChange={handleUuidSearchChange}
               className="w-full"
-              style={{ direction: "ltr" }}
+              style={{direction : 'ltr'}}
             />
             <Button
               type="button"

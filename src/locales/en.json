@@ -8,6 +8,7 @@
     "loadItems": "load Items",
     "loading": "loading...",
     "tableHeaders": {
+      "position": "Featured",
       "item": "Item",
       "type": "Type",
       "category": "Category",
@@ -210,29 +211,48 @@
     "invalidUserID": "Invalid user ID. Please try again."
   },
   "sidebar": {
-    "dashboard": "Dashboard",
+    "dashboard": "Latest ads",
     "users": "Users",
     "chats": "Chats",
-    "settings": "Settings"
+    "settings": "Settings",
+    "commercialAds": "Commercial ads"
   },
   "notificationPopup": {
     "title": "Send Notification",
     "messageLabel": "Message",
-    "messagePlaceholder": "Enter your message",
+    "messagePlaceholder": "Enter your notification message...",
     "actionTypeLabel": "Action Type",
-    "navigationOption": "Navigation",
+    "messageOnlyOption": "Message Only",
+    "navigationOption": "App Navigation",
     "externalLinkOption": "External Link",
     "tabLabel": "Tab",
-    "tabPlaceholder": "Tab name",
+    "tabPlaceholder": "Enter tab name",
     "screenLabel": "Screen",
-    "screenPlaceholder": "Screen name",
-    "uuidLabel": "UUID",
-    "uuidPlaceholder": "Item UUID",
-    "linkLabel": "External Link",
+    "screenPlaceholder": "Enter screen name",
+    "uuidLabel": "Item UUID",
+    "uuidPlaceholder": "Enter item UUID",
+    "linkLabel": "Link URL",
     "linkPlaceholder": "https://example.com",
+    "withImage": "Include Image",
+    "imageUrlLabel": "Image URL",
+    "imageUrlPlaceholder": "https://example.com/image.jpg",
+    "widthLabel": "Width (px)",
+    "widthPlaceholder": "300",
+    "heightLabel": "Height (px)",
+    "heightPlaceholder": "150",
     "cancelButton": "Cancel",
     "sendButton": "Send",
-    "NotificationSuccess": "Notification sent successfully",
-    "NotificationError": "Notification send failed"
+    "publicTitle": "Send Public Notification",
+    "NotificationSuccess" : "Notifications Sent successfully",
+    "errors": {
+      "messageRequired": "Message is required",
+      "tabRequired": "Tab is required",
+      "screenRequired": "Screen is required",
+      "uuidRequired": "UUID is required",
+      "linkRequired": "Link URL is required",
+      "imageUrlRequired": "Image URL is required",
+      "widthRequired": "Width is required",
+      "heightRequired": "Height is required"
+    }
   }
 }
