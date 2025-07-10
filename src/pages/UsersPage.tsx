@@ -219,14 +219,43 @@ export const UserInfo = () => {
                 </div>
                 <div className="flex gap-2">
                   {!isEditing ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsEditing(true)}
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      {t("userInfo.edit")}
-                    </Button>
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        {t("userInfo.edit")}
+                      </Button>
+                      <SendNotificationPopup
+                        is_public={false}
+                        userId={userData.id}
+                        loading={loadingNotification}
+                        onSend={async (messageData) => {
+                          setLoadingNotification(true);
+                          try {
+                            await sendNot(messageData);
+                            toast.success(
+                              t("notificationPopup.NotificationSuccess")
+                            );
+                          } catch {
+                            toast.error(
+                              t("notificationPopup.NotificationError")
+                            );
+                          } finally {
+                            setLoadingNotification(false);
+                          }
+                        }}
+                      >
+                        <Button
+                          variant="outline"
+                          className="flex-1 lg:flex-none"
+                        >
+                          <MessageCircle /> {t("dialog.buttons.message")}
+                        </Button>
+                      </SendNotificationPopup>
+                    </>
                   ) : (
                     <>
                       <Button
