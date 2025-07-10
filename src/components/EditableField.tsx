@@ -71,7 +71,7 @@ export const EditableField = ({
   if (fieldName === "need") {
     return (
       <div className="space-y-1">
-        <div className="font-semibold text-blue-600 dark:text-blue-400">
+        <div className="text-xs font-normal text-blue-600 dark:text-blue-400">
           {label}
         </div>
         {isEditing ? (
@@ -84,7 +84,7 @@ export const EditableField = ({
                 onChange={() => {
                   handleFieldChangeRadio(fieldName, true);
                 }}
-                className="h-4 w-4"
+                className="h-4 w-4 text-sm"
               />
               {t("editableField.employeeLooking")}
             </h3>
@@ -114,7 +114,7 @@ export const EditableField = ({
 
   return (
     <div className="space-y-1">
-      <h3 className="font-semibold text-blue-600 dark:text-blue-400">
+      <h3 className="text-xs font-normal text-blue-600 dark:text-blue-400">
         {label}
       </h3>
       {isEditing ? (
@@ -139,7 +139,7 @@ export const EditableField = ({
           />
         )
       ) : (
-        <p>
+        <p className="text-sm">
           {value
             ? fieldName === 'price' ? formatPrice(
                 item.discount

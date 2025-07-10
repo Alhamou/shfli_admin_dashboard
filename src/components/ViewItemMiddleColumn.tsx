@@ -70,20 +70,20 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                 />
 
                 <div>
-                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                     {t("dialog.labels.category")}
                   </p>
-                  <p>
+                  <p className="text-sm">
                     {item.category_name?.ar ||
                       t("dialog.messages.notAvailable")}
                   </p>
                 </div>
 
                 <div>
-                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                     {t("dialog.labels.subcategory")}
                   </p>
-                  <p>
+                  <p className="text-sm">
                     {item.subcategory_name?.ar ||
                       t("dialog.messages.notAvailable")}
                   </p>
@@ -91,14 +91,14 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
 
                 {item.model_name && (
                   <div className="col-span-2">
-                    <p className="font-semibold text-blue-600 dark:text-blue-400">
+                    <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                       {t("dialog.labels.model")}
                     </p>
-                    <p>
+                    <p className="text-sm">
                       {item.model_name.ar || t("dialog.messages.notAvailable")}
                     </p>
                     {item.model_name.ar && (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         ({item.model_name.ar})
                       </p>
                     )}
@@ -106,60 +106,60 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                 )}
 
                 <div>
-                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                     {t("dialog.labels.city")}
                   </p>
-                  <p>{item.city}</p>
+                  <p className="text-sm">{item.city}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                     {t("dialog.labels.state")}
                   </p>
-                  <p>{item.state}</p>
+                  <p className="text-sm">{item.state}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                     {t("dialog.labels.address")}
                   </p>
-                  <p>{item.address}</p>
+                  <p className="text-sm">{item.address}</p>
                 </div>
 
                 <div>
-                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                     {t("dialog.labels.whatsappContact")}
                   </p>
-                  <p>
+                  <p className="text-sm">
                     {item.contact_whatsapp || t("dialog.messages.notAvailable")}
                   </p>
                 </div>
                 {item.item_as !== "job" && (
                   <div>
-                    <p className="font-semibold text-blue-600 dark:text-blue-400">
+                    <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                       {t("dialog.labels.phone")}
                     </p>
-                    <p>
+                    <p className="text-sm">
                       {item.contact_phone || t("dialog.messages.notAvailable")}
                     </p>
                   </div>
                 )}
 
                 <div>
-                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                     {t("dialog.labels.views")}
                   </p>
-                  <p>{item.view_count || 0}</p>
+                  <p className="text-sm">{item.view_count || 0}</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                     {t("dialog.labels.favorites")}
                   </p>
-                  <p>{item.favorite_at ? 1 : 0}</p>
+                  <p className="text-sm">{item.favorite_at ? 1 : 0}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                     {t("dialog.labels.created")}
                   </p>
-                  <p>
+                  <p className="text-sm">
                     {activated_at.replace(/^منذ\s*/, "").replace(/\s*ago$/, "")}
                   </p>
                 </div>
@@ -168,7 +168,7 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                 {item.item_as === "job" ? (
                   <>
                     <div className="col-span-2">
-                      <p className="font-semibold text-blue-600 dark:text-blue-400">
+                      <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                         {t("dialog.labels.jobType")}
                       </p>
                       {isEditing ? (
@@ -207,7 +207,7 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                           </label>
                         </div>
                       ) : (
-                        <p>
+                        <p className="text-sm">
                           {item.need
                             ? t("dialog.labels.employeeLooking")
                             : t("dialog.labels.companyLooking")}
@@ -215,10 +215,10 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                       )}
                     </div>
                     <div>
-                      <p className="font-semibold text-blue-600 dark:text-blue-400">
+                      <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                         {t("dialog.labels.remoteJob")}
                       </p>
-                      <p>
+                      <p className="text-sm">
                         {item.remote_job
                           ? t("dialog.messages.yes")
                           : t("dialog.messages.no")}
@@ -285,60 +285,60 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                       item.storage_capacity && (
                         <>
                           <div>
-                            <p className="font-semibold text-blue-600 dark:text-blue-400">
+                            <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.storage")}
                             </p>
-                            <p>{item.storage_capacity}GB</p>
+                            <p className="text-sm">{item.storage_capacity}GB</p>
                           </div>
                           <div>
-                            <p className="font-semibold text-blue-600 dark:text-blue-400">
+                            <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.ram")}
                             </p>
-                            <p>{item.ram}GB</p>
+                            <p className="text-sm">{item.ram}GB</p>
                           </div>
                           <div>
-                            <p className="font-semibold text-blue-600 dark:text-blue-400">
+                            <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.operatingSystem")}
                             </p>
-                            <p>
+                            <p className="text-sm">
                               {item.operating_system ||
                                 t("dialog.messages.notAvailable")}
                             </p>
                           </div>
                           <div>
-                            <p className="font-semibold text-blue-600 dark:text-blue-400">
+                            <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.screenSize")}
                             </p>
-                            <p>{item.screen_size}"</p>
+                            <p className="text-sm">{item.screen_size}"</p>
                           </div>
                           <div>
-                            <p className="font-semibold text-blue-600 dark:text-blue-400">
+                            <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.battery")}
                             </p>
-                            <p>{item.battery_capacity}mAh</p>
+                            <p className="text-sm">{item.battery_capacity}mAh</p>
                           </div>
                           <div>
-                            <p className="font-semibold text-blue-600 dark:text-blue-400">
+                            <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.camera")}
                             </p>
-                            <p>
+                            <p className="text-sm">
                               {item.camera_resolution ||
                                 t("dialog.messages.notAvailable")}
                             </p>
                           </div>
                           <div>
-                            <p className="font-semibold text-blue-600 dark:text-blue-400">
+                            <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.color")}
                             </p>
-                            <p>
+                            <p className="text-sm">
                               {item.color || t("dialog.messages.notAvailable")}
                             </p>
                           </div>
                           <div>
-                            <p className="font-semibold text-blue-600 dark:text-blue-400">
+                            <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                               {t("dialog.labels.condition")}
                             </p>
-                            <p>
+                            <p className="text-sm">
                               {item.condition ||
                                 t("dialog.messages.notAvailable")}
                             </p>
@@ -350,33 +350,33 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                     {item.item_as === "used" && item.mileage && (
                       <>
                         <div>
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.mileage")}
                           </p>
-                          <p>{item.mileage} km</p>
+                          <p className="text-sm">{item.mileage} km</p>
                         </div>
                         <div>
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.transmission")}
                           </p>
-                          <p>
+                          <p className="text-sm">
                             {item.transmission_type ||
                               t("dialog.messages.notAvailable")}
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.year")}
                           </p>
-                          <p>
+                          <p className="text-sm">
                             {item.year || t("dialog.messages.notAvailable")}
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.fuelType")}
                           </p>
-                          <p>
+                          <p className="text-sm">
                             {item.fuel_type_id ||
                               t("dialog.messages.notAvailable")}
                           </p>
@@ -388,52 +388,52 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                     {item.item_as === "used" && item.area && (
                       <>
                         <div>
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.area")}
                           </p>
-                          <p>
+                          <p className="text-sm">
                             {item.area} {t("dialog.labels.sqft")}
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.bedrooms")}
                           </p>
-                          <p>
+                          <p className="text-sm">
                             {item.bedrooms || t("dialog.messages.notAvailable")}
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.bathrooms")}
                           </p>
-                          <p>
+                          <p className="text-sm">
                             {item.bathrooms ||
                               t("dialog.messages.notAvailable")}
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.floor")}
                           </p>
-                          <p>
+                          <p className="text-sm">
                             {item.floor || t("dialog.messages.notAvailable")}
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.yearBuilt")}
                           </p>
-                          <p>
+                          <p className="text-sm">
                             {item.year_built ||
                               t("dialog.messages.notAvailable")}
                           </p>
                         </div>
                         <div>
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                             {t("dialog.labels.furnished")}
                           </p>
-                          <p>
+                          <p className="text-sm">
                             {item.is_furnished
                               ? t("dialog.messages.yes")
                               : t("dialog.messages.no")}
@@ -456,20 +456,20 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                     />
                     {/* General item details */}
                     <div>
-                      <p className="font-semibold text-blue-600 dark:text-blue-400">
+                      <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                         {t("dialog.labels.reserved")}
                       </p>
-                      <p>
+                      <p className="text-sm">
                         {item.reserved
                           ? t("dialog.messages.yes")
                           : t("dialog.messages.no")}
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold text-blue-600 dark:text-blue-400">
+                      <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                         {t("dialog.labels.discountEndDate")}
                       </p>
-                      <p>
+                      <p className="text-sm">
                         {item.date_end_discount
                           ? new Date(
                               item.date_end_discount
@@ -480,7 +480,7 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                   </>
                 )}
                                     <div>
-                      <p className="font-semibold text-blue-600 dark:text-blue-400">
+                      <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                         {t("dashboard.messages.user")}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
@@ -491,7 +491,7 @@ export const ViewItemMiddleColumn = ({item,isEditing,editedFields,originalItem,s
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold text-blue-600 dark:text-blue-400">
+                      <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
                         {t("dialog.labels.item")}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">

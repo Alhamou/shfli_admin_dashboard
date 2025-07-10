@@ -376,7 +376,7 @@ export default function DashboardHome() {
                       )}
                       <div className="space-y-1 flex-1 min-w-0 max-w-40">
                         {item.item_as === "job" ? (
-                          <p className="font-medium truncate">
+                          <p className="font-normal text-blue-600 dark:text-blue-400 truncate">
                             {item.need
                               ? t("dialog.labels.employeeLooking")
                               : t("dialog.labels.companyLooking")}

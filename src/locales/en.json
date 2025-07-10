@@ -73,8 +73,8 @@
       "companyWebsite": "Company website",
       "companyPhone": "Company phone",
       "companyEmail": "Company email",
-      "employeeLooking": "Employee looking for a job",
-      "companyLooking": "Company looking for an employee",
+      "employeeLooking": "looking for a job",
+      "companyLooking": "looking for an employee",
       "itemDetails": "Item Details",
       "storage": "Storage",
       "ram": "RAM",
@@ -134,8 +134,8 @@
     "statusUpdateError": "Failed to update item status"
   },
   "editableField": {
-    "employeeLooking": "Employee looking for a job",
-    "companyLooking": "Company looking for an employee",
+    "employeeLooking": "looking for a job",
+    "companyLooking": "looking for an employee",
     "notAvailable": "N/A"
   },
   "theme": {

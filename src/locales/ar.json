@@ -73,8 +73,8 @@
       "companyWebsite": "موقع الشركة",
       "companyPhone": "هاتف الشركة",
       "companyEmail": "بريد الشركة",
-      "employeeLooking": "موظف يبحث عن عمل",
-      "companyLooking": "شركة تبحث عن موظف",
+      "employeeLooking": "يبحث عن عمل",
+      "companyLooking": "تبحث عن موظف",
       "itemDetails": "تفاصيل العنصر",
       "storage": "التخزين",
       "ram": "الذاكرة العشوائية",
@@ -134,8 +134,8 @@
     "statusUpdateError": "فشل تحديث حالة العنصر"
   },
   "editableField": {
-    "employeeLooking": "موظف يبحث عن عمل",
-    "companyLooking": "شركة تبحث عن موظف",
+    "employeeLooking": "يبحث عن عمل",
+    "companyLooking": "تبحث عن موظف",
     "notAvailable": "غير متوفر"
   },
   "theme": {
