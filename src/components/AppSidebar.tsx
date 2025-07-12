@@ -21,48 +21,58 @@ import {
   LogOut,
   MessageCircle,
   Tv,
-  ChartColumnIncreasing
+  ChartColumnIncreasing,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-
-const menuItems = [
-  {
-    title: "dashboard",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "commercialAds",
-    url: "/commercialAds",
-    icon: Tv,
-  },
-  {
-    title: "users",
-    url: "/users",
-    icon: Users,
-  },
-  {
-    title: "chats",
-    url: "/chats",
-    icon: MessageCircle,
-  },
-    {
-    title: "statistics",
-    url: "/statistics",
-    icon: ChartColumnIncreasing,
-  },
-  {
-    title: "settings",
-    url: "/settings",
-    icon: Settings,
-  },
-];
 
 export function AppSidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
   const { t } = useTranslation();
+
+  const menuItems = [
+    {
+      title: "dashboard",
+      url: "/",
+      icon: Home,
+    },
+    {
+      title: "commercialAds",
+      url: "/commercialAds",
+      icon: Tv,
+    },
+    {
+      title: "users",
+      url: "/users",
+      icon: Users,
+    },
+    ...(!user?.roles.includes("admin") //fixme
+      ? [
+          {
+            title: "admin",
+            url: "/admin",
+            icon: User,
+          },
+        ]
+      : []),
+    {
+      title: "chats",
+      url: "/chats",
+      icon: MessageCircle,
+    },
+    {
+      title: "statistics",
+      url: "/statistics",
+      icon: ChartColumnIncreasing,
+    },
+    {
+      title: "settings",
+      url: "/settings",
+      icon: Settings,
+    },
+  ];
 
   return (
     <Sidebar>

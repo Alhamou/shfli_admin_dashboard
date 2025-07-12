@@ -27,6 +27,7 @@ import { Toaster } from "sonner";
 import { useTranslation } from "react-i18next";
 import Commercial from "@/pages/Commercial";
 import { StatisticsPage } from "@/pages/ٍStatistics";
+import { Admin } from "@/pages/Admin";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -88,6 +89,15 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 }
 
+function ProtectedRouteAdmin({ children }: { children: ReactNode }) {
+  const { isAuthenticated, user } = useAuth();
+  return isAuthenticated && !user?.roles.includes("admin") ? ( //fixme
+    <>{children}</>
+  ) : (
+    <Navigate to="/login" replace />
+  );
+}
+
 export default function App() {
   const { i18n } = useTranslation();
 
@@ -143,6 +153,15 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+
+              <Route
+                path="admin"
+                element={
+                  <ProtectedRouteAdmin>
+                    <Admin />
+                  </ProtectedRouteAdmin>
+                }
+              />
               <Route
                 path="settings"
                 element={
@@ -151,7 +170,7 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-                            <Route
+              <Route
                 path="commercialAds"
                 element={
                   <ProtectedRoute>

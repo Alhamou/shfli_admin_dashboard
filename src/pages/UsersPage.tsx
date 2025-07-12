@@ -7,7 +7,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { getUserInfo, putUserInfo, sendNot } from "@/services/restApiServices";
+import { getUserInfo, putUserInfo, sendNotTeam } from "@/services/restApiServices";
 import { IUser } from "@/interfaces";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -119,26 +119,6 @@ export const UserInfo = () => {
     >
       <div className="flex flex-row">
         <h1 className="text-2xl font-bold mb-6">{t("userInfo.title")}</h1>
-        <SendNotificationPopup
-          is_public={true}
-          userId={1}
-          loading={loadingNotification}
-          onSend={async (messageData) => {
-            setLoadingNotification(true);
-            try {
-              await sendNot(messageData);
-              toast.success(t("notificationPopup.NotificationSuccess"));
-            } catch {
-              toast.error(t("notificationPopup.NotificationError"));
-            } finally {
-              setLoadingNotification(false);
-            }
-          }}
-        >
-          <Button variant="outline" className="flex-1 lg:flex-none">
-            <MessageCircle /> {t("notificationPopup.publicTitle")}
-          </Button>
-        </SendNotificationPopup>
       </div>
 
       <div className="flex gap-2 mb-6">
@@ -235,7 +215,7 @@ export const UserInfo = () => {
                         onSend={async (messageData) => {
                           setLoadingNotification(true);
                           try {
-                            await sendNot(messageData);
+                            await sendNotTeam(messageData);
                             toast.success(
                               t("notificationPopup.NotificationSuccess")
                             );

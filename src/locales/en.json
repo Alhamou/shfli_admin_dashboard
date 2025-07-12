@@ -216,10 +216,23 @@
     "chats": "Chats",
     "settings": "Settings",
     "commercialAds": "Commercial ads",
-    "statistics": "statistics"
+    "statistics": "statistics",
+    "admin" : "Admin"
+  },
+    "announcement": {
+    "button": "Send notification through firebase",
+    "title": "Firebase notification",
+    "titlePlaceholder": "title",
+    "descriptionPlaceholder": "description",
+    "send": "Send notification",
+    "sending": "Sending...",
+    "success": "notification sent successfully!",
+    "error": "Failed to send notification",
+    "requiredField": "This field is required"
   },
   "notificationPopup": {
     "title": "Send Notification",
+    "NotificationError": "Failed to send notification",
     "messageLabel": "Message",
     "messagePlaceholder": "Enter your notification message...",
     "actionTypeLabel": "Action Type",

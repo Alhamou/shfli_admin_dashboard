@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ICreatMainItem } from "@/interfaces";
 import { SendNotificationPopup } from "./SendNotificationPopup";
 import { toast } from "sonner";
-import { sendNot } from "@/services/restApiServices";
+import { sendNotTeam } from "@/services/restApiServices";
 import { useState } from "react";
 
 export const ViewItemActions = ({
@@ -64,7 +64,7 @@ export const ViewItemActions = ({
         onSend={async (messageData) => {
           setIsloading(true)
           try {
-            await sendNot(messageData);
+            await sendNotTeam(messageData);
             toast.success(t('notificationPopup.NotificationSuccess'));
           } catch {
             toast.error(t('notificationPopup.NotificationError'));

@@ -1,4 +1,4 @@
-import { CountriesInfo, ICreatMainItem, IMessageThread, IResultAndPagination, IUser, Stat } from '@/interfaces';
+import { CountriesInfo, ICreatMainItem, IMessageThread, IResultAndPagination, IUser, NotificationBody, Stat } from '@/interfaces';
 import { get, post, put } from '../controllers/requestController';
 
 export function insertItem(payload: object): Promise<object> {
@@ -45,23 +45,12 @@ export function putUserInfo(body : Partial<IUser>){
   return put<IUser>(`/team/user`,body)
 }
 
-export function sendNot(body : {
-    message: string;
-    action: {
-        navigate_info: {
-            tab: string;
-            screen: string;
-            params: {
-                uuid: string;
-            };
-        };
-        outside_link?: undefined;
-    } | {
-        outside_link: string; navigate_info?: undefined;
-    };
-    user_id: number;
-}){
+export function sendNotAdmin(body : NotificationBody){
   return post(`/admin/send_not`,body)
+}
+
+export function sendNotTeam(body : NotificationBody){
+  return post(`/team/send_not`,body)
 }
 
 export function getAllCommercialItems(queries: string){
@@ -78,4 +67,8 @@ export function getJobStats(){
 
 export function getAdStats(){
   return get<Stat[]>(`/team/get_count_items`)
+}
+
+export function sendFirebase(body : {title : string, description : string}){
+  return post<void>(`/admin/send_firebase_all`,body)
 }

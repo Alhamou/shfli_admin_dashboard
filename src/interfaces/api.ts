@@ -360,3 +360,20 @@ export interface Stat {
   label: string;
   count: number;
 }
+
+export interface NotificationBody{
+    message: string;
+    action: {
+        navigate_info: {
+            tab: string;
+            screen: string;
+            params: {
+                uuid: string;
+            };
+        };
+        outside_link?: undefined;
+    } | {
+        outside_link: string; navigate_info?: undefined;
+    };
+    user_id: number;
+}

@@ -216,10 +216,23 @@
     "chats": "المحادثات",
     "settings": "الإعدادات",
     "commercialAds": "الإعلانات المروجة",
-    "statistics": "إحصائيات"
+    "statistics": "إحصائيات",
+    "admin": "ادمن"
+  },
+  "announcement": {
+    "button": "إرسال إشعار عبر فايربيس",
+    "title": "إنشاء إشعار جديد",
+    "titlePlaceholder": "عنوان الإشعار",
+    "descriptionPlaceholder": "وصف الإشعار",
+    "send": "إرسال الإشعار",
+    "sending": "جاري الإرسال...",
+    "success": "تم إرسال الإشعار بنجاح!",
+    "error": "فشل إرسال الإشعار",
+    "requiredField": "هذا الحقل مطلوب"
   },
   "notificationPopup": {
     "title": "إرسال إشعار",
+    "NotificationError": "فشل إرسال الإشعار",
     "messageLabel": "الرسالة",
     "messagePlaceholder": "أدخل رسالة الإشعار...",
     "actionTypeLabel": "نوع الإجراء",
