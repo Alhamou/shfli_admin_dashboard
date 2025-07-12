@@ -48,7 +48,7 @@ export function AppSidebar() {
       url: "/users",
       icon: Users,
     },
-    ...(!user?.roles.includes("admin") //fixme
+    ...(user?.roles.includes("admin")
       ? [
           {
             title: "admin",

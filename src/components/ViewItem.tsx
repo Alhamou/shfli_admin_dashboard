@@ -92,11 +92,11 @@ export function ItemDetailView({
     }
   };
 
-  const fetchBlockReasons = async () => {
+  const fetchBlockReasons = async (item_as : "shop" | "used" | "job" | undefined) => {
     setLoading(true);
     try {
       const response = await getReasons();
-      setBlockReasons(item?.item_as === "job" ? response.jobs : response.items);
+      setBlockReasons(item_as === "job" ? response.jobs : response.items);
     } catch (err) {
       toast.error(t("messages.reasonsError"));
     } finally {
@@ -160,8 +160,9 @@ export function ItemDetailView({
 
   useEffect(() => {
     if (open) {
-      fetchItem(uuid);
-      fetchBlockReasons();
+      fetchItem(uuid).then((res) => {
+        fetchBlockReasons(res?.item_as);
+      });
       setShowReasonInput(false);
       setSelectedReason("");
       setCustomReason("");

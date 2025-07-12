@@ -91,7 +91,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 
 function ProtectedRouteAdmin({ children }: { children: ReactNode }) {
   const { isAuthenticated, user } = useAuth();
-  return isAuthenticated && !user?.roles.includes("admin") ? ( //fixme
+  return isAuthenticated && user?.roles.includes("admin") ? (
     <>{children}</>
   ) : (
     <Navigate to="/login" replace />
