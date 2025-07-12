@@ -1,4 +1,4 @@
-import { CountriesInfo, ICreatMainItem, IMessageThread, IResultAndPagination, IUser } from '@/interfaces';
+import { CountriesInfo, ICreatMainItem, IMessageThread, IResultAndPagination, IUser, Stat } from '@/interfaces';
 import { get, post, put } from '../controllers/requestController';
 
 export function insertItem(payload: object): Promise<object> {
@@ -66,4 +66,16 @@ export function sendNot(body : {
 
 export function getAllCommercialItems(queries: string){
   return get<IResultAndPagination>(`/items/commercial?${queries}`)
+}
+
+export function getUserStats(){
+  return get<Stat[]>(`/team/get_count_users`)
+}
+
+export function getJobStats(){
+  return get<Stat[]>(`/team/get_count_jobs`)
+}
+
+export function getAdStats(){
+  return get<Stat[]>(`/team/get_count_items`)
 }

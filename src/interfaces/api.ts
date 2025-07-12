@@ -356,3 +356,7 @@ export interface CountriesInfo {
   dialCode: string;
   flag: string;
 }
+export interface Stat {
+  label: string;
+  count: number;
+}

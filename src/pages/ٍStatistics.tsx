@@ -2,28 +2,21 @@ import storageController from '@/controllers/storageController';
 import { RefreshCwIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getUserStats, getJobStats, getAdStats } from '@/services/restApiServices';
+import { Stat } from '@/interfaces';
 
 type DaysOfTheWeek = "Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat";
 
-// Types for our data
-type DailyStats = {
-  count: number;
-  lastUpdated?: string;
-};
-
-type WeeklyStats = {
-  [day in DaysOfTheWeek]: number;
+type StatData = {
+  [date: string]: number;
 } & {
   lastUpdated?: string;
 };
 
 const STATS_KEYS = {
-  DAILY_USERS: 'stats_daily_users',
-  DAILY_ADS: 'stats_daily_ads',
-  DAILY_JOBS: 'stats_daily_jobs',
-  WEEKLY_USERS: 'stats_weekly_users',
-  WEEKLY_ADS: 'stats_weekly_ads',
-  WEEKLY_JOBS: 'stats_weekly_jobs'
+  USERS: 'stats_users',
+  ADS: 'stats_ads',
+  JOBS: 'stats_jobs'
 };
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
@@ -50,162 +43,99 @@ const statColors = {
 export function StatisticsPage() {
   const { t, i18n } = useTranslation();
 
-  // Daily stats
-  const [dailyUsers, setDailyUsers] = useState<DailyStats | null>(null);
-  const [dailyAds, setDailyAds] = useState<DailyStats | null>(null);
-  const [dailyJobs, setDailyJobs] = useState<DailyStats | null>(null);
-
-  // Weekly stats
-  const [weeklyUsers, setWeeklyUsers] = useState<WeeklyStats | null>(null);
-  const [weeklyAds, setWeeklyAds] = useState<WeeklyStats | null>(null);
-  const [weeklyJobs, setWeeklyJobs] = useState<WeeklyStats | null>(null);
+  // Stats data
+  const [usersStats, setUsersStats] = useState<StatData | null>(null);
+  const [adsStats, setAdsStats] = useState<StatData | null>(null);
+  const [jobsStats, setJobsStats] = useState<StatData | null>(null);
 
   // Loading states
   const [loading, setLoading] = useState({
-    dailyUsers: false,
-    dailyAds: false,
-    dailyJobs: false,
-    weeklyUsers: false,
-    weeklyAds: false,
-    weeklyJobs: false
+    users: false,
+    ads: false,
+    jobs: false
   });
 
   // Load initial data from localStorage or fetch if empty
   useEffect(() => {
     const loadInitialData = async () => {
-      // Daily stats
-      const savedDailyUsers = storageController.get<DailyStats>(STATS_KEYS.DAILY_USERS);
-      const savedDailyAds = storageController.get<DailyStats>(STATS_KEYS.DAILY_ADS);
-      const savedDailyJobs = storageController.get<DailyStats>(STATS_KEYS.DAILY_JOBS);
+      const savedUsers = storageController.get<StatData>(STATS_KEYS.USERS);
+      const savedAds = storageController.get<StatData>(STATS_KEYS.ADS);
+      const savedJobs = storageController.get<StatData>(STATS_KEYS.JOBS);
 
-      // Weekly stats
-      const savedWeeklyUsers = storageController.get<WeeklyStats>(STATS_KEYS.WEEKLY_USERS);
-      const savedWeeklyAds = storageController.get<WeeklyStats>(STATS_KEYS.WEEKLY_ADS);
-      const savedWeeklyJobs = storageController.get<WeeklyStats>(STATS_KEYS.WEEKLY_JOBS);
+      if (!savedUsers) await fetchUsersStats();
+      else setUsersStats(savedUsers);
 
-      // Set or fetch data
-      if (!savedDailyUsers) await fetchDailyUsers();
-      else setDailyUsers(savedDailyUsers);
+      if (!savedAds) await fetchAdsStats();
+      else setAdsStats(savedAds);
 
-      if (!savedDailyAds) await fetchDailyAds();
-      else setDailyAds(savedDailyAds);
-
-      if (!savedDailyJobs) await fetchDailyJobs();
-      else setDailyJobs(savedDailyJobs);
-
-      if (!savedWeeklyUsers) await fetchWeeklyUsers();
-      else setWeeklyUsers(savedWeeklyUsers);
-
-      if (!savedWeeklyAds) await fetchWeeklyAds();
-      else setWeeklyAds(savedWeeklyAds);
-
-      if (!savedWeeklyJobs) await fetchWeeklyJobs();
-      else setWeeklyJobs(savedWeeklyJobs);
+      if (!savedJobs) await fetchJobsStats();
+      else setJobsStats(savedJobs);
     };
 
     loadInitialData();
   }, []);
 
-  // Mock API fetch functions
-  const fetchDailyUsers = async () => {
+  const fetchStats = async (apiCall: () => Promise<Stat[]>, key: string, setter: (data: StatData) => void) => {
     try {
-      setLoading(prev => ({ ...prev, dailyUsers: true }));
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const mockData: DailyStats = {
-        count: Math.floor(Math.random() * 1000),
-        lastUpdated: new Date().toISOString()
-      };
-      storageController.set(STATS_KEYS.DAILY_USERS, mockData);
-      setDailyUsers(mockData);
+      setLoading(prev => ({ ...prev, [key]: true }));
+      const response = await apiCall();
+      
+      // Convert the array response to an object with dates as keys
+      const statsData: StatData = {};
+      response.forEach(item => {
+        const date = new Date(item.label);
+        const dayName = date.toLocaleDateString(i18n.language, { weekday: 'short' }) as DaysOfTheWeek;
+        statsData[item.label] = item.count;
+        statsData[dayName] = item.count; // Also store by day name for easy access
+      });
+      
+      statsData.lastUpdated = new Date().toISOString();
+      storageController.set(STATS_KEYS[key.toUpperCase() as keyof typeof STATS_KEYS], statsData);
+      setter(statsData);
     } finally {
-      setLoading(prev => ({ ...prev, dailyUsers: false }));
+      setLoading(prev => ({ ...prev, [key]: false }));
     }
   };
 
-  const fetchDailyAds = async () => {
-    try {
-      setLoading(prev => ({ ...prev, dailyAds: true }));
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const mockData: DailyStats = {
-        count: Math.floor(Math.random() * 500),
-        lastUpdated: new Date().toISOString()
-      };
-      storageController.set(STATS_KEYS.DAILY_ADS, mockData);
-      setDailyAds(mockData);
-    } finally {
-      setLoading(prev => ({ ...prev, dailyAds: false }));
-    }
-  };
-
-  const fetchDailyJobs = async () => {
-    try {
-      setLoading(prev => ({ ...prev, dailyJobs: true }));
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const mockData: DailyStats = {
-        count: Math.floor(Math.random() * 300),
-        lastUpdated: new Date().toISOString()
-      };
-      storageController.set(STATS_KEYS.DAILY_JOBS, mockData);
-      setDailyJobs(mockData);
-    } finally {
-      setLoading(prev => ({ ...prev, dailyJobs: false }));
-    }
-  };
-
-  const fetchWeeklyUsers = async () => {
-    try {
-      setLoading(prev => ({ ...prev, weeklyUsers: true }));
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const mockData: WeeklyStats = daysOfWeek.reduce((acc, day) => {
-        acc[day] = Math.floor(Math.random() * 500);
-        return acc;
-      }, {} as WeeklyStats);
-      mockData.lastUpdated = new Date().toISOString();
-      storageController.set(STATS_KEYS.WEEKLY_USERS, mockData);
-      setWeeklyUsers(mockData);
-    } finally {
-      setLoading(prev => ({ ...prev, weeklyUsers: false }));
-    }
-  };
-
-  const fetchWeeklyAds = async () => {
-    try {
-      setLoading(prev => ({ ...prev, weeklyAds: true }));
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const mockData: WeeklyStats = daysOfWeek.reduce((acc, day) => {
-        acc[day] = Math.floor(Math.random() * 250);
-        return acc;
-      }, {} as WeeklyStats);
-      mockData.lastUpdated = new Date().toISOString();
-      storageController.set(STATS_KEYS.WEEKLY_ADS, mockData);
-      setWeeklyAds(mockData);
-    } finally {
-      setLoading(prev => ({ ...prev, weeklyAds: false }));
-    }
-  };
-
-  const fetchWeeklyJobs = async () => {
-    try {
-      setLoading(prev => ({ ...prev, weeklyJobs: true }));
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const mockData: WeeklyStats = daysOfWeek.reduce((acc, day) => {
-        acc[day] = Math.floor(Math.random() * 150);
-        return acc;
-      }, {} as WeeklyStats);
-      mockData.lastUpdated = new Date().toISOString();
-      storageController.set(STATS_KEYS.WEEKLY_JOBS, mockData);
-      setWeeklyJobs(mockData);
-    } finally {
-      setLoading(prev => ({ ...prev, weeklyJobs: false }));
-    }
-  };
+  const fetchUsersStats = () => fetchStats(getUserStats, 'users', setUsersStats);
+  const fetchAdsStats = () => fetchStats(getAdStats, 'ads', setAdsStats);
+  const fetchJobsStats = () => fetchStats(getJobStats, 'jobs', setJobsStats);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return t('statistics.never');
     return new Date(dateString).toLocaleString(i18n.language);
   };
 
-  const currentDay = new Date().toLocaleDateString(i18n.language, { weekday: 'short' }) as DaysOfTheWeek;
+  const getCurrentDateKey = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
+  };
+
+  const getCurrentDayName = () => {
+    return new Date().toLocaleDateString(i18n.language, { weekday: 'short' }) as DaysOfTheWeek;
+  };
+
+  // Get the last 9 days data in reverse chronological order
+  const getLastNineDaysData = (stats: StatData | null) => {
+    if (!stats) return [];
+    
+    // Filter out the day names and lastUpdated from the stats
+    const dateKeys = Object.keys(stats).filter(key => 
+      key.match(/^\d{4}-\d{2}-\d{2}$/) && key !== 'lastUpdated'
+    );
+    
+    // Sort dates in descending order and take the first 9
+    const sortedDates = dateKeys.sort((a, b) => new Date(b).getTime() - new Date(a).getTime()).slice(0, 9);
+    
+    return sortedDates.map(date => ({
+      date,
+      dayName: new Date(date).toLocaleDateString(i18n.language, { weekday: 'short' }),
+      value: stats[date]
+    }));
+  };
+
+  const currentDateKey = getCurrentDateKey();
+  const currentDayName = getCurrentDayName();
 
   return (
     <div className={`container mx-auto px-4 py-8`}>
@@ -213,125 +143,131 @@ export function StatisticsPage() {
         {t('statistics.statisticsDashboard')}
       </h1>
 
-      {/* Daily Stats Sections */}
+      {/* Current Stats Sections */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-        {/* Daily Users */}
+        {/* Users */}
         <StatSection
-          title={t('statistics.dailyUsers')}
-          stat={dailyUsers}
-          loading={loading.dailyUsers}
-          onRefresh={fetchDailyUsers}
+          title={t('statistics.users')}
+          stat={usersStats}
+          loading={loading.users}
+          onRefresh={fetchUsersStats}
           type="users"
           formatDate={formatDate}
         >
-          {dailyUsers && (
+          {usersStats && (
             <div className="text-5xl font-bold py-4 text-center">
-              <span className={statColors.users.text}>{dailyUsers.count}</span>
+              <span className={statColors.users.text}>
+                {usersStats[currentDateKey] || usersStats[currentDayName] || 0}
+              </span>
             </div>
           )}
         </StatSection>
 
-        {/* Daily Ads */}
+        {/* Ads */}
         <StatSection
-          title={t('statistics.dailyAds')}
-          stat={dailyAds}
-          loading={loading.dailyAds}
-          onRefresh={fetchDailyAds}
+          title={t('statistics.ads')}
+          stat={adsStats}
+          loading={loading.ads}
+          onRefresh={fetchAdsStats}
           type="ads"
           formatDate={formatDate}
         >
-          {dailyAds && (
+          {adsStats && (
             <div className="text-5xl font-bold py-4 text-center">
-              <span className={statColors.ads.text}>{dailyAds.count}</span>
+              <span className={statColors.ads.text}>
+                {adsStats[currentDateKey] || adsStats[currentDayName] || 0}
+              </span>
             </div>
           )}
         </StatSection>
 
-        {/* Daily Jobs */}
+        {/* Jobs */}
         <StatSection
-          title={t('statistics.dailyJobs')}
-          stat={dailyJobs}
-          loading={loading.dailyJobs}
-          onRefresh={fetchDailyJobs}
+          title={t('statistics.jobs')}
+          stat={jobsStats}
+          loading={loading.jobs}
+          onRefresh={fetchJobsStats}
           type="jobs"
           formatDate={formatDate}
         >
-          {dailyJobs && (
+          {jobsStats && (
             <div className="text-5xl font-bold py-4 text-center">
-              <span className={statColors.jobs.text}>{dailyJobs.count}</span>
+              <span className={statColors.jobs.text}>
+                {jobsStats[currentDateKey] || jobsStats[currentDayName] || 0}
+              </span>
             </div>
           )}
         </StatSection>
       </div>
 
-      {/* Weekly Stats Sections */}
+      {/* Last 9 Days Stats Sections */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Weekly Users */}
+        {/* Users History */}
         <StatSection
-          title={t('statistics.weeklyUsers')}
-          stat={weeklyUsers}
-          loading={loading.weeklyUsers}
-          onRefresh={fetchWeeklyUsers}
+          title={t('statistics.usersHistory')}
+          stat={usersStats}
+          loading={loading.users}
+          onRefresh={fetchUsersStats}
           type="users"
           formatDate={formatDate}
         >
-          {weeklyUsers && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-              {daysOfWeek.map((day) => (
+          {usersStats && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {getLastNineDaysData(usersStats).map(({date, dayName, value}) => (
                 <StatCard
-                  key={day}
-                  label={t(day.toLowerCase())}
-                  value={weeklyUsers[day] ?? 0}
+                  key={date}
+                  label={dayName}
+                  value={value}
                   type="users"
-                  highlight={day === currentDay}
+                  highlight={dayName === currentDayName}
                 />
               ))}
             </div>
           )}
         </StatSection>
 
-        {/* Weekly Ads */}
+        {/* Ads History */}
         <StatSection
-          title={t('statistics.weeklyAds')}
-          stat={weeklyAds}
-          loading={loading.weeklyAds}
-          onRefresh={fetchWeeklyAds}
+          title={t('statistics.adsHistory')}
+          stat={adsStats}
+          loading={loading.ads}
+          onRefresh={fetchAdsStats}
           type="ads"
           formatDate={formatDate}
         >
-          {weeklyAds && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-              {daysOfWeek.map((day) => (
+          {adsStats && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {getLastNineDaysData(adsStats).map(({date, dayName, value}) => (
                 <StatCard
-                  key={day}
-                  label={t(day.toLowerCase())}
-                  value={weeklyAds[day] ?? 0}
+                  key={date}
+                  label={dayName}
+                  value={value}
                   type="ads"
-                  highlight={day === currentDay}
+                  highlight={dayName === currentDayName}
                 />
               ))}
             </div>
           )}
         </StatSection>
 
-        {/* Weekly Jobs */}
+        {/* Jobs History */}
         <StatSection
-          title={t('statistics.weeklyJobs')}
-          stat={weeklyJobs}
-          loading={loading.weeklyJobs}
-          onRefresh={fetchWeeklyJobs}
+          title={t('statistics.jobsHistory')}
+          stat={jobsStats}
+          loading={loading.jobs}
+          onRefresh={fetchJobsStats}
           type="jobs"
           formatDate={formatDate}
         >
-          {weeklyJobs && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-              {daysOfWeek.map((day) => (
+          {jobsStats && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {getLastNineDaysData(jobsStats).map(({date, dayName, value}) => (
                 <StatCard
-                  key={day}
-                  label={t(day.toLowerCase())}
-                  value={weeklyJobs[day] ?? 0}
+                  key={date}
+                  label={dayName}
+                  value={value}
                   type="jobs"
-                  highlight={day === currentDay}
+                  highlight={dayName === currentDayName}
                 />
               ))}
             </div>
@@ -342,7 +278,6 @@ export function StatisticsPage() {
   );
 }
 
-// Reusable StatSection component
 function StatSection({
   title,
   stat,
@@ -404,7 +339,7 @@ function StatSection({
   );
 }
 
-// Reusable StatCard component
+// Reusable StatCard component (unchanged)
 function StatCard({
   label,
   value,
