@@ -26,6 +26,7 @@ import storageController from "@/controllers/storageController";
 import { Toaster } from "sonner";
 import { useTranslation } from "react-i18next";
 import Commercial from "@/pages/Commercial";
+import { StatisticsPage } from "@/pages/ٍStatistics";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -123,6 +124,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <UserInfo />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="statistics"
+                element={
+                  <ProtectedRoute>
+                    <StatisticsPage />
                   </ProtectedRoute>
                 }
               />

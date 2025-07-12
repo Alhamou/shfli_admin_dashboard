@@ -5,7 +5,7 @@
     "uuidSearchPlaceholder": "البحث حسب المستخدم...",
     "title": "إدارة العناصر",
     "searchPlaceholder": "ابحث عن العناصر...",
-    "loadItems": "تحميل العناصر",
+    "loadItems": "بحث",
     "loading": "تحميل...",
     "tableHeaders": {
       "position": "مميز",
@@ -215,7 +215,8 @@
     "users": "المستخدمين",
     "chats": "المحادثات",
     "settings": "الإعدادات",
-    "commercialAds": "الإعلانات التجارية"
+    "commercialAds": "الإعلانات المروجة",
+    "statistics": "إحصائيات"
   },
   "notificationPopup": {
     "title": "إرسال إشعار",
@@ -229,8 +230,8 @@
     "tabPlaceholder": "أدخل اسم التبويب",
     "screenLabel": "الشاشة",
     "screenPlaceholder": "أدخل اسم الشاشة",
-    "uuidLabel": "معرّف العنصر",
-    "uuidPlaceholder": "أدخل معرّف العنصر",
+    "uuidLabel": "معرّف UUID",
+    "uuidPlaceholder": "أدخل معرّف الهدف",
     "linkLabel": "رابط URL",
     "linkPlaceholder": "https://example.com",
     "withImage": "تضمين صورة",
@@ -254,5 +255,26 @@
       "widthRequired": "العرض مطلوب",
       "heightRequired": "الارتفاع مطلوب"
     }
+  },
+  "statistics": {
+    "statisticsDashboard": "لوحة الإحصائيات",
+    "dailyUsers": "المستخدمين اليوم",
+    "dailyAds": "الإعلانات اليوم",
+    "dailyJobs": "الوظائف اليوم",
+    "weeklyUsers": "المستخدمين الأسبوعي",
+    "weeklyAds": "الإعلانات الأسبوعي",
+    "weeklyJobs": "الوظائف الأسبوعي",
+    "refresh": "تحديث",
+    "refreshing": "جاري التحميل...",
+    "loading": "تحميل...",
+    "noDataAvailable": "لا توجد بيانات متاحة",
+    "never": "أبداً",
+    "sun": "الأحد",
+    "mon": "الإثنين",
+    "tue": "الثلاثاء",
+    "wed": "الأربعاء",
+    "thu": "الخميس",
+    "fri": "الجمعة",
+    "sat": "السبت"
   }
 }

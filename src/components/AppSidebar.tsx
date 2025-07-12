@@ -21,6 +21,7 @@ import {
   LogOut,
   MessageCircle,
   Tv,
+  ChartColumnIncreasing
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
@@ -45,6 +46,11 @@ const menuItems = [
     title: "chats",
     url: "/chats",
     icon: MessageCircle,
+  },
+    {
+    title: "statistics",
+    url: "/statistics",
+    icon: ChartColumnIncreasing,
   },
   {
     title: "settings",

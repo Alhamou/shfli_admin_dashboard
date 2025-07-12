@@ -5,7 +5,7 @@
     "uuidSearchPlaceholder": "Search by User UUID...",
     "title": "Items Management",
     "searchPlaceholder": "Search items...",
-    "loadItems": "load Items",
+    "loadItems": "Search",
     "loading": "loading...",
     "tableHeaders": {
       "position": "Featured",
@@ -215,7 +215,8 @@
     "users": "Users",
     "chats": "Chats",
     "settings": "Settings",
-    "commercialAds": "Commercial ads"
+    "commercialAds": "Commercial ads",
+    "statistics": "statistics"
   },
   "notificationPopup": {
     "title": "Send Notification",
@@ -243,7 +244,7 @@
     "cancelButton": "Cancel",
     "sendButton": "Send",
     "publicTitle": "Send Public Notification",
-    "NotificationSuccess" : "Notifications Sent successfully",
+    "NotificationSuccess": "Notifications Sent successfully",
     "errors": {
       "messageRequired": "Message is required",
       "tabRequired": "Tab is required",
@@ -254,5 +255,26 @@
       "widthRequired": "Width is required",
       "heightRequired": "Height is required"
     }
+  },
+  "statistics": {
+    "statisticsDashboard": "Statistics Dashboard",
+    "dailyUsers": "Daily Users",
+    "dailyAds": "Daily Ads",
+    "dailyJobs": "Daily Jobs",
+    "weeklyUsers": "Weekly Users",
+    "weeklyAds": "Weekly Ads",
+    "weeklyJobs": "Weekly Jobs",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing...",
+    "loading": "Loading",
+    "noDataAvailable": "No data available",
+    "never": "Never",
+    "sun": "Sun",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat"
   }
 }
