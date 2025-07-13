@@ -242,10 +242,10 @@ export default function DashboardHome() {
   };
 
   return (
-    <div className="mx-auto py-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="mx-auto py-4">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
+          <div className="text-2xl font-bold">{t("dashboard.title")}</div>
           <div
             className={`w-3 h-3 rounded-full ${
               isSocketConnected ? "bg-green-500" : "bg-red-500"
@@ -313,7 +313,7 @@ export default function DashboardHome() {
         <div
           ref={tableContainerRef}
           className="rounded-md border overflow-auto"
-          style={{ maxHeight: "calc(100vh - 200px)" }}
+          style={{ maxHeight: "calc(100vh - 350px)" }}
         >
           <Table>
             <TableHeader className="sticky top-0 bg-background">

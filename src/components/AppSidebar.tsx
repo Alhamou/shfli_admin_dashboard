@@ -30,7 +30,7 @@ import { useTranslation } from "react-i18next";
 export function AppSidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { t } = useTranslation();
+  const { t,i18n } = useTranslation();
 
   const menuItems = [
     {
@@ -75,7 +75,7 @@ export function AppSidebar() {
   ];
 
   return (
-    <Sidebar>
+    <Sidebar side={i18n.language === 'ar' ? "right" : 'left'}>
       <SidebarHeader className="border-b px-6 py-4">
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
           <Shield className="h-6 w-6 text-primary" />

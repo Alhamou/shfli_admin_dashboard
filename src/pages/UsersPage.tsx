@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { SendNotificationPopup } from "@/components/SendNotificationPopup";
+import { Textarea } from "@/components/ui/textarea";
 
 export const UserInfo = () => {
   const { t, i18n } = useTranslation();
@@ -174,9 +175,30 @@ export const UserInfo = () => {
                     />
                   )}
                   <div>
-                    <h2 className="text-xl font-semibold">
-                      {userData.first_name ?? ""} {userData.last_name ?? ""}
-                    </h2>
+                    {isEditing ? (
+                      <div className="flex gap-2">
+                        <Input
+                          defaultValue={userData.first_name || ""}
+                          onChange={(e) =>
+                            handleInputChange("first_name", e.target.value)
+                          }
+                          placeholder={t("userInfo.firstName")}
+                          className="w-32"
+                        />
+                        <Input
+                          defaultValue={userData.last_name || ""}
+                          onChange={(e) =>
+                            handleInputChange("last_name", e.target.value)
+                          }
+                          placeholder={t("userInfo.lastName")}
+                          className="w-32"
+                        />
+                      </div>
+                    ) : (
+                      <h2 className="text-xl font-semibold">
+                        {userData.first_name ?? ""} {userData.last_name ?? ""}
+                      </h2>
+                    )}
                     <div className="flex gap-2 mt-1">
                       {getAccountTypeBadge(userData.account_type)}
                       {userData.blocked && (
@@ -451,7 +473,17 @@ export const UserInfo = () => {
                   <p className="text-sm text-muted-foreground">
                     {t("userInfo.contactData")}
                   </p>
-                  <p>{userData.contact_data || t("userInfo.notAvailable")}</p>
+                  {isEditing ? (
+                    <Textarea
+                      defaultValue={userData.contact_data || ""}
+                      onChange={(e) =>
+                        handleInputChange("contact_data", e.target.value)
+                      }
+                      className="min-w-[500px]"
+                    />
+                  ) : (
+                    <p>{userData.contact_data || t("userInfo.notAvailable")}</p>
+                  )}
                 </div>
               </div>
             </CardContent>

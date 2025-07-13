@@ -14,7 +14,6 @@ import {
   formatPrice,
   getPriceDiscount,
   isUUIDv4,
-  playAudioWithWebAudio,
   toQueryString,
   updateItemInArray,
 } from "@/lib/helpFunctions";
@@ -22,14 +21,11 @@ import "moment";
 import { getAllCommercialItems, updateItem } from "@/services/restApiServices";
 import { ICreatMainItem } from "@/interfaces";
 import { CustomBadge } from "@/components/ui/custom-badge";
-import { Eye, XIcon } from "lucide-react";
+import { Eye } from "lucide-react";
 import { ItemDetailView } from "@/components/ViewItem";
-import { connectSocket, socket } from "@/controllers/requestController";
-import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
-import storageController from "@/controllers/storageController";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const initialQuery = { page: 1, limit: 25, total: 0 };
 
@@ -41,9 +37,7 @@ export default function DashboardHome() {
   const [hasMore, setHasMore] = useState(true);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [uuidSearchTerm, setUuidSearchTerm] = useState("");
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [activeTab, setActiveTab] = useState<"items" | "jobs">("items");
 
   const fetchItems = useCallback(
     async (
@@ -59,6 +53,7 @@ export default function DashboardHome() {
         const query = toQueryString({
           page,
           limit,
+          item_as: activeTab === "jobs" ? "job" : "item",
           ...(search !== ""
             ? isUUIDv4(search)
               ? { uuid: search }
@@ -86,24 +81,13 @@ export default function DashboardHome() {
         setLoading(false);
       }
     },
-    [loading]
+    [loading, activeTab]
   );
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleUuidSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUuidSearchTerm(e.target.value);
-  };
-
-  const handleFetchClick = () => {
-    fetchItems(1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
-  };
 
   // Initial fetch
   useEffect(() => {
     fetchItems(pagination.page, pagination.limit);
-  }, []);
+  }, [activeTab]);
 
   const handleItemUpdate = useCallback(
     (updatedItem: ICreatMainItem) => {
@@ -123,12 +107,7 @@ export default function DashboardHome() {
     const newPosition = item.position === 1 ? 0 : 1;
     try {
       await updateItem(item.uuid, { position: newPosition });
-      fetchItems(
-        pagination.page,
-        pagination.limit,
-        searchTerm.trim(),
-        uuidSearchTerm.trim()
-      );
+      fetchItems(pagination.page, pagination.limit);
       toast.success(t("messages.updateSuccess"));
     } catch (error) {
       toast.error(t("messages.updateError"));
@@ -144,18 +123,13 @@ export default function DashboardHome() {
       const { scrollTop, scrollHeight, clientHeight } = container;
       // Load more when we're within 200px of the bottom
       if (scrollHeight - (scrollTop + clientHeight) < 200) {
-        fetchItems(
-          pagination.page + 1,
-          pagination.limit,
-          searchTerm.trim(),
-          uuidSearchTerm.trim()
-        );
+        fetchItems(pagination.page + 1, pagination.limit);
       }
     };
 
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore, pagination, fetchItems, searchTerm, uuidSearchTerm]);
+  }, [loading, hasMore, pagination, fetchItems]);
 
   useEffect(() => {
     moment.updateLocale("ar", {
@@ -177,61 +151,6 @@ export default function DashboardHome() {
     });
   }, []);
 
-  useEffect(() => {
-    // Connect with error handling
-    connectSocket();
-
-    // Debug events
-    const onConnect = () => {
-      console.log("Connected socket");
-      setIsSocketConnected(true);
-    };
-
-    const onDisconnect = () => {
-      console.log("Socket disconnected");
-      setIsSocketConnected(false);
-    };
-
-    const onError = (err: Error) => {
-      console.error("Socket error:", err.message);
-      setIsSocketConnected(false);
-    };
-
-    const onMessage = (message: ICreatMainItem) => {
-      console.log("new item received", message);
-      setItems((prev) => [message, ...prev]);
-      const muted = storageController.get("audio");
-      if (muted && muted === "muted") {
-      } else {
-        playAudioWithWebAudio("/twinkle.mp3");
-      }
-    };
-
-    // Connection check interval
-    const checkConnectionInterval = setInterval(() => {
-      if (!socket.connected) {
-        console.log("Socket disconnected, attempting to reconnect...");
-        socket.connect();
-      }
-    }, 5000); // Check every 5 seconds
-
-    // Setup event listeners
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("connect_error", onError);
-    socket.on("message", onMessage);
-
-    return () => {
-      // Cleanup
-      clearInterval(checkConnectionInterval);
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("connect_error", onError);
-      socket.off("message", onMessage);
-      socket.disconnect();
-    };
-  }, []);
-
   const getStatusBadge = (status: "active" | "pending" | "blocked") => {
     return (
       <CustomBadge variant={status} size="lg" className="whitespace-nowrap">
@@ -240,79 +159,41 @@ export default function DashboardHome() {
     );
   };
 
+  // Filter items based on active tab
+  const filteredItems = items.filter((item) => {
+    if (activeTab === "jobs") return item.item_as === "job";
+    return item.item_as !== "job";
+  });
+
   return (
-    <div className="mx-auto py-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="mx-auto py-4">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
-          <div
-            className={`w-3 h-3 rounded-full ${
-              isSocketConnected ? "bg-green-500" : "bg-red-500"
-            }`}
-            title={
-              isSocketConnected
-                ? t("dashboard.socketConnected")
-                : t("dashboard.socketDisconnected")
-            }
-          />
+          <div className="text-2xl font-bold">{t("dashboard.title")}</div>
         </div>
       </div>
 
       <div className="rounded-lg shadow p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="relative">
-            <Input
-              placeholder={t("dashboard.searchPlaceholder")}
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-full"
-              style={{direction : 'ltr'}}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute start-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-              onClick={() => {
-                setSearchTerm("");
-              }}
-            >
-              <XIcon className="h-4 w-4" color="red" />
-              <span className="sr-only">Clear</span>
-            </Button>
-          </div>
-          <div className="relative">
-            <Input
-              placeholder={t("dashboard.uuidSearchPlaceholder")}
-              value={uuidSearchTerm}
-              onChange={handleUuidSearchChange}
-              className="w-full"
-              style={{direction : 'ltr'}}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute start-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-              onClick={() => {
-                setUuidSearchTerm("");
-              }}
-            >
-              <XIcon className="h-4 w-4" color="red" />
-              <span className="sr-only">Clear</span>
-            </Button>
-          </div>
-          <div>
-            <Button onClick={handleFetchClick} disabled={loading}>
-              {loading ? t("dashboard.loading") : t("dashboard.loadItems")}
-            </Button>
-          </div>
-        </div>
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as "items" | "jobs")}
+          className="mb-4"
+          style={{direction : i18n.language === 'ar' ? 'rtl' : 'ltr'}}
+        >
+          <TabsList>
+            <TabsTrigger value="items">
+              {t("dashboard.tabs.items")}
+            </TabsTrigger>
+            <TabsTrigger value="jobs">
+              {t("dashboard.tabs.jobs")}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         <div
           ref={tableContainerRef}
           className="rounded-md border overflow-auto"
-          style={{ maxHeight: "calc(100vh - 200px)" }}
+          style={{ maxHeight: "calc(100vh - 350px)" }}
         >
           <Table>
             <TableHeader className="sticky top-0 bg-background">
@@ -327,7 +208,7 @@ export default function DashboardHome() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((item, index) => {
+              {filteredItems.map((item, index) => {
                 const activated_at = moment(item.activated_at)
                   .locale(i18n.language)
                   .fromNow();
@@ -495,12 +376,12 @@ export default function DashboardHome() {
               )}
             </TableBody>
           </Table>
-          {!hasMore && items.length > 0 && (
+          {!hasMore && filteredItems.length > 0 && (
             <div className="p-4 text-center text-muted-foreground">
               {t("dashboard.messages.noMoreItems")}
             </div>
           )}
-          {!loading && items.length === 0 && (
+          {!loading && filteredItems.length === 0 && (
             <div className="p-4 text-center text-muted-foreground">
               {t("dashboard.messages.noItemsFound")}
             </div>
