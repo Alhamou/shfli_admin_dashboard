@@ -262,7 +262,7 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        <div className="rounded-lg shadow p-6">
+        <div className="rounded-lg shadow">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div className="relative">
               <Input

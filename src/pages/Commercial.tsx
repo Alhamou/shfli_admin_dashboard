@@ -176,7 +176,7 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        <div className="rounded-lg shadow p-6">
+        <div className="rounded-lg shadow">
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as "items" | "jobs")}
