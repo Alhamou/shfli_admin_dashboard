@@ -30,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import storageController from "@/controllers/storageController";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 const initialQuery = { page: 1, limit: 25, total: 0 };
 
@@ -242,81 +243,81 @@ export default function DashboardHome() {
   };
 
   return (
-    <div className="mx-auto py-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="text-2xl font-bold">{t("dashboard.title")}</div>
-          <div
-            className={`w-3 h-3 rounded-full ${
-              isSocketConnected ? "bg-green-500" : "bg-red-500"
-            }`}
-            title={
-              isSocketConnected
-                ? t("dashboard.socketConnected")
-                : t("dashboard.socketDisconnected")
-            }
-          />
-        </div>
-      </div>
-
-      <div className="rounded-lg shadow p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="relative">
-            <Input
-              placeholder={t("dashboard.searchPlaceholder")}
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-full"
-              style={{ direction: "ltr" }}
+    <div className="flex flex-col h-full">
+      {/* Sticky header section */}
+      <div className="sticky top-0 pt-4 pb-2">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="text-2xl font-bold">{t("dashboard.title")}</div>
+            <div
+              className={`w-3 h-3 rounded-full ${
+                isSocketConnected ? "bg-green-500" : "bg-red-500"
+              }`}
+              title={
+                isSocketConnected
+                  ? t("dashboard.socketConnected")
+                  : t("dashboard.socketDisconnected")
+              }
             />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute start-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-              onClick={() => {
-                setSearchTerm("");
-              }}
-            >
-              <XIcon className="h-4 w-4" color="red" />
-              <span className="sr-only">Clear</span>
-            </Button>
-          </div>
-          <div className="relative">
-            <Input
-              placeholder={t("dashboard.uuidSearchPlaceholder")}
-              value={uuidSearchTerm}
-              onChange={handleUuidSearchChange}
-              className="w-full"
-              style={{ direction: "ltr" }}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute start-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-              onClick={() => {
-                setUuidSearchTerm("");
-              }}
-            >
-              <XIcon className="h-4 w-4" color="red" />
-              <span className="sr-only">Clear</span>
-            </Button>
-          </div>
-          <div>
-            <Button onClick={handleFetchClick} disabled={loading}>
-              {loading ? t("dashboard.loading") : t("dashboard.loadItems")}
-            </Button>
           </div>
         </div>
 
-        <div
-          ref={tableContainerRef}
-          className="rounded-md border overflow-auto"
-          style={{ maxHeight: "calc(100vh - 350px)" }}
-        >
+        <div className="rounded-lg shadow p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="relative">
+              <Input
+                placeholder={t("dashboard.searchPlaceholder")}
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-full"
+                style={{ direction: "ltr" }}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute start-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                onClick={() => {
+                  setSearchTerm("");
+                }}
+              >
+                <XIcon className="h-4 w-4" color="red" />
+                <span className="sr-only">Clear</span>
+              </Button>
+            </div>
+            <div className="relative">
+              <Input
+                placeholder={t("dashboard.uuidSearchPlaceholder")}
+                value={uuidSearchTerm}
+                onChange={handleUuidSearchChange}
+                className="w-full"
+                style={{ direction: "ltr" }}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute start-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                onClick={() => {
+                  setUuidSearchTerm("");
+                }}
+              >
+                <XIcon className="h-4 w-4" color="red" />
+                <span className="sr-only">Clear</span>
+              </Button>
+            </div>
+            <div>
+              <Button onClick={handleFetchClick} disabled={loading}>
+                {loading ? t("dashboard.loading") : t("dashboard.loadItems")}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Table header - also sticky below the search section */}
+        <div className="rounded-md border bg-background">
           <Table>
-            <TableHeader className="sticky top-0 bg-background">
+            <TableHeader className="sticky top-[210px] bg-background">
               <TableRow>
                 <TableHead>{t("dashboard.tableHeaders.position")}</TableHead>
                 <TableHead>{t("dashboard.tableHeaders.item")}</TableHead>
@@ -327,6 +328,18 @@ export default function DashboardHome() {
                 <TableHead>{t("dashboard.tableHeaders.status")}</TableHead>
               </TableRow>
             </TableHeader>
+          </Table>
+        </div>
+      </div>
+
+      {/* Scrollable content section */}
+      <div
+        className="flex-1 overflow-auto"
+        ref={tableContainerRef}
+        style={{ maxHeight: "calc(100vh - 280px)" }}
+      >
+        <div className="rounded-md border border-t-0">
+          <Table>
             <TableBody>
               {items.map((item, index) => {
                 const activated_at = moment(item.activated_at)
@@ -453,8 +466,11 @@ export default function DashboardHome() {
                         <p className="text-xs text-muted-foreground truncate">
                           {t("dashboard.messages.user")}: <br /> {item.user_id}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {item.uuid_client}
+                        <p
+                          className="text-xs text-muted-foreground truncate text-end"
+                          style={{ direction: "ltr" }}
+                        >
+                          {item.client_details?.phone_number}
                         </p>
                       </div>
                     </TableCell>
@@ -470,6 +486,15 @@ export default function DashboardHome() {
                             {item.account_type === "business"
                               ? t("userInfo.business")
                               : t("userInfo.individual")}
+                          </CustomBadge>
+                        )}
+                        {item.client_details?.account_verified && (
+                          <CustomBadge
+                            variant={"rent"}
+                            size="lg"
+                            className="whitespace-nowrap"
+                          >
+                            {t("userInfo.verified")}
                           </CustomBadge>
                         )}
                       </div>

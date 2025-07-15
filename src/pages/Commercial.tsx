@@ -26,6 +26,7 @@ import { ItemDetailView } from "@/components/ViewItem";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 const initialQuery = { page: 1, limit: 25, total: 0 };
 
@@ -166,37 +167,35 @@ export default function DashboardHome() {
   });
 
   return (
-    <div className="mx-auto py-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="text-2xl font-bold">{t("dashboard.title")}</div>
+    <div className="flex flex-col h-full">
+      {/* Sticky header section */}
+      <div className="sticky top-0 pt-4 pb-2">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="text-2xl font-bold">{t("dashboard.title")}</div>
+          </div>
         </div>
-      </div>
 
-      <div className="rounded-lg shadow p-6">
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as "items" | "jobs")}
-          className="mb-4"
-          style={{direction : i18n.language === 'ar' ? 'rtl' : 'ltr'}}
-        >
-          <TabsList>
-            <TabsTrigger value="items">
-              {t("dashboard.tabs.items")}
-            </TabsTrigger>
-            <TabsTrigger value="jobs">
-              {t("dashboard.tabs.jobs")}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="rounded-lg shadow p-6">
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as "items" | "jobs")}
+            className="mb-4"
+            style={{ direction: i18n.language === "ar" ? "rtl" : "ltr" }}
+          >
+            <TabsList>
+              <TabsTrigger value="items">
+                {t("dashboard.tabs.items")}
+              </TabsTrigger>
+              <TabsTrigger value="jobs">{t("dashboard.tabs.jobs")}</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
 
-        <div
-          ref={tableContainerRef}
-          className="rounded-md border overflow-auto"
-          style={{ maxHeight: "calc(100vh - 350px)" }}
-        >
+        {/* Table header - also sticky below the tabs section */}
+        <div className="rounded-md border bg-background">
           <Table>
-            <TableHeader className="sticky top-0 bg-background">
+            <TableHeader className="sticky top-[180px] bg-background">
               <TableRow>
                 <TableHead>{t("dashboard.tableHeaders.position")}</TableHead>
                 <TableHead>{t("dashboard.tableHeaders.item")}</TableHead>
@@ -207,6 +206,18 @@ export default function DashboardHome() {
                 <TableHead>{t("dashboard.tableHeaders.status")}</TableHead>
               </TableRow>
             </TableHeader>
+          </Table>
+        </div>
+      </div>
+
+      {/* Scrollable content section */}
+      <div
+        className="flex-1 overflow-auto"
+        ref={tableContainerRef}
+        style={{ maxHeight: "calc(100vh - 250px)" }}
+      >
+        <div className="rounded-md border border-t-0">
+          <Table>
             <TableBody>
               {filteredItems.map((item, index) => {
                 const activated_at = moment(item.activated_at)
@@ -333,8 +344,11 @@ export default function DashboardHome() {
                         <p className="text-xs text-muted-foreground truncate">
                           {t("dashboard.messages.user")}: <br /> {item.user_id}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {item.uuid_client}
+                        <p
+                          className="text-xs text-muted-foreground truncate text-end"
+                          style={{ direction: "ltr" }}
+                        >
+                          {item.client_details?.phone_number}
                         </p>
                       </div>
                     </TableCell>
@@ -350,6 +364,15 @@ export default function DashboardHome() {
                             {item.account_type === "business"
                               ? t("userInfo.business")
                               : t("userInfo.individual")}
+                          </CustomBadge>
+                        )}
+                        {item.client_details?.account_verified && ( //fix
+                          <CustomBadge
+                            variant={"rent"}
+                            size="lg"
+                            className="whitespace-nowrap"
+                          >
+                            {t("userInfo.verified")}
                           </CustomBadge>
                         )}
                       </div>

@@ -1,15 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Megaphone, MessageCircle } from "lucide-react";
 import { SendNotificationPopup } from "@/components/SendNotificationPopup";
 import { AnnouncementDialog } from "@/components/FirebaseAnnouncement";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { sendFirebase, sendNotAdmin } from "@/services/restApiServices";
+import { connectSocket, socket } from "@/controllers/requestController";
 
 export function Admin() {
   const { t } = useTranslation();
   const [loadingNotification, setLoadingNotification] = useState(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
 
   const handleSendNotification = async (messageData: any) => {
     setLoadingNotification(true);
@@ -30,6 +31,55 @@ export function Admin() {
   }) => {
     await sendFirebase(data);
   };
+
+  useEffect(() => {
+    // Connect with error handling
+    connectSocket();
+
+    // Debug events
+    const onConnect = () => {
+      console.log("Connected socket");
+      setIsSocketConnected(true);
+    };
+
+    const onDisconnect = () => {
+      console.log("Socket disconnected");
+      setIsSocketConnected(false);
+    };
+
+    const onError = (err: Error) => {
+      console.error("Socket error:", err.message);
+      setIsSocketConnected(false);
+    };
+
+    const onMessage = (message: any) => {
+      console.log("new item received", message);
+    };
+
+    // Connection check interval
+    const checkConnectionInterval = setInterval(() => {
+      if (!socket.connected) {
+        console.log("Socket disconnected, attempting to reconnect...");
+        socket.connect();
+      }
+    }, 5000); // Check every 5 seconds
+
+    // Setup event listeners
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("connect_error", onError);
+    socket.on("log_data", onMessage);
+
+    return () => {
+      // Cleanup
+      clearInterval(checkConnectionInterval);
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("connect_error", onError);
+      socket.off("log_data", onMessage);
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 justify-between">
