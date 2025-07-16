@@ -30,7 +30,6 @@ import { useTranslation } from "react-i18next";
 import storageController from "@/controllers/storageController";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 
 const initialQuery = { page: 1, limit: 25, total: 0 };
 
@@ -477,6 +476,14 @@ export default function DashboardHome() {
                             " " +
                             (item.client_details?.last_name ?? "")}
                         </p>
+                        {item.client_details?.account_type === "business" &&
+                          item.client_details?.business_name && (
+                            <p className="text-sm text-muted-foreground truncate">
+                              {t("dialog.labels.businessName")}
+                              {": "} <br />
+                              {item.client_details?.business_name}
+                            </p>
+                          )}
                       </div>
                     </TableCell>
                     <TableCell>

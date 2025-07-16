@@ -107,13 +107,14 @@ export function ItemDetailView({
   };
 
   const handleStatusToggle = async (
-    newStatus: "active" | "blocked" | "pending"
+    newStatus: "active" | "blocked" | "pending",
+    reason?: string
   ) => {
     if (!item) return;
 
     setUpdatingStatus(true);
     try {
-      let description: string | null = item.description;
+      let description: string | null = null;
 
       if (newStatus === "blocked") {
         description = `${
@@ -121,8 +122,8 @@ export function ItemDetailView({
             ? customReason
             : selectedReason
         }`;
-      } else {
-        description = null;
+      } else if (newStatus === "pending" && reason) {
+        description = reason;
       }
 
       await updateItem(item.uuid, {

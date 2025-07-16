@@ -7,10 +7,10 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Textarea } from "./ui/textarea";
-import { Badge } from "./ui/badge";
 import { Loader2 } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { ICreatMainItem } from "@/interfaces";
+import { CustomBadge } from "./ui/custom-badge";
 
 export const ViewItemFooter = ({
   showReasonInput,
@@ -34,12 +34,40 @@ export const ViewItemFooter = ({
   item: ICreatMainItem | null;
   setShowReasonInput: Dispatch<SetStateAction<boolean>>;
   handleStatusToggle: (
-    newStatus: "active" | "blocked" | "pending"
+    newStatus: "active" | "blocked" | "pending",
+    reason?: string
   ) => Promise<void>;
   updatingStatus: boolean;
   handleBlockAction: () => void;
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [showPendingInput, setShowPendingInput] = useState(false);
+  const [pendingReason, setPendingReason] = useState("");
+
+  const handlePendingAction = () => {
+    if (item?.is_active !== "pending") {
+      setShowPendingInput(true);
+    }
+  };
+
+  const handlePendingSubmit = async () => {
+    await handleStatusToggle("pending", pendingReason);
+    setShowPendingInput(false);
+    setPendingReason("");
+  };
+
+  const handleApprove = async () => {
+    await handleStatusToggle("active");
+  };
+
+  const getStatusBadge = (status: "active" | "pending" | "blocked") => {
+    return (
+      <CustomBadge variant={status} size="lg" className="whitespace-nowrap">
+        {t(`dashboard.statusTypes.${status}`)}
+      </CustomBadge>
+    );
+  };
+
   return (
     <>
       {showReasonInput && (
@@ -108,39 +136,69 @@ export const ViewItemFooter = ({
           </div>
         </div>
       )}
+
+      {showPendingInput && (
+        <div
+          className="space-y-4 p-4 border rounded-lg bg-muted/50"
+          style={{ direction: i18n.language === "ar" ? "rtl" : "ltr" }}
+        >
+          <p className="font-medium">{t("dialog.labels.pendingReason")}</p>
+          <Textarea
+            placeholder={t("dialog.labels.specifyPendingReason")}
+            value={pendingReason}
+            onChange={(e) => setPendingReason(e.target.value)}
+          />
+          <div className="flex gap-2 justify-end">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowPendingInput(false);
+                setPendingReason("");
+              }}
+            >
+              {t("dialog.buttons.cancel")}
+            </Button>
+            <Button
+              onClick={handlePendingSubmit}
+              disabled={!pendingReason || updatingStatus}
+            >
+              {t("dialog.buttons.confirm")}
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className="col-span-full border-t pt-4 mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium">{t("dialog.labels.status")}:</span>
-          <Badge
-            variant={
-              item?.is_active === "active"
-                ? "default"
-                : item?.is_active === "blocked"
-                ? "destructive"
-                : "secondary"
-            }
-            className={`${
-              item?.is_active === "pending" ? "bg-orange-500" : ""
-            }`}
-          >
-            {item?.is_active}
-          </Badge>
+          {getStatusBadge(item?.is_active ?? "active")}
           <span className="text-sm">
             {item?.status_note ? item?.status_note : ""}
           </span>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
-          <Button
-            onClick={() => handleStatusToggle("pending")}
-            variant="outline"
-            disabled={updatingStatus || item?.is_active === "pending"}
-            className="w-full sm:w-auto bg-orange-500"
-          >
-            {updatingStatus ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : null}
-            {t("dialog.buttons.markPending")}
-          </Button>
+          {item?.is_active === "pending" ? (
+            <Button
+              onClick={handleApprove}
+              variant="default"
+              disabled={updatingStatus}
+              className="w-full sm:w-auto bg-green-500 hover:bg-green-600"
+            >
+              {updatingStatus ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              {t("dialog.buttons.approve")}
+            </Button>
+          ) : (
+            <Button
+              onClick={handlePendingAction}
+              variant="outline"
+              disabled={updatingStatus}
+              className={`w-full sm:w-auto bg-orange-500 hover:bg-orange-500`}
+            >
+              {t("dialog.buttons.markPending")}
+            </Button>
+          )}
           <Button
             onClick={handleBlockAction}
             variant={item?.is_active === "active" ? "destructive" : "default"}
