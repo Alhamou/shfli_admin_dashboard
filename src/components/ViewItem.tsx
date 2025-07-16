@@ -92,7 +92,9 @@ export function ItemDetailView({
     }
   };
 
-  const fetchBlockReasons = async (item_as : "shop" | "used" | "job" | undefined) => {
+  const fetchBlockReasons = async (
+    item_as: "shop" | "used" | "job" | undefined
+  ) => {
     setLoading(true);
     try {
       const response = await getReasons();
@@ -104,7 +106,9 @@ export function ItemDetailView({
     }
   };
 
-  const handleStatusToggle = async (newStatus: "active" | "blocked") => {
+  const handleStatusToggle = async (
+    newStatus: "active" | "blocked" | "pending"
+  ) => {
     if (!item) return;
 
     setUpdatingStatus(true);

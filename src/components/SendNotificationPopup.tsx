@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { ICreatMainItem } from "@/interfaces";
 
 interface MessagePopupProps {
   is_public: boolean;
@@ -20,6 +21,7 @@ interface MessagePopupProps {
   onSend: (messageData: any) => void;
   children: React.ReactNode;
   loading: boolean;
+  item?: ICreatMainItem | null;
 }
 
 export const SendNotificationPopup = ({
@@ -28,6 +30,7 @@ export const SendNotificationPopup = ({
   onSend,
   children,
   loading,
+  item,
 }: MessagePopupProps) => {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -36,11 +39,15 @@ export const SendNotificationPopup = ({
   const [actionType, setActionType] = useState<"navigate" | "link" | "none">(
     "none"
   );
-  const [navigateInfo, setNavigateInfo] = useState({
-    tab: "",
-    screen: "",
-    uuid: "",
-  });
+  const [navigateInfo, setNavigateInfo] = useState(
+    item
+      ? { tab: "Home", screen: "Details", uuid: item.uuid }
+      : {
+          tab: "",
+          screen: "",
+          uuid: "",
+        }
+  );
   const [outsideLink, setOutsideLink] = useState("");
   const [withImage, setWithImage] = useState(false);
   const [imageInfo, setImageInfo] = useState({
@@ -94,19 +101,22 @@ export const SendNotificationPopup = ({
     const messageData: any = {
       message,
       is_public,
-      ...(!is_public && { user_id: userId })
+      ...(!is_public && { user_id: userId }),
     };
 
     if (actionType !== "none") {
-      messageData.action = actionType === "navigate" ? {
-        navigate_info: {
-          tab: navigateInfo.tab,
-          screen: navigateInfo.screen,
-          params: { uuid: navigateInfo.uuid }
-        }
-      } : {
-        outside_link: outsideLink
-      };
+      messageData.action =
+        actionType === "navigate"
+          ? {
+              navigate_info: {
+                tab: navigateInfo.tab,
+                screen: navigateInfo.screen,
+                params: { uuid: navigateInfo.uuid },
+              },
+            }
+          : {
+              outside_link: outsideLink,
+            };
     }
 
     if (withImage) {
@@ -114,7 +124,7 @@ export const SendNotificationPopup = ({
       messageData.action.image = {
         image_url: imageInfo.image_url,
         width: parseInt(imageInfo.width),
-        height: parseInt(imageInfo.height)
+        height: parseInt(imageInfo.height),
       };
     }
 
@@ -202,6 +212,7 @@ export const SendNotificationPopup = ({
                     onChange={(e) =>
                       setNavigateInfo({ ...navigateInfo, tab: e.target.value })
                     }
+                    style={{ direction: "ltr" }}
                     placeholder={t("notificationPopup.tabPlaceholder")}
                     className={errors.tab ? "border-red-500" : ""}
                   />
@@ -215,6 +226,7 @@ export const SendNotificationPopup = ({
                   </Label>
                   <Input
                     id="screen"
+                    style={{ direction: "ltr" }}
                     value={navigateInfo.screen}
                     onChange={(e) =>
                       setNavigateInfo({
@@ -235,6 +247,7 @@ export const SendNotificationPopup = ({
                   </Label>
                   <Input
                     id="uuid"
+                    style={{ direction: "ltr" }}
                     value={navigateInfo.uuid}
                     onChange={(e) =>
                       setNavigateInfo({ ...navigateInfo, uuid: e.target.value })

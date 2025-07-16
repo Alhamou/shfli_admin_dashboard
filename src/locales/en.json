@@ -57,6 +57,7 @@
       "confirm": "Confirm",
       "block": "Block Ad",
       "unblock": "Unblock Ad",
+      "markPending": "Mark as Pending",
       "message": "Send Notification",
       "share": "Share",
       "report": "Report"
@@ -120,6 +121,7 @@
       "noImages": "No Images",
       "yes": "Yes",
       "no": "No",
+      "statusPending": "Pending",
       "loading": "Loading...",
       "notAvailable": "N/A",
       "blockReason": {

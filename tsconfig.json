@@ -20,7 +20,11 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "../algalidriverapp/src/context/ThemeContext.tsx",
+    "../algalidriverapp/src/theme"
+  ],
   "exclude": ["node_modules", "dist"],
   "references": [
     {

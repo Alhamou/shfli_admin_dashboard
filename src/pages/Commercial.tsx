@@ -350,6 +350,11 @@ export default function DashboardHome() {
                         >
                           {item.client_details?.phone_number}
                         </p>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {(item.client_details?.first_name ?? "") +
+                            " " +
+                            (item.client_details?.last_name ?? "")}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -366,7 +371,7 @@ export default function DashboardHome() {
                               : t("userInfo.individual")}
                           </CustomBadge>
                         )}
-                        {item.client_details?.account_verified && ( //fix
+                        {item.client_details?.account_verified && (
                           <CustomBadge
                             variant={"rent"}
                             size="lg"

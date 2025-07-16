@@ -23,7 +23,7 @@ export const ViewItemActions = ({
   item: ICreatMainItem;
 }) => {
   const { t } = useTranslation();
-  const [loading,setIsloading] = useState(false)
+  const [loading, setIsloading] = useState(false);
   return (
     <div className="flex flex-row md:flex-col lg:min-w-32 lg:max-w-40 min-w-full mx-8">
       {isEditing ? (
@@ -61,15 +61,16 @@ export const ViewItemActions = ({
         is_public={false}
         userId={item.user_id}
         loading={loading}
+        item={item}
         onSend={async (messageData) => {
-          setIsloading(true)
+          setIsloading(true);
           try {
             await sendNotTeam(messageData);
-            toast.success(t('notificationPopup.NotificationSuccess'));
+            toast.success(t("notificationPopup.NotificationSuccess"));
           } catch {
-            toast.error(t('notificationPopup.NotificationError'));
-          }finally{
-            setIsloading(false)
+            toast.error(t("notificationPopup.NotificationError"));
+          } finally {
+            setIsloading(false);
           }
         }}
       >
