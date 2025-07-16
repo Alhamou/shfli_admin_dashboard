@@ -157,9 +157,9 @@ export default function App() {
               <Route
                 path="admin"
                 element={
-                  // <ProtectedRouteAdmin> // fixme
+                  <ProtectedRouteAdmin>
                     <Admin />
-                  // </ProtectedRouteAdmin>
+                  </ProtectedRouteAdmin>
                 }
               />
               <Route
