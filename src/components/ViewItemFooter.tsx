@@ -42,7 +42,10 @@ export const ViewItemFooter = ({
 }) => {
   const { t, i18n } = useTranslation();
   const [showPendingInput, setShowPendingInput] = useState(false);
-  const [pendingReason, setPendingReason] = useState("");
+  const [pendingReason, setPendingReason] =
+    useState(`بعد ان تقوم بتعديل هذا المنشور وحفظه، سيتم مراجعته من قبل فريقنا، وبمجرد الانتهاء من المراجعة، ستتلقى اشعارأ بشأن منشورك:
+    
+    `);
 
   const handlePendingAction = () => {
     if (item?.is_active !== "pending") {

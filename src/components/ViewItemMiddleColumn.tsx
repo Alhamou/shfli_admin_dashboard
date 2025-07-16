@@ -61,9 +61,6 @@ export const ViewItemMiddleColumn = ({
               ? t("dialog.labels.business")
               : t("dialog.labels.individual")}
           </Badge>
-          {item.archived && (
-            <Badge variant="outline">{t("dialog.labels.archived")}</Badge>
-          )}
           {item.section && (
             <Badge variant="outline">Section {item.section}</Badge>
           )}
@@ -660,6 +657,16 @@ export const ViewItemMiddleColumn = ({
               </p>
               <p className="text-sm">
                 {item.reserved
+                  ? t("dialog.messages.yes")
+                  : t("dialog.messages.no")}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
+                {t("dialog.labels.archived")}
+              </p>
+              <p className="text-sm">
+                {item.archived
                   ? t("dialog.messages.yes")
                   : t("dialog.messages.no")}
               </p>

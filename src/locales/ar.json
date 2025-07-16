@@ -25,7 +25,9 @@
     "statusTypes": {
       "active": "نشط",
       "pending": "معلق",
-      "blocked": "محظور"
+      "blocked": "محظور",
+      "archived": "مؤرشف",
+      "reserved": "محجوز"
     },
     "itemTypes": {
       "shop": "متجر",

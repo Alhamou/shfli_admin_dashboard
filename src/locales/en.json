@@ -25,7 +25,9 @@
     "statusTypes": {
       "active": "Active",
       "pending": "Pending",
-      "blocked": "Blocked"
+      "blocked": "Blocked",
+      "archived": "Archived",
+      "reserved": "Reserved"
     },
     "itemTypes": {
       "shop": "Shop Item",

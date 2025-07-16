@@ -318,13 +318,27 @@ export default function DashboardHome() {
           <Table>
             <TableHeader className="sticky top-[210px] bg-background">
               <TableRow>
-                <TableHead>{t("dashboard.tableHeaders.position")}</TableHead>
-                <TableHead>{t("dashboard.tableHeaders.item")}</TableHead>
-                <TableHead>{t("dashboard.tableHeaders.category")}</TableHead>
-                <TableHead>{t("dashboard.tableHeaders.price")}</TableHead>
-                <TableHead>{t("dashboard.tableHeaders.location")}</TableHead>
-                <TableHead>{t("dashboard.tableHeaders.stats")}</TableHead>
-                <TableHead>{t("dashboard.tableHeaders.status")}</TableHead>
+                <TableHead className="text-start">
+                  {t("dashboard.tableHeaders.position")}
+                </TableHead>
+                <TableHead className="text-start">
+                  {t("dashboard.tableHeaders.item")}
+                </TableHead>
+                <TableHead className="text-start">
+                  {t("dashboard.tableHeaders.category")}
+                </TableHead>
+                <TableHead className="text-start">
+                  {t("dashboard.tableHeaders.price")}
+                </TableHead>
+                <TableHead className="text-start">
+                  {t("dashboard.tableHeaders.location")}
+                </TableHead>
+                <TableHead className="text-start">
+                  {t("dashboard.tableHeaders.stats")}
+                </TableHead>
+                <TableHead className="text-start">
+                  {t("dashboard.tableHeaders.status")}
+                </TableHead>
               </TableRow>
             </TableHeader>
           </Table>
@@ -507,6 +521,24 @@ export default function DashboardHome() {
                             className="whitespace-nowrap"
                           >
                             {t("userInfo.verified")}
+                          </CustomBadge>
+                        )}
+                        {item.archived && (
+                          <CustomBadge
+                            variant="archived"
+                            size="lg"
+                            className="whitespace-nowrap"
+                          >
+                            {t("dashboard.statusTypes.archived")}
+                          </CustomBadge>
+                        )}
+                        {item.reserved && (
+                          <CustomBadge
+                            variant="reserved"
+                            size="lg"
+                            className="whitespace-nowrap"
+                          >
+                            {t("dashboard.statusTypes.reserved")}
                           </CustomBadge>
                         )}
                       </div>
