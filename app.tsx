@@ -28,6 +28,7 @@ import { useTranslation } from "react-i18next";
 import Commercial from "@/pages/Commercial";
 import { StatisticsPage } from "@/pages/ٍStatistics";
 import { Admin } from "@/pages/Admin";
+import PendingAds from "@/pages/PendingAds";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -134,6 +135,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <UserInfo />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="pending"
+                element={
+                  <ProtectedRoute>
+                    <PendingAds />
                   </ProtectedRoute>
                 }
               />

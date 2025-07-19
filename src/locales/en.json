@@ -240,7 +240,8 @@
     "settings": "Settings",
     "commercialAds": "Commercial ads",
     "statistics": "statistics",
-    "admin": "Admin"
+    "admin": "Admin",
+    "pending": "Pending"
   },
   "announcement": {
     "button": "Send notification through firebase",

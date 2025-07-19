@@ -130,8 +130,8 @@
       "skillsRequired": "المهارات المطلوبة",
       "applicationDeadline": "موعد التقديم",
       "benefits": "المزايا",
-      "employeeLooking": "باحث عن موظف",
-      "companyLooking": "باحث عن عمل",
+      "employeeLooking": "باحث عن عمل",
+      "companyLooking": "باحث عن موظف",
       "sqft": "قدم مربع",
       "pendingReason": "سبب وضع العنصر في التعليق",
       "specifyPendingReason": "الرجاء تحديد سبب وضع هذا العنصر في التعليق",
@@ -239,7 +239,8 @@
     "settings": "الإعدادات",
     "commercialAds": "الإعلانات المروجة",
     "statistics": "إحصائيات",
-    "admin": "ادمن"
+    "admin": "ادمن",
+    "pending": "معلق"
   },
   "announcement": {
     "button": "إرسال إشعار عبر فايربيس",

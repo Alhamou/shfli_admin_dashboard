@@ -23,6 +23,7 @@ import {
   Tv,
   ChartColumnIncreasing,
   User,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
@@ -30,7 +31,7 @@ import { useTranslation } from "react-i18next";
 export function AppSidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { t,i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const menuItems = [
     {
@@ -47,6 +48,11 @@ export function AppSidebar() {
       title: "users",
       url: "/users",
       icon: Users,
+    },
+    {
+      title: "pending",
+      url: "/pending",
+      icon: AlertCircle,
     },
     ...(user?.roles.includes("admin")
       ? [
@@ -75,7 +81,7 @@ export function AppSidebar() {
   ];
 
   return (
-    <Sidebar side={i18n.language === 'ar' ? "right" : 'left'}>
+    <Sidebar side={i18n.language === "ar" ? "right" : "left"}>
       <SidebarHeader className="border-b px-6 py-4">
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
           <Shield className="h-6 w-6 text-primary" />
