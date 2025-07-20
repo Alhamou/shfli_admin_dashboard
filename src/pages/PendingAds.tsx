@@ -38,8 +38,6 @@ export default function PendingAds() {
   const [hasMore, setHasMore] = useState(true);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [uuidSearchTerm, setUuidSearchTerm] = useState("");
 
   const fetchItems = useCallback(
     async (
@@ -56,16 +54,6 @@ export default function PendingAds() {
           page,
           limit,
           is_active: "pending",
-          ...(search !== ""
-            ? isUUIDv4(search)
-              ? { uuid: search }
-              : { id: search }
-            : {}),
-          ...(clientUuid !== ""
-            ? isUUIDv4(clientUuid)
-              ? { uuid_client: clientUuid }
-              : { user_id: clientUuid }
-            : {}),
         });
         const response = await getAllItems(query);
         console.log(response.result);
@@ -86,17 +74,6 @@ export default function PendingAds() {
     },
     [loading]
   );
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleUuidSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUuidSearchTerm(e.target.value);
-  };
-
-  const handleFetchClick = () => {
-    fetchItems(1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
-  };
 
   // Initial fetch
   useEffect(() => {
@@ -121,12 +98,7 @@ export default function PendingAds() {
     const newPosition = item.position === 1 ? 0 : 1;
     try {
       await updateItem(item.uuid, { position: newPosition });
-      fetchItems(
-        pagination.page,
-        pagination.limit,
-        searchTerm.trim(),
-        uuidSearchTerm.trim()
-      );
+      fetchItems(pagination.page, pagination.limit);
       toast.success(t("messages.updateSuccess"));
     } catch (error) {
       toast.error(t("messages.updateError"));
@@ -142,18 +114,13 @@ export default function PendingAds() {
       const { scrollTop, scrollHeight, clientHeight } = container;
       // Load more when we're within 200px of the bottom
       if (scrollHeight - (scrollTop + clientHeight) < 200) {
-        fetchItems(
-          pagination.page + 1,
-          pagination.limit,
-          searchTerm.trim(),
-          uuidSearchTerm.trim()
-        );
+        fetchItems(pagination.page + 1, pagination.limit);
       }
     };
 
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore, pagination, fetchItems, searchTerm, uuidSearchTerm]);
+  }, [loading, hasMore, pagination, fetchItems]);
 
   useEffect(() => {
     moment.updateLocale("ar", {
@@ -190,58 +157,6 @@ export default function PendingAds() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="text-2xl font-bold">{t("dashboard.title")}</div>
-          </div>
-        </div>
-
-        <div className="rounded-lg shadow p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="relative">
-              <Input
-                placeholder={t("dashboard.searchPlaceholder")}
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="w-full"
-                style={{ direction: "ltr" }}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute start-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                onClick={() => {
-                  setSearchTerm("");
-                }}
-              >
-                <XIcon className="h-4 w-4" color="red" />
-                <span className="sr-only">Clear</span>
-              </Button>
-            </div>
-            <div className="relative">
-              <Input
-                placeholder={t("dashboard.uuidSearchPlaceholder")}
-                value={uuidSearchTerm}
-                onChange={handleUuidSearchChange}
-                className="w-full"
-                style={{ direction: "ltr" }}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute start-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                onClick={() => {
-                  setUuidSearchTerm("");
-                }}
-              >
-                <XIcon className="h-4 w-4" color="red" />
-                <span className="sr-only">Clear</span>
-              </Button>
-            </div>
-            <div>
-              <Button onClick={handleFetchClick} disabled={loading}>
-                {loading ? t("dashboard.loading") : t("dashboard.loadItems")}
-              </Button>
-            </div>
           </div>
         </div>
 
