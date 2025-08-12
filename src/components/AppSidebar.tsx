@@ -24,6 +24,7 @@ import {
   ChartColumnIncreasing,
   User,
   AlertCircle,
+  Gavel,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
@@ -48,6 +49,11 @@ export function AppSidebar() {
       title: "users",
       url: "/users",
       icon: Users,
+    },
+    {
+      title: "bids",
+      url: "/bids",
+      icon: Gavel,
     },
     {
       title: "pending",

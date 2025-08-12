@@ -1,5 +1,12 @@
 {
   "dashboard": {
+    "bidStatus": {
+      "pending": "Pending",
+      "ended": "Ended",
+      "active": "Active",
+      "blocked": "Blocked",
+      "ask_edit": "Ask Edit"
+    },
     "socketConnected": "Socket connected",
     "socketDisconnected": "Socket disconnected",
     "uuidSearchPlaceholder": "Search by User UUID...",
@@ -241,7 +248,8 @@
     "commercialAds": "Commercial ads",
     "statistics": "statistics",
     "admin": "Admin",
-    "pending": "Pending"
+    "pending": "Pending",
+    "bids": "bids"
   },
   "announcement": {
     "button": "Send notification through firebase",

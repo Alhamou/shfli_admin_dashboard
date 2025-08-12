@@ -29,6 +29,7 @@ import Commercial from "@/pages/Commercial";
 import { StatisticsPage } from "@/pages/ٍStatistics";
 import { Admin } from "@/pages/Admin";
 import PendingAds from "@/pages/PendingAds";
+import BidsScreen from "@/pages/Bids";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -135,6 +136,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <UserInfo />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="bids"
+                element={
+                  <ProtectedRoute>
+                    <BidsScreen />
                   </ProtectedRoute>
                 }
               />

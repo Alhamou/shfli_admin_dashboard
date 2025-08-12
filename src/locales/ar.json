@@ -1,5 +1,12 @@
 {
   "dashboard": {
+    "bidStatus": {
+      "pending": "قيد الانتظار",
+      "ended": "منتهي",
+      "active": "نشط",
+      "blocked": "محظور",
+      "ask_edit": "طلب تعديل"
+    },
     "socketConnected": "الاتصال نشط",
     "socketDisconnected": "الاتصال غير نشط",
     "uuidSearchPlaceholder": "البحث حسب المستخدم...",
@@ -240,7 +247,8 @@
     "commercialAds": "الإعلانات المروجة",
     "statistics": "إحصائيات",
     "admin": "ادمن",
-    "pending": "معلق"
+    "pending": "معلق",
+    "bids": "مزايدات"
   },
   "announcement": {
     "button": "إرسال إشعار عبر فايربيس",
