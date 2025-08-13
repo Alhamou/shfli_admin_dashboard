@@ -34,7 +34,9 @@
       "pending": "معلق",
       "blocked": "محظور",
       "archived": "مؤرشف",
-      "reserved": "محجوز"
+      "reserved": "محجوز",
+      "ended": "منتهي",
+      "askEdit": "طلب تعديل"
     },
     "itemTypes": {
       "shop": "متجر",
@@ -70,9 +72,13 @@
       "message": "إرسال إشعار",
       "share": "مشاركة",
       "report": "الإبلاغ",
-      "approve": "تنشيط"
+      "approve": "تنشيط",
+      "updateBidStatus": "تحديث حالة المزايدة",
+      "update": "تحديث"
     },
     "labels": {
+      "updateBidStatus": "تحديث حالة المزايدة",
+      "bidStatus": "حالة المزايدة",
       "title": "العنوان",
       "description": "الوصف",
       "aiDescription": "الوصف بالذكاء الاصطناعي",
@@ -164,7 +170,9 @@
     "updateError": "فشل تحديث العنصر",
     "reasonsError": "تعذر جلب أسباب الحظر",
     "statusUpdateSuccess": "تم تحديث حالة العنصر",
-    "statusUpdateError": "فشل تحديث حالة العنصر"
+    "statusUpdateError": "فشل تحديث حالة العنصر",
+    "bidStatusUpdateSuccess": "تم تحديث حالة المزايدة",
+    "bidStatusUpdateError": "فشل تحديث حالة المزايدة"
   },
   "editableField": {
     "employeeLooking": "يبحث عن عمل",

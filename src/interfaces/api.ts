@@ -18,6 +18,13 @@ export interface IAPI_KEY {
   is_active: boolean;
 }
 
+export type Bid_status =
+  | "active"
+  | "ended"
+  | "pending"
+  | "ask_edit"
+  | "blocked";
+
 interface ItemAd extends IBaseItem {
   main_item_id: number;
   category_id: number;
@@ -27,7 +34,8 @@ interface ItemAd extends IBaseItem {
   category_model_id?: number | null;
   price: number;
   currency: string;
-  item_for: "sale" | "rent" | "trade" | "service";
+  bid_status: Bid_status;
+  item_for: "sale" | "rent" | "trade" | "service" | "bid";
   reserved: boolean;
   discount: number;
   date_end_discount: string;
@@ -361,19 +369,22 @@ export interface Stat {
   count: number;
 }
 
-export interface NotificationBody{
-    message: string;
-    action: {
+export interface NotificationBody {
+  message: string;
+  action:
+    | {
         navigate_info: {
-            tab: string;
-            screen: string;
-            params: {
-                uuid: string;
-            };
+          tab: string;
+          screen: string;
+          params: {
+            uuid: string;
+          };
         };
         outside_link?: undefined;
-    } | {
-        outside_link: string; navigate_info?: undefined;
-    };
-    user_id: number;
+      }
+    | {
+        outside_link: string;
+        navigate_info?: undefined;
+      };
+  user_id: number;
 }

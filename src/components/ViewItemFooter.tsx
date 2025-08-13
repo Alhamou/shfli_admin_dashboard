@@ -9,8 +9,102 @@ import {
 import { Textarea } from "./ui/textarea";
 import { Loader2 } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
-import { ICreatMainItem } from "@/interfaces";
+import { Bid_status, ICreatMainItem } from "@/interfaces";
 import { CustomBadge } from "./ui/custom-badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { toast } from "sonner";
+import { updateItem } from "@/services/restApiServices";
+
+// Add this new component for bid status form
+const BidStatusForm = ({
+  onCancel,
+  onSubmit,
+  loading,
+  item,
+}: {
+  onCancel: () => void;
+  onSubmit: (status: Bid_status, note?: string) => void;
+  loading: boolean;
+  item: ICreatMainItem;
+}) => {
+  const { t } = useTranslation();
+  const [bidStatus, setBidStatus] = useState<Bid_status>(item.bid_status);
+  const [statusNote, setStatusNote] = useState("");
+
+  const handleSubmit = () => {
+    if (bidStatus === "active") {
+      onSubmit(bidStatus);
+    } else {
+      onSubmit(bidStatus, statusNote);
+    }
+  };
+
+  return (
+    <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+      <p className="font-medium">{t("dialog.labels.updateBidStatus")}</p>
+
+      <div className="space-y-2">
+        <Select
+          onValueChange={(val) => {
+            setBidStatus(val as Bid_status);
+          }}
+          value={bidStatus}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={t("dialog.labels.selectBidStatus")} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">
+              {t("dashboard.statusTypes.active")}
+            </SelectItem>
+            <SelectItem value="ended">
+              {t("dashboard.statusTypes.ended")}
+            </SelectItem>
+            <SelectItem value="ask_edit">
+              {t("dashboard.statusTypes.askEdit")}
+            </SelectItem>
+            <SelectItem value="blocked">
+              {t("dashboard.statusTypes.blocked")}
+            </SelectItem>
+            <SelectItem value="pending">
+              {t("dashboard.statusTypes.pending")}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        {bidStatus && bidStatus !== "active" && (
+          <Textarea
+            placeholder={t("dialog.labels.statusNote")}
+            value={statusNote}
+            onChange={(e) => setStatusNote(e.target.value)}
+            // required={bidStatus !== "active"}
+          />
+        )}
+      </div>
+
+      <div className="flex gap-2 justify-end">
+        <Button variant="outline" onClick={onCancel}>
+          {t("dialog.buttons.cancel")}
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          disabled={
+            !bidStatus || (bidStatus !== "active" && !statusNote) || loading
+          }
+        >
+          {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+          {t("dialog.buttons.update")}
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 export const ViewItemFooter = ({
   showReasonInput,
@@ -24,6 +118,8 @@ export const ViewItemFooter = ({
   handleStatusToggle,
   updatingStatus,
   handleBlockAction,
+  fetchItem,
+  onItemUpdate,
 }: {
   showReasonInput: boolean;
   selectedReason: string;
@@ -31,7 +127,7 @@ export const ViewItemFooter = ({
   setSelectedReason: Dispatch<SetStateAction<string>>;
   setCustomReason: Dispatch<SetStateAction<string>>;
   customReason: string;
-  item: ICreatMainItem | null;
+  item: ICreatMainItem;
   setShowReasonInput: Dispatch<SetStateAction<boolean>>;
   handleStatusToggle: (
     newStatus: "active" | "blocked" | "pending",
@@ -39,11 +135,14 @@ export const ViewItemFooter = ({
   ) => Promise<void>;
   updatingStatus: boolean;
   handleBlockAction: () => void;
+  fetchItem: (uuid: string) => Promise<ICreatMainItem | undefined>;
+  onItemUpdate: (updatedItem: ICreatMainItem) => void;
 }) => {
   const { t, i18n } = useTranslation();
   const [showPendingInput, setShowPendingInput] = useState(false);
+  const [showBidStatusForm, setShowBidStatusForm] = useState(false);
   const [pendingReason, setPendingReason] =
-    useState(`بعد ان تقوم بتعديل هذا المنشور وحفظه، سيتم مراجعته من قبل فريقنا، وبمجرد الانتهاء من المراجعة، ستتلقى اشعارأ بشأن منشورك:
+    useState(`بعد ان تقوم بتعديل هذا المنشور وحفظه، سيتم مراجعته من قبل فريقنا، وبمجعد الانتهاء من المراجعة، ستتلقى اشعارأ بشأن منشورك:
     
     `);
 
@@ -63,9 +162,40 @@ export const ViewItemFooter = ({
     await handleStatusToggle("active");
   };
 
+  const handleBidStatusUpdate = async (
+    status: "active" | "ended" | "pending" | "ask_edit" | "blocked",
+    note?: string
+  ) => {
+    try {
+      await updateItem(item.uuid, {
+        bid_status: status,
+        status_note: note,
+      });
+      toast.success(t("messages.bidStatusUpdateSuccess"));
+      const updatedItem = await fetchItem(item.uuid);
+      if (updatedItem) {
+        onItemUpdate(updatedItem);
+      }
+    } catch (error) {
+      toast.error(t("messages.bidStatusUpdateError"));
+    }
+  };
+
   const getStatusBadge = (status: "active" | "pending" | "blocked") => {
     return (
       <CustomBadge variant={status} size="lg" className="whitespace-nowrap">
+        {t(`dashboard.statusTypes.${status}`)}
+      </CustomBadge>
+    );
+  };
+
+  const getBidStatusBadge = (status: string) => {
+    return (
+      <CustomBadge
+        variant={status === "active" ? "active" : "pending"}
+        size="lg"
+        className="whitespace-nowrap"
+      >
         {t(`dashboard.statusTypes.${status}`)}
       </CustomBadge>
     );
@@ -171,15 +301,41 @@ export const ViewItemFooter = ({
         </div>
       )}
 
+      {showBidStatusForm && (
+        <BidStatusForm
+          onCancel={() => setShowBidStatusForm(false)}
+          onSubmit={handleBidStatusUpdate}
+          loading={updatingStatus}
+          item={item}
+        />
+      )}
+
       <div className="col-span-full border-t pt-4 mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium">{t("dialog.labels.status")}:</span>
           {getStatusBadge(item?.is_active ?? "active")}
+          {item?.item_for === "bid" && (
+            <>
+              <span className="font-medium">
+                {t("dialog.labels.bidStatus")}:
+              </span>
+              {getBidStatusBadge(item?.bid_status ?? "active")}
+            </>
+          )}
           <span className="text-sm">
             {item?.status_note ? item?.status_note : ""}
           </span>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
+          {item?.item_for === "bid" && (
+            <Button
+              onClick={() => setShowBidStatusForm(true)}
+              variant="outline"
+              className="w-full sm:w-auto"
+            >
+              {t("dialog.buttons.updateBidStatus")}
+            </Button>
+          )}
           {item?.is_active === "pending" ? (
             <Button
               onClick={handleApprove}

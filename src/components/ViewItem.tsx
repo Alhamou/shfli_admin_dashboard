@@ -231,19 +231,23 @@ export function ItemDetailView({
             />
           </div>
         ) : null}
-        <ViewItemFooter
-          blockReasons={blockReasons}
-          customReason={customReason}
-          handleBlockAction={handleBlockAction}
-          handleStatusToggle={handleStatusToggle}
-          item={item}
-          selectedReason={selectedReason}
-          setCustomReason={setCustomReason}
-          setSelectedReason={setSelectedReason}
-          setShowReasonInput={setShowReasonInput}
-          showReasonInput={showReasonInput}
-          updatingStatus={updatingStatus}
-        />
+        {item && (
+          <ViewItemFooter
+            blockReasons={blockReasons}
+            customReason={customReason}
+            handleBlockAction={handleBlockAction}
+            handleStatusToggle={handleStatusToggle}
+            item={item}
+            selectedReason={selectedReason}
+            setCustomReason={setCustomReason}
+            setSelectedReason={setSelectedReason}
+            setShowReasonInput={setShowReasonInput}
+            showReasonInput={showReasonInput}
+            updatingStatus={updatingStatus}
+            fetchItem={fetchItem}
+            onItemUpdate={onItemUpdate}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

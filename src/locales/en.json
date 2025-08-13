@@ -34,7 +34,9 @@
       "pending": "Pending",
       "blocked": "Blocked",
       "archived": "Archived",
-      "reserved": "Reserved"
+      "reserved": "Reserved",
+      "ended": "ended",
+      "askEdit": "ask edit"
     },
     "itemTypes": {
       "shop": "Shop Item",
@@ -70,9 +72,13 @@
       "message": "Send Notification",
       "share": "Share",
       "report": "Report",
-      "approve": "activate"
+      "approve": "activate",
+      "updateBidStatus": "Update Bid Status",
+      "update": "تحديث"
     },
     "labels": {
+      "updateBidStatus": "Update Bid Status",
+      "bidStatus": "Bid Status",
       "title": "Title",
       "description": "Description",
       "aiDescription": "AI Description",
@@ -165,7 +171,9 @@
     "updateError": "Failed to update item",
     "reasonsError": "Could not fetch block reasons",
     "statusUpdateSuccess": "Item has been updated",
-    "statusUpdateError": "Failed to update item status"
+    "statusUpdateError": "Failed to update item status",
+    "bidStatusUpdateSuccess": "Bid Status Updated Successfully",
+    "bidStatusUpdateError": "Bid Status Update Failed"
   },
   "editableField": {
     "employeeLooking": "looking for a job",
