@@ -39,6 +39,7 @@ interface ItemAd extends IBaseItem {
   reserved: boolean;
   discount: number;
   date_end_discount: string;
+  bid_end_time: Date | null;
 }
 
 // MOBILES SQL Interface.

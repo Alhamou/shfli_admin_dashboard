@@ -74,7 +74,8 @@
       "report": "الإبلاغ",
       "approve": "تنشيط",
       "updateBidStatus": "تحديث حالة المزايدة",
-      "update": "تحديث"
+      "update": "تحديث",
+      "convertToSale": "تحويل إلى بيع"
     },
     "labels": {
       "updateBidStatus": "تحديث حالة المزايدة",
@@ -172,7 +173,9 @@
     "statusUpdateSuccess": "تم تحديث حالة العنصر",
     "statusUpdateError": "فشل تحديث حالة العنصر",
     "bidStatusUpdateSuccess": "تم تحديث حالة المزايدة",
-    "bidStatusUpdateError": "فشل تحديث حالة المزايدة"
+    "bidStatusUpdateError": "فشل تحديث حالة المزايدة",
+    "convertToSaleSuccess": "تم تحويل العنصر إلى بيع بنجاح",
+    "convertToSaleError": "فشل في تحويل العنصر إلى بيع"
   },
   "editableField": {
     "employeeLooking": "يبحث عن عمل",

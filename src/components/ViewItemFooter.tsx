@@ -145,6 +145,7 @@ export const ViewItemFooter = ({
     useState(`بعد ان تقوم بتعديل هذا المنشور وحفظه، سيتم مراجعته من قبل فريقنا، وبمجعد الانتهاء من المراجعة، ستتلقى اشعارأ بشأن منشورك:
     
     `);
+  const [convertingToSale, setConvertingToSale] = useState(false);
 
   const handlePendingAction = () => {
     if (item?.is_active !== "pending") {
@@ -178,6 +179,27 @@ export const ViewItemFooter = ({
       }
     } catch (error) {
       toast.error(t("messages.bidStatusUpdateError"));
+    }
+  };
+
+  const handleConvertToSale = async () => {
+    setConvertingToSale(true);
+    try {
+      await updateItem(item.uuid, {
+        is_active: "active",
+        item_for: "sale",
+        status_note: null,
+        bid_end_time: null,
+      });
+      toast.success(t("messages.convertToSaleSuccess"));
+      const updatedItem = await fetchItem(item.uuid);
+      if (updatedItem) {
+        onItemUpdate(updatedItem);
+      }
+    } catch (error) {
+      toast.error(t("messages.convertToSaleError"));
+    } finally {
+      setConvertingToSale(false);
     }
   };
 
@@ -328,13 +350,26 @@ export const ViewItemFooter = ({
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           {item?.item_for === "bid" && (
-            <Button
-              onClick={() => setShowBidStatusForm(true)}
-              variant="outline"
-              className="w-full sm:w-auto"
-            >
-              {t("dialog.buttons.updateBidStatus")}
-            </Button>
+            <>
+              <Button
+                onClick={() => setShowBidStatusForm(true)}
+                variant="outline"
+                className="w-full sm:w-auto"
+              >
+                {t("dialog.buttons.updateBidStatus")}
+              </Button>
+              <Button
+                onClick={handleConvertToSale}
+                variant="outline"
+                disabled={convertingToSale || updatingStatus}
+                className="w-full sm:w-auto"
+              >
+                {convertingToSale ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                {t("dialog.buttons.convertToSale")}
+              </Button>
+            </>
           )}
           {item?.is_active === "pending" ? (
             <Button

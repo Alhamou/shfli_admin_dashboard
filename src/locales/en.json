@@ -74,7 +74,8 @@
       "report": "Report",
       "approve": "activate",
       "updateBidStatus": "Update Bid Status",
-      "update": "تحديث"
+      "update": "update",
+      "convertToSale": "Convert to Sale"
     },
     "labels": {
       "updateBidStatus": "Update Bid Status",
@@ -173,7 +174,9 @@
     "statusUpdateSuccess": "Item has been updated",
     "statusUpdateError": "Failed to update item status",
     "bidStatusUpdateSuccess": "Bid Status Updated Successfully",
-    "bidStatusUpdateError": "Bid Status Update Failed"
+    "bidStatusUpdateError": "Bid Status Update Failed",
+    "convertToSaleSuccess": "Item successfully converted to sale",
+    "convertToSaleError": "Failed to convert item to sale"
   },
   "editableField": {
     "employeeLooking": "looking for a job",
