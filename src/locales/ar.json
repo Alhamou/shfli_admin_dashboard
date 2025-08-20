@@ -61,6 +61,8 @@
   "dialog": {
     "itemDetails": "تفاصيل العنصر",
     "buttons": {
+      "banUserFromBid": "حظر المستخدم من المزاد",
+      "submit": "إرسال",
       "cancel": "إلغاء",
       "save": "حفظ",
       "edit": "تعديل",
@@ -78,6 +80,8 @@
       "convertToSale": "تحويل إلى بيع"
     },
     "labels": {
+      "banUserFromBid": "حظر المستخدم من المزاد",
+      "enterUsername": "أدخل رمز المستخدم للحظر",
       "updateBidStatus": "تحديث حالة المزايدة",
       "bidStatus": "حالة المزايدة",
       "title": "العنوان",
@@ -153,6 +157,8 @@
       "businessName": "اسم العمل"
     },
     "messages": {
+      "banUserSuccess": "تم حظر المستخدم بنجاح",
+      "banUserError": "فشل في حظر المستخدم",
       "noImages": "لا توجد صور",
       "yes": "نعم",
       "no": "لا",

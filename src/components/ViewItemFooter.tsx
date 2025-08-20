@@ -106,6 +106,50 @@ const BidStatusForm = ({
   );
 };
 
+// Add this new component for ban user form
+const BanUserForm = ({
+  onCancel,
+  onSubmit,
+  loading,
+}: {
+  onCancel: () => void;
+  onSubmit: (username: string) => void;
+  loading: boolean;
+}) => {
+  const { t } = useTranslation();
+  const [username, setUsername] = useState("");
+
+  const handleSubmit = () => {
+    onSubmit(username);
+  };
+
+  return (
+    <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+      <p className="font-medium">{t("dialog.labels.banUserFromBid")}</p>
+
+      <div className="space-y-2">
+        <input
+          type="text"
+          placeholder={t("dialog.labels.enterUsername")}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        />
+      </div>
+
+      <div className="flex gap-2 justify-end">
+        <Button variant="outline" onClick={onCancel}>
+          {t("dialog.buttons.cancel")}
+        </Button>
+        <Button onClick={handleSubmit} disabled={!username || loading}>
+          {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+          {t("dialog.buttons.submit")}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 export const ViewItemFooter = ({
   showReasonInput,
   selectedReason,
@@ -141,6 +185,8 @@ export const ViewItemFooter = ({
   const { t, i18n } = useTranslation();
   const [showPendingInput, setShowPendingInput] = useState(false);
   const [showBidStatusForm, setShowBidStatusForm] = useState(false);
+  const [showBanUserForm, setShowBanUserForm] = useState(false);
+  const [banningUser, setBanningUser] = useState(false);
   const [pendingReason, setPendingReason] =
     useState(`بعد ان تقوم بتعديل هذا المنشور وحفظه، سيتم مراجعته من قبل فريقنا، وبمجعد الانتهاء من المراجعة، ستتلقى اشعارأ بشأن منشورك:
     
@@ -200,6 +246,25 @@ export const ViewItemFooter = ({
       toast.error(t("messages.convertToSaleError"));
     } finally {
       setConvertingToSale(false);
+    }
+  };
+
+  const handleBanUser = async (username: string) => {
+    setBanningUser(true);
+    try {
+      await updateItem(item.uuid, {
+        user_selector: username,
+      });
+      toast.success(t("messages.banUserSuccess"));
+      const updatedItem = await fetchItem(item.uuid);
+      if (updatedItem) {
+        onItemUpdate(updatedItem);
+      }
+      setShowBanUserForm(false);
+    } catch (error) {
+      toast.error(t("messages.banUserError"));
+    } finally {
+      setBanningUser(false);
     }
   };
 
@@ -332,6 +397,14 @@ export const ViewItemFooter = ({
         />
       )}
 
+      {showBanUserForm && (
+        <BanUserForm
+          onCancel={() => setShowBanUserForm(false)}
+          onSubmit={handleBanUser}
+          loading={banningUser}
+        />
+      )}
+
       <div className="col-span-full border-t pt-4 mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium">{t("dialog.labels.status")}:</span>
@@ -357,6 +430,13 @@ export const ViewItemFooter = ({
                 className="w-full sm:w-auto"
               >
                 {t("dialog.buttons.updateBidStatus")}
+              </Button>
+              <Button
+                onClick={() => setShowBanUserForm(true)}
+                variant="outline"
+                className="w-full sm:w-auto"
+              >
+                {t("dialog.buttons.banUserFromBid")}
               </Button>
               <Button
                 onClick={handleConvertToSale}

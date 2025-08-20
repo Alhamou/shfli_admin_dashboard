@@ -75,9 +75,13 @@
       "approve": "activate",
       "updateBidStatus": "Update Bid Status",
       "update": "update",
-      "convertToSale": "Convert to Sale"
+      "convertToSale": "Convert to Sale",
+      "banUserFromBid": "Ban user from bid",
+      "submit": "Submit"
     },
     "labels": {
+      "banUserFromBid": "Ban User from Bid",
+      "enterUsername": "Enter code to ban",
       "updateBidStatus": "Update Bid Status",
       "bidStatus": "Bid Status",
       "title": "Title",
@@ -153,6 +157,8 @@
       "businessName": "business name"
     },
     "messages": {
+      "banUserSuccess": "User banned successfully",
+      "banUserError": "Failed to ban user",
       "noImages": "No Images",
       "yes": "Yes",
       "no": "No",
