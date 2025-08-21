@@ -58,6 +58,10 @@
       "notAvailable": "N/A"
     }
   },
+  "convertToSaleConfirm": {
+    "title": "Convert to Sale",
+    "description": "Are you sure you want to convert this item to sale? This action cannot be undone."
+  },
   "dialog": {
     "itemDetails": "Item Details",
     "buttons": {

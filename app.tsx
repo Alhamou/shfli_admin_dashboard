@@ -75,6 +75,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
+    storageController.clear();
     setIsAuthenticated(false);
     setUser(null);
   };

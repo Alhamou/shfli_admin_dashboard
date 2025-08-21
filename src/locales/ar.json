@@ -58,6 +58,10 @@
       "notAvailable": "غير متوفر"
     }
   },
+  "convertToSaleConfirm": {
+    "title": "تحويل إلى للبيع",
+    "description": "هل أنت متأكد أنك تريد تحويل هذا العنصر إلى للبيع؟ لا يمكن التراجع عن هذا الإجراء."
+  },
   "dialog": {
     "itemDetails": "تفاصيل العنصر",
     "buttons": {
@@ -80,7 +84,7 @@
       "convertToSale": "تحويل إلى بيع"
     },
     "labels": {
-      "banUserFromBid": "حظر المستخدم من المزاد",
+      "banUserFromBid": "إزالة المستخدم من المزاد",
       "enterUsername": "أدخل رمز المستخدم للحظر",
       "updateBidStatus": "تحديث حالة المزايدة",
       "bidStatus": "حالة المزايدة",
