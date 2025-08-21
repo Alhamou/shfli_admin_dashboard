@@ -138,18 +138,19 @@ export const ViewItemActions = ({
         >
           {t("dialog.buttons.report")}
         </Button>
-
-        <Button
-          onClick={openConfirmDialog}
-          variant="outline"
-          disabled={convertingToSale || updatingStatus}
-          className="w-full sm:w-auto"
-        >
-          {convertingToSale ? (
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-          ) : null}
-          {t("dialog.buttons.convertToSale")}
-        </Button>
+        {item?.item_for === "bid" && (
+          <Button
+            onClick={openConfirmDialog}
+            variant="outline"
+            disabled={convertingToSale || updatingStatus}
+            className="w-full sm:w-auto"
+          >
+            {convertingToSale ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : null}
+            {t("dialog.buttons.convertToSale")}
+          </Button>
+        )}
       </div>
 
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
