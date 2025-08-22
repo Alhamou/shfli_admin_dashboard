@@ -50,7 +50,7 @@ export const ViewItemActions = ({
         item_for: "sale",
         status_note: null,
         bid_end_time: null,
-        bids: [],
+        bid_status: null
       });
       toast.success(t("messages.convertToSaleSuccess"));
       const updatedItem = await fetchItem(item.uuid);
