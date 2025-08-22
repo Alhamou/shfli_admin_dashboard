@@ -418,41 +418,47 @@ export const ViewItemFooter = ({
               </Button>
             </>
           )}
-          {item?.is_active === "pending" ? (
-            <Button
-              onClick={handleApprove}
-              variant="default"
-              disabled={updatingStatus}
-              className="w-full sm:w-auto bg-green-500 hover:bg-green-600"
-            >
-              {updatingStatus ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : null}
-              {t("dialog.buttons.approve")}
-            </Button>
-          ) : (
-            <Button
-              onClick={handlePendingAction}
-              variant="outline"
-              disabled={updatingStatus}
-              className={`w-full sm:w-auto bg-orange-500 hover:bg-orange-500`}
-            >
-              {t("dialog.buttons.markPending")}
-            </Button>
+          {item.item_for !== "bid" && (
+            <>
+              {item?.is_active === "pending" ? (
+                <Button
+                  onClick={handleApprove}
+                  variant="default"
+                  disabled={updatingStatus}
+                  className="w-full sm:w-auto bg-green-500 hover:bg-green-600"
+                >
+                  {updatingStatus ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
+                  {t("dialog.buttons.approve")}
+                </Button>
+              ) : (
+                <Button
+                  onClick={handlePendingAction}
+                  variant="outline"
+                  disabled={updatingStatus}
+                  className={`w-full sm:w-auto bg-orange-500 hover:bg-orange-500`}
+                >
+                  {t("dialog.buttons.markPending")}
+                </Button>
+              )}
+              <Button
+                onClick={handleBlockAction}
+                variant={
+                  item?.is_active === "active" ? "destructive" : "default"
+                }
+                disabled={updatingStatus}
+                className="w-full sm:w-auto"
+              >
+                {updatingStatus ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                {item?.is_active === "active"
+                  ? t("dialog.buttons.block")
+                  : t("dialog.buttons.unblock")}
+              </Button>
+            </>
           )}
-          <Button
-            onClick={handleBlockAction}
-            variant={item?.is_active === "active" ? "destructive" : "default"}
-            disabled={updatingStatus}
-            className="w-full sm:w-auto"
-          >
-            {updatingStatus ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : null}
-            {item?.is_active === "active"
-              ? t("dialog.buttons.block")
-              : t("dialog.buttons.unblock")}
-          </Button>
         </div>
       </div>
     </>

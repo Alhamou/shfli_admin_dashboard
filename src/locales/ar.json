@@ -65,7 +65,7 @@
   "dialog": {
     "itemDetails": "تفاصيل العنصر",
     "buttons": {
-      "banUserFromBid": "حظر المستخدم من المزاد",
+      "banUserFromBid": "إزالة المستخدم من المزاد",
       "submit": "إرسال",
       "cancel": "إلغاء",
       "save": "حفظ",
@@ -85,7 +85,7 @@
     },
     "labels": {
       "banUserFromBid": "إزالة المستخدم من المزاد",
-      "enterUsername": "أدخل رمز المستخدم للحظر",
+      "enterUsername": "أدخل رمز المستخدم للإزالة",
       "updateBidStatus": "تحديث حالة المزايدة",
       "bidStatus": "حالة المزايدة",
       "title": "العنوان",
