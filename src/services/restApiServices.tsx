@@ -47,7 +47,7 @@ export function getChatLogs(uuid: string) {
 }
 
 export function getUserInfo(uuid: string) {
-  return get<IUser>(`/team/user?id=${uuid}`);
+  return get<IUser>(`/team/user?id=${encodeURIComponent(uuid)}`);
 }
 
 export function putUserInfo(body: Partial<IUser>) {
