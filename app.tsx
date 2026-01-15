@@ -1,35 +1,34 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import {
-  useState,
-  createContext,
-  useContext,
-  type ReactNode,
-  useEffect,
-} from "react";
-import DashboardLayout from "./src/components/DashboardLayout";
-import DashboardHome from "./src/pages/DashboardHome";
-import { UserInfo } from "./src/pages/UsersPage";
-import { ChatLogs } from "./src/pages/ChatLogs";
-import SettingsPage from "./src/pages/SettingsPage";
-import { LoginPage } from "./src/pages/LoginPage";
-import Provider from "./src/context/MainProvider";
-import { signin } from "@/services/authServices";
+import storageController from "@/controllers/storageController";
 import { ILogin, IObjectToken } from "@/interfaces";
 import { saveTokenInLocalStorage } from "@/lib/helpFunctions";
-import { jwtDecode } from "jwt-decode";
-import storageController from "@/controllers/storageController";
-import { Toaster } from "sonner";
-import { useTranslation } from "react-i18next";
-import Commercial from "@/pages/Commercial";
-import { StatisticsPage } from "@/pages/ٍStatistics";
 import { Admin } from "@/pages/Admin";
-import PendingAds from "@/pages/PendingAds";
 import BidsScreen from "@/pages/Bids";
+import Commercial from "@/pages/Commercial";
+import PendingAds from "@/pages/PendingAds";
+import { StatisticsPage } from "@/pages/ٍStatistics";
+import { signin } from "@/services/authServices";
+import { jwtDecode } from "jwt-decode";
+import {
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+    type ReactNode,
+} from "react";
+import {
+    Navigate,
+    Route,
+    BrowserRouter as Router,
+    Routes,
+} from "react-router-dom";
+import { Toaster } from "sonner";
+import DashboardLayout from "./src/components/DashboardLayout";
+import Provider from "./src/context/MainProvider";
+import { ChatLogs } from "./src/pages/ChatLogs";
+import DashboardHome from "./src/pages/DashboardHome";
+import { LoginPage } from "./src/pages/LoginPage";
+import SettingsPage from "./src/pages/SettingsPage";
+import { UserInfo } from "./src/pages/UsersPage";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -102,14 +101,6 @@ function ProtectedRouteAdmin({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
-  const { i18n } = useTranslation();
-
-  useEffect(() => {
-    const language = storageController.get("language");
-    if (language) {
-      i18n.changeLanguage(language as string);
-    }
-  }, []);
   return (
     <AuthProvider>
       <Provider>

@@ -1,36 +1,34 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
-import moment from "moment";
-import {
-  formatPrice,
-  getPriceDiscount,
-  isUUIDv4,
-  toQueryString,
-  updateItemInArray,
-} from "@/lib/helpFunctions";
-import "moment";
-import { getAllItems, updateItem } from "@/services/restApiServices";
-import { ICreatMainItem } from "@/interfaces";
 import { CustomBadge } from "@/components/ui/custom-badge";
-import { Eye } from "lucide-react";
-import { ItemDetailView } from "@/components/ViewItem";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ItemDetailView } from "@/components/ViewItem";
+import { ICreatMainItem } from "@/interfaces";
+import {
+    formatPrice,
+    getPriceDiscount,
+    isUUIDv4,
+    toQueryString,
+    updateItemInArray,
+} from "@/lib/helpFunctions";
+import { getAllItems, updateItem } from "@/services/restApiServices";
+import { Eye } from "lucide-react";
+import "moment";
+import moment from "moment";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 const initialQuery = { page: 1, limit: 25, total: 0 };
 
 export default function BidsScreen() {
-  const { t, i18n } = useTranslation();
   const [items, setItems] = useState<ICreatMainItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState(initialQuery);
@@ -139,9 +137,9 @@ export default function BidsScreen() {
         searchTerm.trim(),
         uuidSearchTerm.trim()
       );
-      toast.success(t("messages.updateSuccess"));
+      toast.success("تم تحديث العنصر بنجاح");
     } catch (error) {
-      toast.error(t("messages.updateError"));
+      toast.error("فشل تحديث العنصر");
     }
   };
 
@@ -190,7 +188,7 @@ export default function BidsScreen() {
   const getStatusBadge = (status: "active" | "pending" | "blocked") => {
     return (
       <CustomBadge variant={status} size="lg" className="whitespace-nowrap">
-        {t(`dashboard.statusTypes.${status}`)}
+        {status === "active" ? "نشط" : status === "pending" ? "معلق" : "محظور"}
       </CustomBadge>
     );
   };
@@ -201,7 +199,7 @@ export default function BidsScreen() {
       <div className="sticky top-0 pt-4 pb-2">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="text-2xl font-bold">{t("dashboard.title")}</div>
+            <div className="text-2xl font-bold">إدارة العناصر</div>
           </div>
         </div>
 
@@ -210,19 +208,19 @@ export default function BidsScreen() {
           <Tabs value={activeTab} onValueChange={handleTabChange}>
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="pending">
-                {t("dashboard.bidStatus.pending")}
+                قيد الانتظار
               </TabsTrigger>
               <TabsTrigger value="ended">
-                {t("dashboard.bidStatus.ended")}
+                منتهي
               </TabsTrigger>
               <TabsTrigger value="active">
-                {t("dashboard.bidStatus.active")}
+                نشط
               </TabsTrigger>
               <TabsTrigger value="blocked">
-                {t("dashboard.bidStatus.blocked")}
+                محظور
               </TabsTrigger>
               <TabsTrigger value="ask_edit">
-                {t("dashboard.bidStatus.ask_edit")}
+                طلب تعديل
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -234,25 +232,25 @@ export default function BidsScreen() {
             <TableHeader className="sticky top-[210px] bg-background">
               <TableRow>
                 <TableHead className="text-start">
-                  {t("dashboard.tableHeaders.position")}
+                  مميز
                 </TableHead>
                 <TableHead className="text-start">
-                  {t("dashboard.tableHeaders.item")}
+                  العنصر
                 </TableHead>
                 <TableHead className="text-start">
-                  {t("dashboard.tableHeaders.category")}
+                  الفئة
                 </TableHead>
                 <TableHead className="text-start">
-                  {t("dashboard.tableHeaders.price")}
+                  السعر
                 </TableHead>
                 <TableHead className="text-start">
-                  {t("dashboard.tableHeaders.location")}
+                  الموقع
                 </TableHead>
                 <TableHead className="text-start">
-                  {t("dashboard.tableHeaders.stats")}
+                  الإحصائيات
                 </TableHead>
                 <TableHead className="text-start">
-                  {t("dashboard.tableHeaders.status")}
+                  الحالة
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -271,7 +269,7 @@ export default function BidsScreen() {
             <TableBody>
               {items.map((item, index) => {
                 const activated_at = moment(item.activated_at)
-                  .locale(i18n.language)
+                  .locale("ar")
                   .fromNow();
                 return (
                   <TableRow key={`${index}`}>
@@ -320,8 +318,8 @@ export default function BidsScreen() {
                         {item.item_as === "job" ? (
                           <p className="font-normal text-blue-600 dark:text-blue-400 truncate">
                             {item.need
-                              ? t("dialog.labels.employeeLooking")
-                              : t("dialog.labels.companyLooking")}
+                              ? "يبحث عن عمل"
+                              : "تبحث عن موظف"}
                           </p>
                         ) : (
                           <></>
@@ -342,11 +340,11 @@ export default function BidsScreen() {
                       <div className="space-y-1">
                         <p>
                           {item.category_name?.ar ||
-                            t("dashboard.messages.notAvailable")}
+                            "غير متوفر"}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           {item.subcategory_name?.ar ||
-                            t("dashboard.messages.notAvailable")}
+                            "غير متوفر"}
                         </p>
                       </div>
                     </TableCell>
@@ -363,13 +361,13 @@ export default function BidsScreen() {
                           </p>
                           {item.discount > 0 && (
                             <p className="text-xs text-muted-foreground">
-                              {t("dashboard.messages.discount")}:{" "}
+                              خصم:{" "}
                               {item.discount}%
                             </p>
                           )}
                         </div>
                       ) : (
-                        t("dashboard.messages.notAvailable")
+                        "غير متوفر"
                       )}
                     </TableCell>
                     <TableCell>
@@ -392,7 +390,7 @@ export default function BidsScreen() {
                             .replace(/\s*ago$/, "")}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {t("dashboard.messages.user")}: <br /> {item.user_id}
+                          المستخدم: <br /> {item.user_id}
                         </p>
                         <p
                           className="text-xs text-muted-foreground truncate text-end"
@@ -408,7 +406,7 @@ export default function BidsScreen() {
                         {item.client_details?.account_type === "business" &&
                           item.client_details?.business_name && (
                             <p className="text-sm text-muted-foreground truncate">
-                              {t("dialog.labels.businessName")}
+                              اسم العمل
                               {": "} <br />
                               {item.client_details?.business_name}
                             </p>
@@ -425,8 +423,8 @@ export default function BidsScreen() {
                             className="whitespace-nowrap"
                           >
                             {item.account_type === "business"
-                              ? t("userInfo.business")
-                              : t("userInfo.individual")}
+                              ? "عمل"
+                              : "فرد"}
                           </CustomBadge>
                         )}
                         {item.client_details?.account_verified && (
@@ -435,7 +433,7 @@ export default function BidsScreen() {
                             size="lg"
                             className="whitespace-nowrap"
                           >
-                            {t("userInfo.verified")}
+                            موثق
                           </CustomBadge>
                         )}
                         {item.archived && (
@@ -444,7 +442,7 @@ export default function BidsScreen() {
                             size="lg"
                             className="whitespace-nowrap"
                           >
-                            {t("dashboard.statusTypes.archived")}
+                            مؤرشف
                           </CustomBadge>
                         )}
                         {item.reserved && (
@@ -453,7 +451,7 @@ export default function BidsScreen() {
                             size="lg"
                             className="whitespace-nowrap"
                           >
-                            {t("dashboard.statusTypes.reserved")}
+                            محجوز
                           </CustomBadge>
                         )}
                       </div>
@@ -482,12 +480,12 @@ export default function BidsScreen() {
           </Table>
           {!hasMore && items.length > 0 && (
             <div className="p-4 text-center text-muted-foreground">
-              {t("dashboard.messages.noMoreItems")}
+              لا توجد عناصر أخرى
             </div>
           )}
           {!loading && items.length === 0 && (
             <div className="p-4 text-center text-muted-foreground">
-              {t("dashboard.messages.noItemsFound")}
+              لم يتم العثور على عناصر
             </div>
           )}
         </div>

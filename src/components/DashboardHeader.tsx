@@ -1,11 +1,10 @@
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
-import { Bell, BellOff } from "lucide-react"
-import { ThemeToggle } from "./ThemeToggle"
-import { LanguageSwitcher } from "./LanguageSwitcher"
+import { Separator } from "@/components/ui/separator"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import storageController from "@/controllers/storageController"
+import { Bell, BellOff } from "lucide-react"
 import { useState } from "react"
+import { ThemeToggle } from "./ThemeToggle"
 
 export function DashboardHeader() {
   const [muted,setMuted] = useState(storageController.get('audio') === 'muted' ? true : false)
@@ -16,7 +15,6 @@ export function DashboardHeader() {
 
       <div className="flex-1 flex items-center gap-4">
       <ThemeToggle />
-      <LanguageSwitcher />
       </div>
 
       <div className="flex items-center gap-2">

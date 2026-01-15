@@ -1,20 +1,18 @@
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
 } from "@/components/ui/card";
-import { getChatLogs } from "@/services/restApiServices";
+import { Input } from "@/components/ui/input";
 import { IMessageThread } from "@/interfaces";
-import { useTranslation } from "react-i18next";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getChatLogs } from "@/services/restApiServices";
 import { AlertCircle, XIcon } from "lucide-react";
+import { useState } from "react";
 
 export const ChatLogs = () => {
-  const { t, i18n } = useTranslation();
   const [uuid, setUuid] = useState("");
   const [chatData, setChatData] = useState<IMessageThread | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +20,7 @@ export const ChatLogs = () => {
 
   const handleFetchMessages = async () => {
     if (!uuid.trim()) {
-      setError(t("errors.emptyUUID"));
+      setError("الرجاء إدخال UUID صالح");
       return;
     }
 
@@ -33,7 +31,7 @@ export const ChatLogs = () => {
       const data = await getChatLogs(uuid);
       setChatData(data);
     } catch (error) {
-      setError(t("errors.invalidUUID"));
+      setError("UUID غير صالح أو المحادثة غير موجودة");
       console.error("Error fetching chat data:", error);
     } finally {
       setIsLoading(false);
@@ -49,22 +47,22 @@ export const ChatLogs = () => {
   };
 
   const getParticipantName = (senderId: number) => {
-    if (!chatData) return t("chat.unknown");
-    return senderId === chatData.buyer_id ? t("chat.buyer") : t("chat.seller");
+    if (!chatData) return "غير معروف";
+    return senderId === chatData.buyer_id ? "المشتري" : "البائع";
   };
 
   return (
     <div
       className="container mx-auto p-4 max-w-4xl"
-      style={{ direction: i18n.language === "ar" ? "rtl" : "ltr" }}
+      style={{ direction: "rtl" }}
     >
-      <h1 className="text-2xl font-bold mb-6">{t("chat.title")}</h1>
+      <h1 className="text-2xl font-bold mb-6">رسائل الدردشة</h1>
 
       <div className="flex gap-2 mb-6">
         <div className="flex-1 relative">
           <Input
             type="text"
-            placeholder={t("chat.uuidPlaceholder")}
+            placeholder="أدخل UUID المحادثة"
             value={uuid}
             onChange={(e) => {
               setUuid(e.target.value);
@@ -87,7 +85,7 @@ export const ChatLogs = () => {
           </Button>
         </div>
         <Button onClick={handleFetchMessages} disabled={isLoading}>
-          {isLoading ? t("chat.loading") : t("chat.getMessages")}
+          {isLoading ? "جار التحميل..." : "الحصول على الرسائل"}
         </Button>
       </div>
 
@@ -101,14 +99,14 @@ export const ChatLogs = () => {
       {chatData ? (
         <Card>
           <CardHeader>
-            <h2 className="text-xl font-semibold">{t("chat.conversation")}</h2>
+            <h2 className="text-xl font-semibold">محادثة الدردشة</h2>
             <p className="text-sm text-muted-foreground">
-              {t("chat.betweenBuyer")} (ID: {chatData.buyer_id}){" "}
-              {t("chat.andSeller")} (ID: {chatData.seller_id})
+              بين المشتري (ID: {chatData.buyer_id}){" "}
+              والبائع (ID: {chatData.seller_id})
             </p>
             <p className="text-sm text-muted-foreground">
-              {t("chat.itemId")}: {chatData.main_items_id} |{" "}
-              {t("chat.lastMessage")}:{" "}
+              معرف العنصر: {chatData.main_items_id} |{" "}
+              آخر رسالة:{" "}
               {formatTimestamp(chatData.last_chat.sent_at)}
             </p>
           </CardHeader>
@@ -155,15 +153,15 @@ export const ChatLogs = () => {
             ))}
           </CardContent>
           <CardFooter className="text-sm text-muted-foreground">
-            {chatData.content?.length} {t("chat.messageCount")} |{" "}
-            {t("chat.uuid")}: {chatData.uuid}
+            {chatData.content?.length} رسائل |{" "}
+            UUID المحادثة: {chatData.uuid}
           </CardFooter>
         </Card>
       ) : (
         !isLoading &&
         !error && (
           <div className="text-center py-8 text-muted-foreground">
-            {t("chat.noChatSelected")}
+            لم يتم تحديد الدردشة
           </div>
         )
       )}

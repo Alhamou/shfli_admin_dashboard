@@ -1,93 +1,92 @@
 "use client";
 
-import { Link, useLocation } from "react-router-dom";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { useAuth } from "../../app";
-import {
-  Home,
-  Users,
-  Settings,
-  Shield,
-  LogOut,
-  MessageCircle,
-  Tv,
-  ChartColumnIncreasing,
-  User,
-  AlertCircle,
-  Gavel,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "react-i18next";
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import {
+    AlertCircle,
+    ChartColumnIncreasing,
+    Gavel,
+    Home,
+    LogOut,
+    MessageCircle,
+    Settings,
+    Shield,
+    Tv,
+    User,
+    Users,
+} from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../../app";
 
 export function AppSidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
-  const { t, i18n } = useTranslation();
+
 
   const menuItems = [
     {
-      title: "dashboard",
+      title: "أحدث الإعلانات",
       url: "/",
       icon: Home,
     },
     {
-      title: "commercialAds",
+      title: "الإعلانات المروجة",
       url: "/commercialAds",
       icon: Tv,
     },
     {
-      title: "users",
+      title: "المستخدمين",
       url: "/users",
       icon: Users,
     },
     {
-      title: "bids",
+      title: "مزايدات",
       url: "/bids",
       icon: Gavel,
     },
     {
-      title: "pending",
+      title: "معلق",
       url: "/pending",
       icon: AlertCircle,
     },
     ...(user?.roles.includes("admin")
       ? [
           {
-            title: "admin",
+            title: "ادمن",
             url: "/admin",
             icon: User,
           },
         ]
       : []),
     {
-      title: "chats",
+      title: "المحادثات",
       url: "/chats",
       icon: MessageCircle,
     },
     {
-      title: "statistics",
+      title: "إحصائيات",
       url: "/statistics",
       icon: ChartColumnIncreasing,
     },
     {
-      title: "settings",
+      title: "الإعدادات",
       url: "/settings",
       icon: Settings,
     },
   ];
 
   return (
-    <Sidebar side={i18n.language === "ar" ? "right" : "left"}>
+    <Sidebar side="right">
       <SidebarHeader className="border-b px-6 py-4">
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
           <Shield className="h-6 w-6 text-primary" />
@@ -107,7 +106,7 @@ export function AppSidebar() {
                   >
                     <Link to={item.url} className="flex items-center gap-3">
                       <item.icon className="h-4 w-4" />
-                      <span>{t(`sidebar.${item.title}`)}</span>
+                      <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

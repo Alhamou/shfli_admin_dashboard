@@ -1,21 +1,19 @@
-import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { ICreatMainItem } from "@/interfaces";
-import { getItem, updateItem, getReasons } from "@/services/restApiServices";
+import { getItem, getReasons, updateItem } from "@/services/restApiServices";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
-import i18n from "@/i18n";
-import { ViewItemMiddleColumn } from "./ViewItemMiddleColumn";
 import { ViewItemActions } from "./ViewItemActions";
-import { ViewItemImages } from "./ViewItemImages";
 import { ViewItemFooter } from "./ViewItemFooter";
+import { ViewItemImages } from "./ViewItemImages";
+import { ViewItemMiddleColumn } from "./ViewItemMiddleColumn";
 
 interface ItemDetailViewProps {
   uuid: string;
@@ -32,7 +30,6 @@ export function ItemDetailView({
   onStatusChange,
   onItemUpdate,
 }: ItemDetailViewProps) {
-  const { t } = useTranslation();
   const [item, setItem] = useState<ICreatMainItem | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,8 +51,8 @@ export function ItemDetailView({
       setOriginalItem(data[0]);
       return data[0];
     } catch (err) {
-      setError(t("messages.loadingError"));
-      toast.error(t("messages.fetchError"));
+      setError("خطأ في تحميل البيانات");
+      toast.error("فشل في جلب المنشور");
     } finally {
       setLoading(false);
     }
@@ -79,7 +76,7 @@ export function ItemDetailView({
 
     try {
       await updateItem(item.uuid, editedFields);
-      toast.success(t("messages.updateSuccess"));
+      toast.success("تم تحديث المنشور بنجاح");
       setIsEditing(false);
       setOriginalItem(item);
       setEditedFields({});
@@ -88,7 +85,7 @@ export function ItemDetailView({
         onItemUpdate(updatedItem);
       }
     } catch (error) {
-      toast.error(t("messages.updateError"));
+      toast.error("فشل في تحديث المنشور");
     }
   };
 
@@ -100,7 +97,7 @@ export function ItemDetailView({
       const response = await getReasons();
       setBlockReasons(item_as === "job" ? response.jobs : response.items);
     } catch (err) {
-      toast.error(t("messages.reasonsError"));
+      toast.error("فشل في تحميل أسباب الحظر");
     } finally {
       setLoading(false);
     }
@@ -118,7 +115,7 @@ export function ItemDetailView({
 
       if (newStatus === "blocked") {
         description = `${
-          selectedReason === t("dialog.messages.blockReason.other")
+          selectedReason === "آخر"
             ? customReason
             : selectedReason
         }`;
@@ -132,13 +129,9 @@ export function ItemDetailView({
       });
 
       toast.success(
-        t("messages.statusUpdateSuccess", {
-          status: t(
-            `messages.status${
-              newStatus.charAt(0).toUpperCase() + newStatus.slice(1)
-            }`
-          ),
-        })
+        `تم تحديث الحالة بنجاح إلى ${
+          newStatus === "active" ? "نشط" : newStatus === "blocked" ? "محظور" : "معلق"
+        }`
       );
 
       const updatedItem = await fetchItem(item.uuid);
@@ -146,7 +139,7 @@ export function ItemDetailView({
         onItemUpdate(updatedItem);
       }
     } catch (err) {
-      toast.error(t("messages.statusUpdateError"));
+      toast.error("فشل في تحديث الحالة");
     } finally {
       setUpdatingStatus(false);
       setShowReasonInput(false);
@@ -185,7 +178,7 @@ export function ItemDetailView({
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Loader2 className="h-8 w-8 animate-spin" />
-            <span className="sr-only">{t("dialog.messages.loading")}</span>
+            <span className="sr-only">جاري التحميل...</span>
           </div>
         ) : error ? (
           <div className="text-center py-8 text-destructive">
@@ -197,14 +190,12 @@ export function ItemDetailView({
                 fetchItem(uuid);
               }}
             >
-              {t("dialog.buttons.retry")}
+              إعادة المحاولة
             </Button>
           </div>
         ) : item ? (
           <div
-            className={`flex flex-col ${
-              i18n.language === "ar" ? "lg:flex-row-reverse" : "lg:flex-row"
-            }`}
+            className="flex flex-col lg:flex-row-reverse"
           >
             {/* Left Column - Images */}
             <ViewItemImages item={item} />
@@ -228,6 +219,8 @@ export function ItemDetailView({
               isEditing={isEditing}
               updatingStatus={updatingStatus}
               item={item}
+              fetchItem={fetchItem}
+              onItemUpdate={onItemUpdate}
             />
           </div>
         ) : null}

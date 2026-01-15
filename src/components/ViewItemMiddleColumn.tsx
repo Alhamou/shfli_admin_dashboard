@@ -1,8 +1,7 @@
 import { ICreatMainItem } from "@/interfaces";
-import { useTranslation } from "react-i18next";
-import { EditableField } from "./EditableField";
 import moment from "moment";
 import { Dispatch, SetStateAction } from "react";
+import { EditableField } from "./EditableField";
 import { Badge } from "./ui/badge";
 
 export const ViewItemMiddleColumn = ({
@@ -20,19 +19,18 @@ export const ViewItemMiddleColumn = ({
   setEditedFields: Dispatch<SetStateAction<Partial<ICreatMainItem>>>;
   setItem: Dispatch<SetStateAction<ICreatMainItem | null>>;
 }) => {
-  const { t, i18n } = useTranslation();
   const activated_at = moment(item?.activated_at)
-    .locale(i18n.language)
+    .locale("ar")
     .fromNow();
 
   return (
     <div
       className="flex-grow px-4"
-      style={{ direction: i18n.language === "ar" ? "rtl" : "ltr" }}
+      style={{ direction: "rtl" }}
     >
       <div className="my-4">
         <EditableField
-          label={t("dialog.labels.title")}
+          label="العنوان"
           value={item.title}
           fieldName="title"
           editedFields={editedFields}
@@ -58,8 +56,8 @@ export const ViewItemMiddleColumn = ({
           </Badge>
           <Badge variant="outline">
             {item.account_type === "business"
-              ? t("dialog.labels.business")
-              : t("dialog.labels.individual")}
+              ? "تجاري"
+              : "فردي"}
           </Badge>
           {item.section && (
             <Badge variant="outline">Section {item.section}</Badge>
@@ -69,7 +67,7 @@ export const ViewItemMiddleColumn = ({
 
       <div className="my-4">
         <EditableField
-          label={t("dialog.labels.description")}
+          label="الوصف"
           value={item.description}
           fieldName="description"
           isTextarea
@@ -83,7 +81,7 @@ export const ViewItemMiddleColumn = ({
         {item.ai_description && (
           <div className="mt-2">
             <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-              {t("dialog.labels.aiDescription")}
+              وصف الذكاء الاصطناعي
             </p>
             <p className="text-sm">{item.ai_description}</p>
           </div>
@@ -93,7 +91,7 @@ export const ViewItemMiddleColumn = ({
       <div className="flex flex-wrap gap-8">
         {/* Position and Basic Info */}
         <EditableField
-          label={t("dialog.labels.position")}
+          label="الموقع"
           value={item.position?.toString() || ""}
           fieldName="position"
           type="number"
@@ -107,10 +105,10 @@ export const ViewItemMiddleColumn = ({
 
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.category")}
+            الفئة
           </p>
           <p className="text-sm">
-            {item.category_name?.ar || t("dialog.messages.notAvailable")}
+            {item.category_name?.ar || "غير متوفر"}
           </p>
           <p className="text-xs text-muted-foreground">
             ID: {item.category_id}
@@ -119,10 +117,10 @@ export const ViewItemMiddleColumn = ({
 
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.subcategory")}
+            الفئة الفرعية
           </p>
           <p className="text-sm">
-            {item.subcategory_name?.ar || t("dialog.messages.notAvailable")}
+            {item.subcategory_name?.ar || "غير متوفر"}
           </p>
           <p className="text-xs text-muted-foreground">
             ID: {item.subcategory_id}
@@ -132,10 +130,10 @@ export const ViewItemMiddleColumn = ({
         {item.model_name && (
           <div className="col-span-2">
             <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-              {t("dialog.labels.model")}
+              الموديل
             </p>
             <p className="text-sm">
-              {item.model_name.ar || t("dialog.messages.notAvailable")}
+              {item.model_name.ar || "غير متوفر"}
             </p>
             {item.category_model_id && (
               <p className="text-xs text-muted-foreground">
@@ -149,7 +147,7 @@ export const ViewItemMiddleColumn = ({
 
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.address")}
+            العنوان
           </p>
           <p className="text-sm">{item.address}</p>
           <p className="text-xs text-muted-foreground">
@@ -158,7 +156,7 @@ export const ViewItemMiddleColumn = ({
         </div>
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.city")}
+            المدينة
           </p>
           <p className="text-sm">{item.city}</p>
           <p className="text-xs text-muted-foreground">
@@ -167,7 +165,7 @@ export const ViewItemMiddleColumn = ({
         </div>
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.state")}
+            المنطقة
           </p>
           <p className="text-sm">{item.state}</p>
         </div>
@@ -175,19 +173,19 @@ export const ViewItemMiddleColumn = ({
         {/* Contact Information */}
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.whatsappContact")}
+            واتساب التواصل
           </p>
           <p className="text-sm" style={{ direction: "ltr" }}>
-            {item.contact_whatsapp || t("dialog.messages.notAvailable")}
+            {item.contact_whatsapp || "غير متوفر"}
           </p>
         </div>
         {item.item_as !== "job" && (
           <div>
             <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-              {t("dialog.labels.phone")}
+              الهاتف
             </p>
             <p className="text-sm">
-              {item.contact_phone || t("dialog.messages.notAvailable")}
+              {item.contact_phone || "غير متوفر"}
             </p>
           </div>
         )}
@@ -195,13 +193,13 @@ export const ViewItemMiddleColumn = ({
         {/* Stats */}
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.views")}
+            المشاهدات
           </p>
           <p className="text-sm">{item.view_count || 0}</p>
         </div>
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.favorites")}
+            المفضلة
           </p>
           <p className="text-sm">{item.favorite_at ? 1 : 0}</p>
         </div>
@@ -215,19 +213,19 @@ export const ViewItemMiddleColumn = ({
         </div> */}
         <div className="col-span-2">
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.created")}
+            تاريخ الإنشاء
           </p>
           <p className="text-sm">
             {activated_at.replace(/^منذ\s*/, "").replace(/\s*ago$/, "")}
           </p>
           {item.updated_at && (
             <p className="text-xs text-muted-foreground">
-              Updated: {moment(item.updated_at).locale(i18n.language).fromNow()}
+              تاريخ التحديث: {moment(item.updated_at).locale("ar").fromNow()}
             </p>
           )}
           {item.deleted_at && (
             <p className="text-xs text-destructive">
-              Deleted: {moment(item.deleted_at).locale(i18n.language).fromNow()}
+              تاريخ الحذف: {moment(item.deleted_at).locale("ar").fromNow()}
             </p>
           )}
         </div>
@@ -235,30 +233,30 @@ export const ViewItemMiddleColumn = ({
         {/* Delivery and Purchase Options */}
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.deliveryAvailable")}
+            التوصيل متاح
           </p>
           <p className="text-sm">
             {item.delivery_available
-              ? t("dialog.messages.yes")
-              : t("dialog.messages.no")}
+              ? "نعم"
+              : "لا"}
           </p>
         </div>
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.installment")}
+            التقسيط متاح
           </p>
           <p className="text-sm">
             {item.installment
-              ? t("dialog.messages.yes")
-              : t("dialog.messages.no")}
+              ? "نعم"
+              : "لا"}
           </p>
         </div>
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.obo")}
+            قابل للتفاوض
           </p>
           <p className="text-sm">
-            {item.obo ? t("dialog.messages.yes") : t("dialog.messages.no")}
+            {item.obo ? "نعم" : "لا"}
           </p>
         </div>
 
@@ -267,7 +265,7 @@ export const ViewItemMiddleColumn = ({
           <>
             <div className="col-span-2">
               <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                {t("dialog.labels.jobType")}
+                نوع الوظيفة
               </p>
               {isEditing ? (
                 <div className="flex flex-col">
@@ -285,7 +283,7 @@ export const ViewItemMiddleColumn = ({
                       }}
                       className="h-4 w-4"
                     />
-                    {t("dialog.labels.employeeLooking")}
+                    باحث عن عمل
                   </label>
                   <label className="flex items-center gap-2">
                     <input
@@ -301,40 +299,40 @@ export const ViewItemMiddleColumn = ({
                       }}
                       className="h-4 w-4"
                     />
-                    {t("dialog.labels.companyLooking")}
+                    باحث عن موظف
                   </label>
                 </div>
               ) : (
                 <p className="text-sm">
                   {item.need
-                    ? t("dialog.labels.employeeLooking")
-                    : t("dialog.labels.companyLooking")}
+                    ? "باحث عن عمل"
+                    : "باحث عن موظف"}
                 </p>
               )}
             </div>
             <div>
               <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                {t("dialog.labels.remoteJob")}
+                عمل عن بعد
               </p>
               <p className="text-sm">
                 {item.remote_job
-                  ? t("dialog.messages.yes")
-                  : t("dialog.messages.no")}
+                  ? "نعم"
+                  : "لا"}
               </p>
             </div>
             <div>
               <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                {t("dialog.labels.jobEnded")}
+                انتهاء التوظيف
               </p>
               <p className="text-sm">
                 {item.ended
-                  ? t("dialog.messages.yes")
-                  : t("dialog.messages.no")}
+                  ? "نعم"
+                  : "لا"}
               </p>
             </div>
             <div className="col-span-2">
               <EditableField
-                label={t("dialog.labels.companyName")}
+                label="اسم الشركة"
                 value={item.company_name}
                 fieldName="company_name"
                 editedFields={editedFields}
@@ -347,7 +345,7 @@ export const ViewItemMiddleColumn = ({
             </div>
             <div>
               <EditableField
-                label={t("dialog.labels.companyWebsite")}
+                label="موقع الشركة الإلكتروني"
                 value={item.company_website}
                 fieldName="company_website"
                 editedFields={editedFields}
@@ -360,7 +358,7 @@ export const ViewItemMiddleColumn = ({
             </div>
             <div>
               <EditableField
-                label={t("dialog.labels.companyPhone")}
+                label="هاتف الشركة"
                 value={item.contact_phone}
                 fieldName="contact_phone"
                 editedFields={editedFields}
@@ -373,7 +371,7 @@ export const ViewItemMiddleColumn = ({
             </div>
             <div>
               <EditableField
-                label={t("dialog.labels.companyEmail")}
+                label="البريد الإلكتروني للشركة"
                 value={item.contact_email}
                 fieldName="contact_email"
                 editedFields={editedFields}
@@ -387,7 +385,7 @@ export const ViewItemMiddleColumn = ({
             {item.job_type && (
               <div>
                 <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                  {t("dialog.labels.jobTypeCategory")}
+                  نوع الوظيفة
                 </p>
                 <p className="text-sm">{item.job_type}</p>
               </div>
@@ -395,7 +393,7 @@ export const ViewItemMiddleColumn = ({
             {item.experience_level && (
               <div>
                 <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                  {t("dialog.labels.experienceLevel")}
+                  مستوى الخبرة
                 </p>
                 <p className="text-sm">{item.experience_level}</p>
               </div>
@@ -403,7 +401,7 @@ export const ViewItemMiddleColumn = ({
             {item.education_level && (
               <div>
                 <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                  {t("dialog.labels.educationLevel")}
+                  المستوى التعليمي
                 </p>
                 <p className="text-sm">{item.education_level}</p>
               </div>
@@ -411,7 +409,7 @@ export const ViewItemMiddleColumn = ({
             {item.skills_required && (
               <div className="col-span-2">
                 <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                  {t("dialog.labels.skillsRequired")}
+                  المهارات المطلوبة
                 </p>
                 <p className="text-sm">{item.skills_required}</p>
               </div>
@@ -419,7 +417,7 @@ export const ViewItemMiddleColumn = ({
             {item.application_deadline && (
               <div>
                 <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                  {t("dialog.labels.applicationDeadline")}
+                  آخر موعد للتقديم
                 </p>
                 <p className="text-sm">
                   {new Date(item.application_deadline).toLocaleDateString()}
@@ -429,7 +427,7 @@ export const ViewItemMiddleColumn = ({
             {item.benefits && (
               <div className="col-span-2">
                 <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                  {t("dialog.labels.benefits")}
+                  المميزات
                 </p>
                 <p className="text-sm">{item.benefits}</p>
               </div>
@@ -440,7 +438,7 @@ export const ViewItemMiddleColumn = ({
           <>
             {/* Price and Currency */}
             <EditableField
-              label={t("dialog.labels.price")}
+              label="السعر"
               value={item.price}
               fieldName="price"
               type="number"
@@ -453,7 +451,7 @@ export const ViewItemMiddleColumn = ({
             />
             <div>
               <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                {t("dialog.labels.discount")}
+                الخصم
               </p>
               <p className="text-sm">{item.discount || 0}%</p>
             </div>
@@ -465,7 +463,7 @@ export const ViewItemMiddleColumn = ({
                   {item.storage_capacity && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.storage")}
+                        مساحة التخزين
                       </p>
                       <p className="text-sm">{item.storage_capacity}GB</p>
                     </div>
@@ -473,7 +471,7 @@ export const ViewItemMiddleColumn = ({
                   {item.ram && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.ram")}
+                        الرام
                       </p>
                       <p className="text-sm">{item.ram}GB</p>
                     </div>
@@ -481,7 +479,7 @@ export const ViewItemMiddleColumn = ({
                   {item.operating_system && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.operatingSystem")}
+                        نظام التشغيل
                       </p>
                       <p className="text-sm">{item.operating_system}</p>
                     </div>
@@ -489,7 +487,7 @@ export const ViewItemMiddleColumn = ({
                   {item.screen_size && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.screenSize")}
+                        حجم الشاشة
                       </p>
                       <p className="text-sm">{item.screen_size}"</p>
                     </div>
@@ -497,7 +495,7 @@ export const ViewItemMiddleColumn = ({
                   {item.battery_capacity && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.battery")}
+                        البطارية
                       </p>
                       <p className="text-sm">{item.battery_capacity}mAh</p>
                     </div>
@@ -505,7 +503,7 @@ export const ViewItemMiddleColumn = ({
                   {item.camera_resolution && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.camera")}
+                        الكاميرا
                       </p>
                       <p className="text-sm">{item.camera_resolution}</p>
                     </div>
@@ -513,7 +511,7 @@ export const ViewItemMiddleColumn = ({
                   {item.color && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.color")}
+                        اللون
                       </p>
                       <p className="text-sm">{item.color}</p>
                     </div>
@@ -521,7 +519,7 @@ export const ViewItemMiddleColumn = ({
                   {item.condition && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.condition")}
+                        الحالة
                       </p>
                       <p className="text-sm">{item.condition}</p>
                     </div>
@@ -529,7 +527,7 @@ export const ViewItemMiddleColumn = ({
                   {item.network_type && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.networkType")}
+                        نوع الشبكة
                       </p>
                       <p className="text-sm">{item.network_type}</p>
                     </div>
@@ -544,7 +542,7 @@ export const ViewItemMiddleColumn = ({
                   {item.mileage && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.mileage")}
+                        المسافة المقطوعة
                       </p>
                       <p className="text-sm">{item.mileage} km</p>
                     </div>
@@ -552,7 +550,7 @@ export const ViewItemMiddleColumn = ({
                   {item.transmission_type && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.transmission")}
+                        ناقل الحركة
                       </p>
                       <p className="text-sm">{item.transmission_type}</p>
                     </div>
@@ -560,7 +558,7 @@ export const ViewItemMiddleColumn = ({
                   {item.year && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.year")}
+                        السنة
                       </p>
                       <p className="text-sm">{item.year}</p>
                     </div>
@@ -568,7 +566,7 @@ export const ViewItemMiddleColumn = ({
                   {item.fuel_type_id && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.fuelType")}
+                        نوع الوقود
                       </p>
                       <p className="text-sm">{item.fuel_type_id}</p>
                     </div>
@@ -576,7 +574,7 @@ export const ViewItemMiddleColumn = ({
                   {item.type_id && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.carType")}
+                        نوع السيارة
                       </p>
                       <p className="text-sm">ID: {item.type_id}</p>
                     </div>
@@ -584,7 +582,7 @@ export const ViewItemMiddleColumn = ({
                   {item.series && (
                     <div>
                       <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                        {t("dialog.labels.series")}
+                        الفئة
                       </p>
                       <p className="text-sm">{item.series}</p>
                     </div>
@@ -598,17 +596,17 @@ export const ViewItemMiddleColumn = ({
                 {item.area && (
                   <div>
                     <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                      {t("dialog.labels.area")}
+                      المساحة
                     </p>
                     <p className="text-sm">
-                      {item.area} {t("dialog.labels.sqft")}
+                      {item.area} قدم مربع
                     </p>
                   </div>
                 )}
                 {item.bedrooms && (
                   <div>
                     <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                      {t("dialog.labels.bedrooms")}
+                      غرف النوم
                     </p>
                     <p className="text-sm">{item.bedrooms}</p>
                   </div>
@@ -616,7 +614,7 @@ export const ViewItemMiddleColumn = ({
                 {item.bathrooms && (
                   <div>
                     <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                      {t("dialog.labels.bathrooms")}
+                      الحمامات
                     </p>
                     <p className="text-sm">{item.bathrooms}</p>
                   </div>
@@ -624,7 +622,7 @@ export const ViewItemMiddleColumn = ({
                 {item.floor && (
                   <div>
                     <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                      {t("dialog.labels.floor")}
+                      الطابق
                     </p>
                     <p className="text-sm">{item.floor}</p>
                   </div>
@@ -632,19 +630,19 @@ export const ViewItemMiddleColumn = ({
                 {item.year_built && (
                   <div>
                     <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                      {t("dialog.labels.yearBuilt")}
+                      سنة البناء
                     </p>
                     <p className="text-sm">{item.year_built}</p>
                   </div>
                 )}
                 <div>
                   <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                    {t("dialog.labels.furnished")}
+                    مفروش
                   </p>
                   <p className="text-sm">
                     {item.is_furnished
-                      ? t("dialog.messages.yes")
-                      : t("dialog.messages.no")}
+                      ? "نعم"
+                      : "لا"}
                   </p>
                 </div>
               </>
@@ -653,43 +651,43 @@ export const ViewItemMiddleColumn = ({
             {/* General item details */}
             <div>
               <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                {t("dialog.labels.reserved")}
+                محجوز
               </p>
               <p className="text-sm">
                 {item.reserved
-                  ? t("dialog.messages.yes")
-                  : t("dialog.messages.no")}
+                  ? "نعم"
+                  : "لا"}
               </p>
             </div>
             <div>
               <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                {t("dialog.labels.archived")}
+                مؤرشف
               </p>
               <p className="text-sm">
                 {item.archived
-                  ? t("dialog.messages.yes")
-                  : t("dialog.messages.no")}
+                  ? "نعم"
+                  : "لا"}
               </p>
             </div>
             <div>
               <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                {t("dialog.labels.discountEndDate")}
+                تاريخ انتهاء الخصم
               </p>
               <p className="text-sm">
                 {item.date_end_discount
                   ? new Date(item.date_end_discount).toLocaleDateString()
-                  : t("dialog.messages.notAvailable")}
+                  : "غير متوفر"}
               </p>
             </div>
             {item.ended && (
               <div>
                 <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                  {t("dialog.labels.ended")}
+                  منتهي
                 </p>
                 <p className="text-sm">
                   {item.ended
-                    ? t("dialog.messages.yes")
-                    : t("dialog.messages.no")}
+                    ? "نعم"
+                    : "لا"}
                 </p>
               </div>
             )}
@@ -700,7 +698,7 @@ export const ViewItemMiddleColumn = ({
           item.client_details?.business_name && (
             <div>
               <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-                {t("dialog.labels.businessName")}
+                اسم النشاط التجاري
               </p>
               <p className="text-sm font-medium truncate">
                 {item.client_details.business_name}
@@ -711,7 +709,7 @@ export const ViewItemMiddleColumn = ({
         {/* User and Item IDs */}
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dashboard.messages.user")}
+            المستخدم
           </p>
           <p className="text-xs text-muted-foreground truncate">
             {item.user_id}
@@ -733,7 +731,7 @@ export const ViewItemMiddleColumn = ({
         </div>
         <div>
           <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-            {t("dialog.labels.item")}
+            المنشور
           </p>
           <p className="text-xs text-muted-foreground truncate">
             {item.main_items_id}
@@ -746,7 +744,7 @@ export const ViewItemMiddleColumn = ({
         {item.title_filtered && (
           <div className="col-span-2">
             <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-              {t("dialog.labels.filteredTitle")}
+              العنوان المصفى
             </p>
             <p className="text-sm">{item.title_filtered}</p>
           </div>
@@ -754,7 +752,7 @@ export const ViewItemMiddleColumn = ({
         {item.description_filtered && (
           <div className="col-span-2">
             <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-              {t("dialog.labels.filteredDescription")}
+              الوصف المصفى
             </p>
             <p className="text-sm">{item.description_filtered}</p>
           </div>
@@ -762,7 +760,7 @@ export const ViewItemMiddleColumn = ({
         {item.status_note && (
           <div className="col-span-2">
             <p className="text-xs font-normal text-blue-600 dark:text-blue-400">
-              {t("dialog.labels.statusNote")}
+              ملاحظة الحالة
             </p>
             <p className="text-sm">{item.status_note}</p>
           </div>

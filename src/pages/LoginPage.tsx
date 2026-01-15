@@ -1,22 +1,22 @@
-import { useState, useEffect } from "react"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Loader2, Shield, User } from "lucide-react"
-import { useProvider } from "@/context/MainProvider"
+import { Label } from "@/components/ui/label"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import { SYRIA_COUNTRY } from "@/constants/phone"
+import { useProvider } from "@/context/MainProvider"
+import { cleanPhoneNumber } from "@/lib/helpFunctions"
+import { Loader2, Shield, User } from "lucide-react"
+import { useEffect, useState } from "react"
 import { Navigate } from "react-router-dom"
 import { useAuth } from "../../app"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { cleanPhoneNumber } from "@/lib/helpFunctions"
 
 export const LoginPage = () => {
     const { isAuthenticated, login } = useAuth()
@@ -64,17 +64,17 @@ export const LoginPage = () => {
   }
 
   return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4" style={{ direction: "rtl" }}>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
             <div className="flex items-center space-x-2">
               <Shield className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold">SHFLI</span>
+              <span className="text-2xl font-bold">شفلي</span>
             </div>
           </div>
-          <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
-          <CardDescription className="text-center">Sign in to your admin dashboard</CardDescription>
+          <CardTitle className="text-2xl text-center">أهلاً بك مجدداً</CardTitle>
+          <CardDescription className="text-center">قم بتسجيل الدخول إلى لوحة تحكم المدير</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <form onSubmit={handleLogin} className="space-y-4">
@@ -84,14 +84,14 @@ export const LoginPage = () => {
         onValueChange={handleCountryChange}
         disabled={isLoadingCountries}
       >
-        <SelectTrigger className="w-[120px] rounded-r-none border-r-0">
+        <SelectTrigger className="w-[120px] rounded-l-none border-l-0">
           {isLoadingCountries ? (
             <div className="flex items-center">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              <span>Loading...</span>
+              <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+              <span>جاري التحميل...</span>
             </div>
           ) : (
-            <SelectValue placeholder="Country" />
+            <SelectValue placeholder="الدولة" />
           )}
         </SelectTrigger>
         <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -109,23 +109,23 @@ export const LoginPage = () => {
         value={phoneNumber}
         onChange={handlePhoneChange}
         disabled={isLoading}
-        className="rounded-l-none pl-3"
-        placeholder="Phone number"
+        className="rounded-r-none pr-3"
+        placeholder="رقم الهاتف"
       />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">كلمة المرور</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="أدخل كلمة المرور الخاصة بك"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
             </Button>
           </form>
 
@@ -134,17 +134,17 @@ export const LoginPage = () => {
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or</span>
+              <span className="bg-background px-2 text-muted-foreground">أو</span>
             </div>
           </div>
 
           <Button variant="outline" className="w-full" onClick={handleGuestLogin} disabled={isLoading}>
-            <User className="mr-2 h-4 w-4" />
-            {isLoading ? "Signing in..." : "Sign in as Guest"}
+            <User className="ml-2 h-4 w-4" />
+            {isLoading ? "جاري تسجيل الدخول..." : "تسجيل دخول كضيف"}
           </Button>
         </CardContent>
         <CardFooter className="text-center text-sm text-muted-foreground">
-          Demo credentials: Any email and password will work
+          بيانات التجربة: أي هاتف وكلمة مرور سيعملان
         </CardFooter>
       </Card>
     </div>

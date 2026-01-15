@@ -1,8 +1,6 @@
 import { ICreatMainItem } from "@/interfaces";
-import { useTranslation } from "react-i18next";
 
 export const ViewItemImages = ({ item }: { item: ICreatMainItem }) => {
-  const { t } = useTranslation();
   return (
     item.item_as !== "job" && (
       <div className="max-h-[60vh]">
@@ -36,7 +34,7 @@ export const ViewItemImages = ({ item }: { item: ICreatMainItem }) => {
           ) : (
             <div className="bg-gray-100 dark:bg-gray-800 aspect-square rounded-lg flex items-center justify-center col-span-2 sm:col-span-3 lg:col-span-1">
               <span className="text-gray-500">
-                {t("dialog.messages.noImages")}
+                لا توجد صور متاحة
               </span>
             </div>
           )}

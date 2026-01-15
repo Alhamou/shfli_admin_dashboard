@@ -1,9 +1,8 @@
 import { ICreatMainItem } from "@/interfaces";
-import { Textarea } from "./ui/textarea";
+import { formatPrice, getPriceDiscount } from "@/lib/helpFunctions";
 import { Dispatch, SetStateAction } from "react";
 import { Input } from "./ui/input";
-import { useTranslation } from "react-i18next";
-import { formatPrice, getPriceDiscount } from "@/lib/helpFunctions";
+import { Textarea } from "./ui/textarea";
 
 export const EditableField = ({
   label,
@@ -30,7 +29,6 @@ export const EditableField = ({
   originalItem: ICreatMainItem | null;
   isEditing: boolean;
 }) => {
-  const { t } = useTranslation();
 
   const handleFieldChange = (
     field: keyof ICreatMainItem,
@@ -86,7 +84,7 @@ export const EditableField = ({
                 }}
                 className="h-4 w-4 text-sm"
               />
-              {t("editableField.employeeLooking")}
+              يبحث عن عمل
             </h3>
             <h3 className="flex items-center gap-2">
               <Input
@@ -98,14 +96,14 @@ export const EditableField = ({
                 }}
                 className="h-4 w-4"
               />
-              {t("editableField.companyLooking")}
+              تبحث عن موظف
             </h3>
           </div>
         ) : (
           <p>
             {value
-              ? t("editableField.employeeLooking")
-              : t("editableField.companyLooking")}
+              ? "يبحث عن عمل"
+              : "تبحث عن موظف"}
           </p>
         )}
       </div>
@@ -147,7 +145,7 @@ export const EditableField = ({
                   : item.price,
                 item.currency
               )
-            : value : t("editableField.notAvailable")}
+            : value : "غير متوفر"}
         </p>
       )}
     </div>

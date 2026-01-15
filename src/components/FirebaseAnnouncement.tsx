@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,9 +8,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Megaphone, Send } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Send, Megaphone } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 export function AnnouncementDialog({
   onSend,
@@ -20,7 +19,6 @@ export function AnnouncementDialog({
   onSend: (data: { title: string; description: string }) => Promise<void>;
   children: React.ReactNode;
 }) {
-  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -56,11 +54,11 @@ export function AnnouncementDialog({
     setLoading(true);
     try {
       await onSend(formData);
-      toast.success(t("announcement.success"));
+      toast.success("تم إرسال الإعلان بنجاح");
       setFormData({ title: "", description: "" });
       setOpen(false);
     } catch (error) {
-      toast.error(t("announcement.error"));
+      toast.error("فشل في إرسال الإعلان");
     } finally {
       setLoading(false);
     }
@@ -70,20 +68,19 @@ export function AnnouncementDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
-        className={`max-w-md rounded-2xl ${
-          i18n.language === "ar" ? "text-right" : "text-left"
-        }`}
+        className="max-w-md rounded-2xl text-right"
+        style={{ direction: "rtl" }}
       >
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
             <Megaphone className="h-6 w-6 text-purple-500" />
-            {t("announcement.title")}
+            إرسال إعلان عام للمستخدمين
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t("announcement.titlePlaceholder")}
+              عنوان الإعلان
             </label>
             <Input
               name="title"
@@ -91,17 +88,17 @@ export function AnnouncementDialog({
               onChange={handleChange}
               className={`h-12 text-lg ${
                 errors.title ? "border-red-500" : ""
-              } ${i18n.language === "ar" ? "text-right" : "text-left"}`}
+              } text-right`}
             />
             {errors.title && (
               <p className="mt-1 text-sm text-red-500">
-                {t("announcement.requiredField")}
+                هذا الحقل مطلوب
               </p>
             )}
           </div>
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t("announcement.descriptionPlaceholder")}
+              وصف الإعلان
             </label>
             <Textarea
               name="description"
@@ -110,11 +107,11 @@ export function AnnouncementDialog({
               rows={5}
               className={`text-lg ${
                 errors.description ? "border-red-500" : ""
-              } ${i18n.language === "ar" ? "text-right" : "text-left"}`}
+              } text-right`}
             />
             {errors.description && (
               <p className="mt-1 text-sm text-red-500">
-                {t("announcement.requiredField")}
+                هذا الحقل مطلوب
               </p>
             )}
           </div>
@@ -145,12 +142,12 @@ export function AnnouncementDialog({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                {t("announcement.sending")}
+                جاري الإرسال...
               </span>
             ) : (
               <span className="flex items-center justify-center gap-2">
                 <Send className="h-5 w-5" />
-                {t("announcement.send")}
+                إرسال الآن
               </span>
             )}
           </Button>

@@ -1,21 +1,20 @@
-import { Edit, Loader2, MessageCircle, Save, X } from "lucide-react";
-import { Button } from "./ui/button";
-import { useTranslation } from "react-i18next";
 import { ICreatMainItem } from "@/interfaces";
-import { SendNotificationPopup } from "./SendNotificationPopup";
-import { toast } from "sonner";
 import { sendNotTeam, updateItem } from "@/services/restApiServices";
+import { Edit, Loader2, MessageCircle, Save, X } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { SendNotificationPopup } from "./SendNotificationPopup";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
 } from "./ui/alert-dialog";
+import { Button } from "./ui/button";
 
 export const ViewItemActions = ({
   handleEditToggle,
@@ -36,7 +35,6 @@ export const ViewItemActions = ({
   fetchItem: (uuid: string) => Promise<ICreatMainItem | undefined>;
   onItemUpdate: (updatedItem: ICreatMainItem) => void;
 }) => {
-  const { t } = useTranslation();
   const [loading, setIsloading] = useState(false);
   const [convertingToSale, setConvertingToSale] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -53,13 +51,13 @@ export const ViewItemActions = ({
         bid_status: null,
         bids: "[]"
       });
-      toast.success(t("messages.convertToSaleSuccess"));
+      toast.success("تم التحويل إلى منشور عادي بنجاح");
       const updatedItem = await fetchItem(item.uuid);
       if (updatedItem) {
         onItemUpdate(updatedItem);
       }
     } catch (error) {
-      toast.error(t("messages.convertToSaleError"));
+      toast.error("فشل في التحويل إلى منشور عادي");
     } finally {
       setConvertingToSale(false);
     }
@@ -84,7 +82,7 @@ export const ViewItemActions = ({
               onClick={handleEditToggle}
               className="flex-1 sm:flex-none"
             >
-              <X className="h-4 w-4 mr-2" /> {t("dialog.buttons.cancel")}
+              <X className="h-4 w-4 mr-2" /> إلغاء
             </Button>
             <Button
               variant="default"
@@ -93,7 +91,7 @@ export const ViewItemActions = ({
               disabled={Object.keys(editedFields).length === 0}
               className="flex-1 sm:flex-none"
             >
-              <Save className="h-4 w-4 mr-2" /> {t("dialog.buttons.save")}
+              <Save className="h-4 w-4 mr-2" /> حفظ التعديلات
             </Button>
           </>
         ) : (
@@ -103,7 +101,7 @@ export const ViewItemActions = ({
             onClick={handleEditToggle}
             className="flex-1 sm:flex-none"
           >
-            <Edit className="h-4 w-4 mr-2" /> {t("dialog.buttons.edit")}
+            <Edit className="h-4 w-4 mr-2" /> تعديل المنشور
           </Button>
         )}
 
@@ -116,28 +114,28 @@ export const ViewItemActions = ({
             setIsloading(true);
             try {
               await sendNotTeam(messageData);
-              toast.success(t("notificationPopup.NotificationSuccess"));
+              toast.success("تم إرسال الإشعار بنجاح");
             } catch {
-              toast.error(t("notificationPopup.NotificationError"));
+              toast.error("فشل في إرسال الإشعار");
             } finally {
               setIsloading(false);
             }
           }}
         >
           <Button variant="outline" className="flex-1 lg:flex-none">
-            <MessageCircle /> {t("dialog.buttons.message")}
+            <MessageCircle /> مراسلة المستخدم
           </Button>
         </SendNotificationPopup>
 
         <Button variant="outline" className="flex-1 lg:flex-none">
-          {t("dialog.buttons.share")}
+          مشاركة
         </Button>
         <Button
           variant="outline"
           className="flex-1 lg:flex-none"
           disabled={updatingStatus}
         >
-          {t("dialog.buttons.report")}
+          إبلاغ
         </Button>
         {item?.item_for === "bid" && (
           <Button
@@ -149,7 +147,7 @@ export const ViewItemActions = ({
             {convertingToSale ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : null}
-            {t("dialog.buttons.convertToSale")}
+            تحويل إلى منشور عادي
           </Button>
         )}
       </div>
@@ -158,18 +156,18 @@ export const ViewItemActions = ({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {t("convertToSaleConfirm.title")}
+              تأكيد التحويل إلى منشور عادي
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {t("convertToSaleConfirm.description")}
+              هل أنت متأكد من رغبتك في تحويل هذا المزاد إلى منشور عادي؟ سيتم حذف جميع المزايدات الحالية.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={closeConfirmDialog}>
-              {t("dialog.buttons.cancel")}
+              إلغاء
             </AlertDialogCancel>
             <AlertDialogAction onClick={handleConvertToSale}>
-              {t("dialog.buttons.confirm")}
+              تأكيد
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

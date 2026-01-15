@@ -1,14 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { SendNotificationPopup } from "@/components/SendNotificationPopup";
 import { AnnouncementDialog } from "@/components/FirebaseAnnouncement";
-import { useTranslation } from "react-i18next";
+import { SendNotificationPopup } from "@/components/SendNotificationPopup";
+import { Button } from "@/components/ui/button";
+import { connectSocket, socket } from "@/controllers/requestController";
+import { sendFirebase, sendNotAdmin } from "@/services/restApiServices";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { sendFirebase, sendNotAdmin } from "@/services/restApiServices";
-import { connectSocket, socket } from "@/controllers/requestController";
 
 export function Admin() {
-  const { t } = useTranslation();
   const [loadingNotification, setLoadingNotification] = useState(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
@@ -17,9 +15,9 @@ export function Admin() {
     try {
       // Replace with your actual notification sending logic
       await sendNotAdmin(messageData);
-      toast.success(t("notificationPopup.NotificationSuccess"));
+      toast.success("تم إرسال الإشعار بنجاح");
     } catch {
-      toast.error(t("notificationPopup.NotificationError"));
+      toast.error("فشل في إرسال الإشعار");
     } finally {
       setLoadingNotification(false);
     }
@@ -93,13 +91,13 @@ export function Admin() {
           variant="outline"
           className="h-14 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 text-lg font-semibold"
         >
-          {t("notificationPopup.publicTitle")}
+          إرسال إشعار عام
         </Button>
       </SendNotificationPopup>
 
       <AnnouncementDialog onSend={handleSendAnnouncement}>
         <Button className="mx-8 h-14 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 text-lg font-semibold">
-          <span>{t("announcement.button")}</span>
+          <span>إرسال إعلان تطبيق</span>
         </Button>
       </AnnouncementDialog>
     </div>

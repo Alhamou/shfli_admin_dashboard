@@ -1,19 +1,18 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { ICreatMainItem } from "@/interfaces";
+import { useState } from "react";
 
 interface MessagePopupProps {
   is_public: boolean;
@@ -32,7 +31,6 @@ export const SendNotificationPopup = ({
   loading,
   item,
 }: MessagePopupProps) => {
-  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState("");
@@ -60,34 +58,34 @@ export const SendNotificationPopup = ({
     const newErrors: Record<string, string> = {};
 
     if (!message.trim()) {
-      newErrors.message = t("notificationPopup.errors.messageRequired");
+      newErrors.message = "الرسالة مطلوبة";
     }
 
     if (actionType !== "none") {
       if (actionType === "navigate") {
         if (!navigateInfo.tab.trim()) {
-          newErrors.tab = t("notificationPopup.errors.tabRequired");
+          newErrors.tab = "التبويب مطلوب";
         }
         if (!navigateInfo.screen.trim()) {
-          newErrors.screen = t("notificationPopup.errors.screenRequired");
+          newErrors.screen = "الشاشة مطلوبة";
         }
         if (!navigateInfo.uuid.trim()) {
-          newErrors.uuid = t("notificationPopup.errors.uuidRequired");
+          newErrors.uuid = "المعرف مطلوب";
         }
       } else if (actionType === "link" && !outsideLink.trim()) {
-        newErrors.link = t("notificationPopup.errors.linkRequired");
+        newErrors.link = "الرابط مطلوب";
       }
     }
 
     if (withImage) {
       if (!imageInfo.image_url.trim()) {
-        newErrors.image_url = t("notificationPopup.errors.imageUrlRequired");
+        newErrors.image_url = "رابط الصورة مطلوب";
       }
       if (!imageInfo.width) {
-        newErrors.width = t("notificationPopup.errors.widthRequired");
+        newErrors.width = "العرض مطلوب";
       }
       if (!imageInfo.height) {
-        newErrors.height = t("notificationPopup.errors.heightRequired");
+        newErrors.height = "الارتفاع مطلوب";
       }
     }
 
@@ -147,21 +145,21 @@ export const SendNotificationPopup = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         className="sm:max-w-[500px]"
-        style={{ direction: i18n.language === "ar" ? "rtl" : "ltr" }}
+        style={{ direction: "rtl" }}
       >
         <DialogHeader>
-          <DialogTitle>{t("notificationPopup.title")}</DialogTitle>
+          <DialogTitle>إرسال إشعار</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="message">
-              {t("notificationPopup.messageLabel")}*
+              نص الرسالة*
             </Label>
             <Textarea
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder={t("notificationPopup.messagePlaceholder")}
+              placeholder="اكتب نص الرسالة هنا..."
               className={errors.message ? "border-red-500" : ""}
             />
             {errors.message && (
@@ -170,7 +168,7 @@ export const SendNotificationPopup = ({
           </div>
 
           <div className="space-y-2">
-            <Label>{t("notificationPopup.actionTypeLabel")}</Label>
+            <Label>نوع الإجراء عند النقر</Label>
             <RadioGroup
               value={actionType}
               onValueChange={(value) =>
@@ -181,19 +179,19 @@ export const SendNotificationPopup = ({
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="none" id="none" />
                 <Label htmlFor="none">
-                  {t("notificationPopup.messageOnlyOption")}
+                  رسالة فقط
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="navigate" id="navigate" />
                 <Label htmlFor="navigate">
-                  {t("notificationPopup.navigationOption")}
+                  انتقال داخل التطبيق
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="link" id="link" />
                 <Label htmlFor="link">
-                  {t("notificationPopup.externalLinkOption")}
+                  رابط خارجي
                 </Label>
               </div>
             </RadioGroup>
@@ -204,7 +202,7 @@ export const SendNotificationPopup = ({
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <Label htmlFor="tab">
-                    {t("notificationPopup.tabLabel")}*
+                    التبويب*
                   </Label>
                   <Input
                     id="tab"
@@ -213,7 +211,7 @@ export const SendNotificationPopup = ({
                       setNavigateInfo({ ...navigateInfo, tab: e.target.value })
                     }
                     style={{ direction: "ltr" }}
-                    placeholder={t("notificationPopup.tabPlaceholder")}
+                    placeholder="مثال: Home"
                     className={errors.tab ? "border-red-500" : ""}
                   />
                   {errors.tab && (
@@ -222,7 +220,7 @@ export const SendNotificationPopup = ({
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="screen">
-                    {t("notificationPopup.screenLabel")}*
+                    الشاشة*
                   </Label>
                   <Input
                     id="screen"
@@ -234,7 +232,7 @@ export const SendNotificationPopup = ({
                         screen: e.target.value,
                       })
                     }
-                    placeholder={t("notificationPopup.screenPlaceholder")}
+                    placeholder="مثال: Details"
                     className={errors.screen ? "border-red-500" : ""}
                   />
                   {errors.screen && (
@@ -243,7 +241,7 @@ export const SendNotificationPopup = ({
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="uuid">
-                    {t("notificationPopup.uuidLabel")}*
+                    المعرف (UUID)*
                   </Label>
                   <Input
                     id="uuid"
@@ -252,7 +250,7 @@ export const SendNotificationPopup = ({
                     onChange={(e) =>
                       setNavigateInfo({ ...navigateInfo, uuid: e.target.value })
                     }
-                    placeholder={t("notificationPopup.uuidPlaceholder")}
+                    placeholder="أدخل UUID المنشور"
                     className={errors.uuid ? "border-red-500" : ""}
                   />
                   {errors.uuid && (
@@ -265,12 +263,12 @@ export const SendNotificationPopup = ({
 
           {actionType === "link" && (
             <div className="space-y-1">
-              <Label htmlFor="link">{t("notificationPopup.linkLabel")}*</Label>
+              <Label htmlFor="link">الرابط*</Label>
               <Input
                 id="link"
                 value={outsideLink}
                 onChange={(e) => setOutsideLink(e.target.value)}
-                placeholder={t("notificationPopup.linkPlaceholder")}
+                placeholder="https://example.com"
                 className={errors.link ? "border-red-500" : ""}
                 style={{ direction: "ltr" }}
               />
@@ -289,7 +287,7 @@ export const SendNotificationPopup = ({
                 style={{ direction: "ltr" }}
               />
               <Label htmlFor="with-image">
-                {t("notificationPopup.withImage")}
+                إرفاق صورة
               </Label>
             </div>
 
@@ -297,7 +295,7 @@ export const SendNotificationPopup = ({
               <div className="space-y-3 pt-2">
                 <div className="space-y-1">
                   <Label htmlFor="image_url">
-                    {t("notificationPopup.imageUrlLabel")}*
+                    رابط الصورة*
                   </Label>
                   <Input
                     id="image_url"
@@ -305,7 +303,7 @@ export const SendNotificationPopup = ({
                     onChange={(e) =>
                       setImageInfo({ ...imageInfo, image_url: e.target.value })
                     }
-                    placeholder={t("notificationPopup.imageUrlPlaceholder")}
+                    placeholder="أدخل رابط جى أو أر إل الصورة"
                     className={errors.image_url ? "border-red-500" : ""}
                     style={{ direction: "ltr" }}
                   />
@@ -316,7 +314,7 @@ export const SendNotificationPopup = ({
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label htmlFor="width">
-                      {t("notificationPopup.widthLabel")}*
+                      العرض*
                     </Label>
                     <Input
                       id="width"
@@ -325,7 +323,7 @@ export const SendNotificationPopup = ({
                       onChange={(e) =>
                         setImageInfo({ ...imageInfo, width: e.target.value })
                       }
-                      placeholder={t("notificationPopup.widthPlaceholder")}
+                      placeholder="العرض (بكسل)"
                       className={errors.width ? "border-red-500" : ""}
                     />
                     {errors.width && (
@@ -334,7 +332,7 @@ export const SendNotificationPopup = ({
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="height">
-                      {t("notificationPopup.heightLabel")}*
+                      الارتفاع*
                     </Label>
                     <Input
                       id="height"
@@ -343,7 +341,7 @@ export const SendNotificationPopup = ({
                       onChange={(e) =>
                         setImageInfo({ ...imageInfo, height: e.target.value })
                       }
-                      placeholder={t("notificationPopup.heightPlaceholder")}
+                      placeholder="الارتفاع (بكسل)"
                       className={errors.height ? "border-red-500" : ""}
                     />
                     {errors.height && (
@@ -357,10 +355,10 @@ export const SendNotificationPopup = ({
 
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="outline" onClick={() => setOpen(false)}>
-              {t("notificationPopup.cancelButton")}
+              إلغاء
             </Button>
             <Button onClick={handleSubmit} disabled={loading}>
-              {t("notificationPopup.sendButton")}
+              إرسال الإشعار
             </Button>
           </div>
         </div>

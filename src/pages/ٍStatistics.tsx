@@ -1,13 +1,12 @@
 import storageController from "@/controllers/storageController";
-import { RefreshCwIcon } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import {
-  getUserStats,
-  getJobStats,
-  getAdStats,
-} from "@/services/restApiServices";
 import { Stat } from "@/interfaces";
+import {
+    getAdStats,
+    getJobStats,
+    getUserStats,
+} from "@/services/restApiServices";
+import { RefreshCwIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type DaysOfTheWeek = "Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat";
 
@@ -43,7 +42,6 @@ const statColors = {
 };
 
 export function StatisticsPage() {
-  const { t, i18n } = useTranslation();
 
   // Stats data
   const [usersStats, setUsersStats] = useState<StatData | null>(null);
@@ -90,7 +88,7 @@ export function StatisticsPage() {
       const statsData: StatData = {};
       response.forEach((item) => {
         const date = new Date(item.label);
-        const dayName = date.toLocaleDateString(i18n.language, {
+        const dayName = date.toLocaleDateString("ar", {
           weekday: "short",
         }) as DaysOfTheWeek;
         statsData[item.label] = item.count;
@@ -114,8 +112,8 @@ export function StatisticsPage() {
   const fetchJobsStats = () => fetchStats(getJobStats, "jobs", setJobsStats);
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return t("statistics.never");
-    return new Date(dateString).toLocaleString(i18n.language);
+    if (!dateString) return "أبداً";
+    return new Date(dateString).toLocaleString("ar");
   };
 
   const getCurrentDateKey = () => {
@@ -124,7 +122,7 @@ export function StatisticsPage() {
   };
 
   const getCurrentDayName = () => {
-    return new Date().toLocaleDateString(i18n.language, {
+    return new Date().toLocaleDateString("ar", {
       weekday: "short",
     }) as DaysOfTheWeek;
   };
@@ -145,7 +143,7 @@ export function StatisticsPage() {
 
     return sortedDates.map((date) => ({
       date,
-      dayName: new Date(date).toLocaleDateString(i18n.language, {
+      dayName: new Date(date).toLocaleDateString("ar", {
         weekday: "short",
       }),
       value: stats[date],
@@ -158,14 +156,14 @@ export function StatisticsPage() {
   return (
     <div className={`container mx-auto px-4 py-8`}>
       <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-        {t("statistics.statisticsDashboard")}
+        لوحة إحصائيات النظام
       </h1>
 
       {/* Current Stats Sections */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
         {/* Users */}
         <StatSection
-          title={t("statistics.users")}
+          title="المستخدمين"
           stat={usersStats}
           loading={loading.users}
           onRefresh={fetchUsersStats}
@@ -184,7 +182,7 @@ export function StatisticsPage() {
 
         {/* Ads */}
         <StatSection
-          title={t("statistics.ads")}
+          title="الإعلانات"
           stat={adsStats}
           loading={loading.ads}
           onRefresh={fetchAdsStats}
@@ -203,7 +201,7 @@ export function StatisticsPage() {
 
         {/* Jobs */}
         <StatSection
-          title={t("statistics.jobs")}
+          title="الوظائف"
           stat={jobsStats}
           loading={loading.jobs}
           onRefresh={fetchJobsStats}
@@ -225,7 +223,7 @@ export function StatisticsPage() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Users History */}
         <StatSection
-          title={t("statistics.usersHistory")}
+          title="سجل المستخدمين"
           stat={usersStats}
           loading={loading.users}
           onRefresh={fetchUsersStats}
@@ -252,7 +250,7 @@ export function StatisticsPage() {
 
         {/* Ads History */}
         <StatSection
-          title={t("statistics.adsHistory")}
+          title="سجل الإعلانات"
           stat={adsStats}
           loading={loading.ads}
           onRefresh={fetchAdsStats}
@@ -277,7 +275,7 @@ export function StatisticsPage() {
 
         {/* Jobs History */}
         <StatSection
-          title={t("statistics.jobsHistory")}
+          title="سجل الوظائف"
           stat={jobsStats}
           loading={loading.jobs}
           onRefresh={fetchJobsStats}
@@ -325,7 +323,6 @@ function StatSection({
   formatDate: (date?: string) => string;
   showBtn: boolean;
 }) {
-  const { t } = useTranslation();
   return (
     <div
       className={`rounded-lg shadow p-6 transition-colors duration-200 ${statColors[type].bg} ${statColors[type].border} border`}
@@ -349,12 +346,12 @@ function StatSection({
               {loading ? (
                 <>
                   <RefreshCwIcon className="animate-spin h-4 w-4" />
-                  {t("statistics.refreshing")}
+                  جاري التحديث...
                 </>
               ) : (
                 <>
                   <RefreshCwIcon className="h-4 w-4" />
-                  {t("statistics.refresh")}
+                  تحديث
                 </>
               )}
             </button>
@@ -368,8 +365,8 @@ function StatSection({
         <div className="h-32 flex items-center justify-center">
           <p className="text-gray-500 dark:text-gray-400">
             {loading
-              ? t("statistics.loading")
-              : t("statistics.noDataAvailable")}
+              ? "جاري التحميل..."
+              : "لا توجد بيانات متاحة"}
           </p>
         </div>
       )}

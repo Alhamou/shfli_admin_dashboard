@@ -1,25 +1,24 @@
-import { useTranslation } from "react-i18next";
-import { Button } from "./ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Textarea } from "./ui/textarea";
+import { Bid_status, ICreatMainItem } from "@/interfaces";
+import { updateItem } from "@/services/restApiServices";
 import { Loader2 } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
-import { Bid_status, ICreatMainItem } from "@/interfaces";
+import { toast } from "sonner";
+import { Button } from "./ui/button";
 import { CustomBadge } from "./ui/custom-badge";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "./ui/select";
-import { toast } from "sonner";
-import { updateItem } from "@/services/restApiServices";
+import { Textarea } from "./ui/textarea";
 
 // Add this new component for bid status form
 const BidStatusForm = ({
@@ -33,7 +32,6 @@ const BidStatusForm = ({
   loading: boolean;
   item: ICreatMainItem;
 }) => {
-  const { t } = useTranslation();
   const [bidStatus, setBidStatus] = useState<Bid_status>(item.bid_status);
   const [statusNote, setStatusNote] = useState("");
 
@@ -47,40 +45,40 @@ const BidStatusForm = ({
 
   return (
     <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-      <p className="font-medium">{t("dialog.labels.updateBidStatus")}</p>
+      <p className="font-medium">تحديث حالة المزاد</p>
 
       <div className="space-y-2">
         <Select
           onValueChange={(val) => {
             setBidStatus(val as Bid_status);
           }}
-          value={bidStatus}
+          value={bidStatus || ""}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder={t("dialog.labels.selectBidStatus")} />
+            <SelectValue placeholder="اختر حالة المزاد" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="active">
-              {t("dashboard.statusTypes.active")}
+              نشط
             </SelectItem>
             <SelectItem value="ended">
-              {t("dashboard.statusTypes.ended")}
+              منتهي
             </SelectItem>
             <SelectItem value="ask_edit">
-              {t("dashboard.statusTypes.askEdit")}
+              طلب تعديل
             </SelectItem>
             <SelectItem value="blocked">
-              {t("dashboard.statusTypes.blocked")}
+              محظور
             </SelectItem>
             <SelectItem value="pending">
-              {t("dashboard.statusTypes.pending")}
+              معلق
             </SelectItem>
           </SelectContent>
         </Select>
 
         {bidStatus && bidStatus !== "active" && (
           <Textarea
-            placeholder={t("dialog.labels.statusNote")}
+            placeholder="ملاحظة الحالة"
             value={statusNote}
             onChange={(e) => setStatusNote(e.target.value)}
             // required={bidStatus !== "active"}
@@ -90,7 +88,7 @@ const BidStatusForm = ({
 
       <div className="flex gap-2 justify-end">
         <Button variant="outline" onClick={onCancel}>
-          {t("dialog.buttons.cancel")}
+          إلغاء
         </Button>
         <Button
           onClick={handleSubmit}
@@ -99,7 +97,7 @@ const BidStatusForm = ({
           }
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-          {t("dialog.buttons.update")}
+          تحديث
         </Button>
       </div>
     </div>
@@ -116,7 +114,6 @@ const BanUserForm = ({
   onSubmit: (username: string) => void;
   loading: boolean;
 }) => {
-  const { t } = useTranslation();
   const [username, setUsername] = useState("");
 
   const handleSubmit = () => {
@@ -125,12 +122,12 @@ const BanUserForm = ({
 
   return (
     <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-      <p className="font-medium">{t("dialog.labels.banUserFromBid")}</p>
+      <p className="font-medium">حظر مستخدم من المزاد</p>
 
       <div className="space-y-2">
         <input
           type="text"
-          placeholder={t("dialog.labels.enterUsername")}
+          placeholder="أدخل اسم المستخدم"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -139,11 +136,11 @@ const BanUserForm = ({
 
       <div className="flex gap-2 justify-end">
         <Button variant="outline" onClick={onCancel}>
-          {t("dialog.buttons.cancel")}
+          إلغاء
         </Button>
         <Button onClick={handleSubmit} disabled={!username || loading}>
           {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-          {t("dialog.buttons.submit")}
+          إرسال
         </Button>
       </div>
     </div>
@@ -182,14 +179,13 @@ export const ViewItemFooter = ({
   fetchItem: (uuid: string) => Promise<ICreatMainItem | undefined>;
   onItemUpdate: (updatedItem: ICreatMainItem) => void;
 }) => {
-  const { t, i18n } = useTranslation();
   const [showPendingInput, setShowPendingInput] = useState(false);
   const [showBidStatusForm, setShowBidStatusForm] = useState(false);
   const [showBanUserForm, setShowBanUserForm] = useState(false);
   const [banningUser, setBanningUser] = useState(false);
   const [pendingReason, setPendingReason] =
     useState(`بعد ان تقوم بتعديل هذا المنشور وحفظه، سيتم مراجعته من قبل فريقنا، وبمجعد الانتهاء من المراجعة، ستتلقى اشعارأ بشأن منشورك:
-    
+
     `);
 
   const handlePendingAction = () => {
@@ -209,7 +205,7 @@ export const ViewItemFooter = ({
   };
 
   const handleBidStatusUpdate = async (
-    status: "active" | "ended" | "pending" | "ask_edit" | "blocked",
+    status: Bid_status,
     note?: string
   ) => {
     try {
@@ -217,13 +213,13 @@ export const ViewItemFooter = ({
         bid_status: status,
         status_note: note,
       });
-      toast.success(t("messages.bidStatusUpdateSuccess"));
+      toast.success("تم تحديث حالة المزاد بنجاح");
       const updatedItem = await fetchItem(item.uuid);
       if (updatedItem) {
         onItemUpdate(updatedItem);
       }
     } catch (error) {
-      toast.error(t("messages.bidStatusUpdateError"));
+      toast.error("فشل في تحديث حالة المزاد");
     }
   };
 
@@ -233,14 +229,14 @@ export const ViewItemFooter = ({
       await updateItem(item.uuid, {
         user_selector: username,
       });
-      toast.success(t("messages.banUserSuccess"));
+      toast.success("تم حظر المستخدم بنجاح");
       const updatedItem = await fetchItem(item.uuid);
       if (updatedItem) {
         onItemUpdate(updatedItem);
       }
       setShowBanUserForm(false);
     } catch (error) {
-      toast.error(t("messages.banUserError"));
+      toast.error("فشل في حظر المستخدم");
     } finally {
       setBanningUser(false);
     }
@@ -249,7 +245,7 @@ export const ViewItemFooter = ({
   const getStatusBadge = (status: "active" | "pending" | "blocked") => {
     return (
       <CustomBadge variant={status} size="lg" className="whitespace-nowrap">
-        {t(`dashboard.statusTypes.${status}`)}
+        {status === "active" ? "نشط" : status === "pending" ? "معلق" : "محظور"}
       </CustomBadge>
     );
   };
@@ -261,7 +257,7 @@ export const ViewItemFooter = ({
         size="lg"
         className="whitespace-nowrap"
       >
-        {t(`dashboard.statusTypes.${status}`)}
+        {status === "active" ? "نشط" : status === "ended" ? "منتهي" : status === "ask_edit" ? "طلب تعديل" : status === "blocked" ? "محظور" : "معلق"}
       </CustomBadge>
     );
   };
@@ -270,14 +266,14 @@ export const ViewItemFooter = ({
     <>
       {showReasonInput && (
         <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-          <p className="font-medium">{t("dialog.labels.selectReason")}</p>
+          <p className="font-medium">اختر سبب الحظر</p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
                 className="w-full justify-start whitespace-normal text-left h-auto min-h-[40px] py-2"
               >
-                {selectedReason || t("dialog.labels.selectReason")}
+                {selectedReason || "اختر سبب الحظر"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="max-h-80 overflow-y-scroll">
@@ -292,18 +288,18 @@ export const ViewItemFooter = ({
               ))}
               <DropdownMenuItem
                 onClick={() =>
-                  setSelectedReason(t("dialog.messages.blockReason.other"))
+                  setSelectedReason("آخر")
                 }
                 style={{ direction: "rtl" }}
               >
-                {t("dialog.messages.blockReason.other")}
+                آخر
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {selectedReason === t("dialog.messages.blockReason.other") && (
+          {selectedReason === "آخر" && (
             <Textarea
-              placeholder={t("dialog.labels.specifyReason")}
+              placeholder="حدد السبب"
               value={customReason}
               onChange={(e) => setCustomReason(e.target.value)}
             />
@@ -318,18 +314,18 @@ export const ViewItemFooter = ({
                 setCustomReason("");
               }}
             >
-              {t("dialog.buttons.cancel")}
+              إلغاء
             </Button>
             <Button
               onClick={() => handleStatusToggle("blocked")}
               disabled={
                 !selectedReason ||
-                (selectedReason === t("dialog.messages.blockReason.other") &&
+                (selectedReason === "آخر" &&
                   !customReason) ||
                 updatingStatus
               }
             >
-              {t("dialog.buttons.confirm")}
+              تأكيد
             </Button>
           </div>
         </div>
@@ -338,11 +334,11 @@ export const ViewItemFooter = ({
       {showPendingInput && (
         <div
           className="space-y-4 p-4 border rounded-lg bg-muted/50"
-          style={{ direction: i18n.language === "ar" ? "rtl" : "ltr" }}
+          style={{ direction: "rtl" }}
         >
-          <p className="font-medium">{t("dialog.labels.pendingReason")}</p>
+          <p className="font-medium">سبب التعليق</p>
           <Textarea
-            placeholder={t("dialog.labels.specifyPendingReason")}
+            placeholder="حدد سبب التعليق"
             value={pendingReason}
             onChange={(e) => setPendingReason(e.target.value)}
           />
@@ -354,13 +350,13 @@ export const ViewItemFooter = ({
                 setPendingReason("");
               }}
             >
-              {t("dialog.buttons.cancel")}
+              إلغاء
             </Button>
             <Button
               onClick={handlePendingSubmit}
               disabled={!pendingReason || updatingStatus}
             >
-              {t("dialog.buttons.confirm")}
+              تأكيد
             </Button>
           </div>
         </div>
@@ -385,12 +381,12 @@ export const ViewItemFooter = ({
 
       <div className="col-span-full border-t pt-4 mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-medium">{t("dialog.labels.status")}:</span>
+          <span className="font-medium">الحالة:</span>
           {getStatusBadge(item?.is_active ?? "active")}
           {item?.item_for === "bid" && (
             <>
               <span className="font-medium">
-                {t("dialog.labels.bidStatus")}:
+                حالة المزاد:
               </span>
               {getBidStatusBadge(item?.bid_status ?? "active")}
             </>
@@ -407,14 +403,14 @@ export const ViewItemFooter = ({
                 variant="outline"
                 className="w-full sm:w-auto"
               >
-                {t("dialog.buttons.updateBidStatus")}
+                تحديث حالة المزاد
               </Button>
               <Button
                 onClick={() => setShowBanUserForm(true)}
                 variant="outline"
                 className="w-full sm:w-auto"
               >
-                {t("dialog.buttons.banUserFromBid")}
+                حظر مستخدم من المزاد
               </Button>
             </>
           )}
@@ -430,7 +426,7 @@ export const ViewItemFooter = ({
                   {updatingStatus ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   ) : null}
-                  {t("dialog.buttons.approve")}
+                  موافقة
                 </Button>
               ) : (
                 <Button
@@ -439,7 +435,7 @@ export const ViewItemFooter = ({
                   disabled={updatingStatus}
                   className={`w-full sm:w-auto bg-orange-500 hover:bg-orange-500`}
                 >
-                  {t("dialog.buttons.markPending")}
+                  تحديد كمعلق
                 </Button>
               )}
               <Button
@@ -454,8 +450,8 @@ export const ViewItemFooter = ({
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : null}
                 {item?.is_active === "active"
-                  ? t("dialog.buttons.block")
-                  : t("dialog.buttons.unblock")}
+                  ? "حظر"
+                  : "إلغاء الحظر"}
               </Button>
             </>
           )}

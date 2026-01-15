@@ -1,63 +1,63 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
+import { Switch } from "@/components/ui/switch"
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ direction: "rtl" }}>
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Manage your application settings and preferences</p>
+        <h1 className="text-3xl font-bold tracking-tight">الإعدادات</h1>
+        <p className="text-muted-foreground">إدارة إعدادات التطبيق وتفضيلاتك</p>
       </div>
 
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>General Settings</CardTitle>
-            <CardDescription>Basic application configuration</CardDescription>
+            <CardTitle>الإعدادات العامة</CardTitle>
+            <CardDescription>التكوين الأساسي للتطبيق</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">
-              <Label htmlFor="app-name">Application Name</Label>
-              <Input id="app-name" defaultValue="SHFLI Admin Dashboard" />
+              <Label htmlFor="app-name">اسم التطبيق</Label>
+              <Input id="app-name" defaultValue="لوحة تحكم شفلي" />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="app-description">Description</Label>
-              <Input id="app-description" defaultValue="Admin dashboard for SHFLI application" />
+              <Label htmlFor="app-description">الوصف</Label>
+              <Input id="app-description" defaultValue="لوحة تحكم المدير لتطبيق شفلي" />
             </div>
-            <Button>Save Changes</Button>
+            <Button>حفظ التغييرات</Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Notifications</CardTitle>
-            <CardDescription>Configure how you receive notifications</CardDescription>
+            <CardTitle>الإشعارات</CardTitle>
+            <CardDescription>تكوين كيفية تلقي الإشعارات</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Email Notifications</Label>
-                <p className="text-sm text-muted-foreground">Receive notifications via email</p>
+                <Label>إشعارات البريد الإلكتروني</Label>
+                <p className="text-sm text-muted-foreground">تلقي الإشعارات عبر البريد الإلكتروني</p>
               </div>
               <Switch defaultChecked />
             </div>
             <Separator />
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Push Notifications</Label>
-                <p className="text-sm text-muted-foreground">Receive push notifications in browser</p>
+                <Label>إشعارات المتصفح</Label>
+                <p className="text-sm text-muted-foreground">تلقي إشعارات الدفع في المتصفح</p>
               </div>
               <Switch />
             </div>
             <Separator />
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>SMS Notifications</Label>
-                <p className="text-sm text-muted-foreground">Receive notifications via SMS</p>
+                <Label>إشعارات SMS</Label>
+                <p className="text-sm text-muted-foreground">تلقي الإشعارات عبر SMS</p>
               </div>
               <Switch />
             </div>
@@ -66,26 +66,26 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Security</CardTitle>
-            <CardDescription>Manage your security preferences</CardDescription>
+            <CardTitle>الأمان</CardTitle>
+            <CardDescription>إدارة تفضيلات الأمان الخاصة بك</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Two-Factor Authentication</Label>
-                <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
+                <Label>المصادقة الثنائية</Label>
+                <p className="text-sm text-muted-foreground">أضف طبقة إضافية من الأمان إلى حسابك</p>
               </div>
               <Switch />
             </div>
             <Separator />
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Session Timeout</Label>
-                <p className="text-sm text-muted-foreground">Automatically log out after inactivity</p>
+                <Label>مهلة الجلسة</Label>
+                <p className="text-sm text-muted-foreground">تسجيل الخروج تلقائياً بعد عدم النشاط</p>
               </div>
               <Switch defaultChecked />
             </div>
-            <Button variant="outline">Change Password</Button>
+            <Button variant="outline">تغيير كلمة المرور</Button>
           </CardContent>
         </Card>
       </div>

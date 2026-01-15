@@ -1,28 +1,26 @@
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { SendNotificationPopup } from "@/components/SendNotificationPopup";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
 } from "@/components/ui/card";
-import { getUserInfo, putUserInfo, sendNotTeam } from "@/services/restApiServices";
-import { IUser } from "@/interfaces";
-import { useTranslation } from "react-i18next";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Edit, MessageCircle, Save, X, XIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { CustomBadge } from "@/components/ui/custom-badge";
-import { toast } from "sonner";
-import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SendNotificationPopup } from "@/components/SendNotificationPopup";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { IUser } from "@/interfaces";
+import { getUserInfo, putUserInfo, sendNotTeam } from "@/services/restApiServices";
+import { AlertCircle, Edit, MessageCircle, Save, X, XIcon } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export const UserInfo = () => {
-  const { t, i18n } = useTranslation();
-  const [userId, setUserId] = useState("");
+    const [userId, setUserId] = useState("");
   const [userData, setUserData] = useState<IUser | null>(null);
   const [editData, setEditData] = useState<Partial<IUser>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +30,7 @@ export const UserInfo = () => {
 
   const handleFetchUser = async () => {
     if (!userId.trim()) {
-      setError(t("errors.emptyUserID"));
+      setError("الرجاء إدخال ID المستخدم");
       return;
     }
 
@@ -45,7 +43,7 @@ export const UserInfo = () => {
       const data = await getUserInfo(userId);
       setUserData(data);
     } catch (error) {
-      setError(t("errors.invalidUserID"));
+      setError("ID غير صالح. يُرجى المحاولة مرة أخرى.");
       console.error("Error fetching user data:", error);
     } finally {
       setIsLoading(false);
@@ -82,9 +80,9 @@ export const UserInfo = () => {
       handleFetchUser();
       setEditData({});
       setIsEditing(false);
-      toast.success(t("userInfo.updateSuccess"));
+      toast.success("تم تحديث المستخدم بنجاح");
     } catch (error) {
-      toast.error(t("errors.updateFailed"));
+      toast.error("فشل في تحديث المستخدم");
       console.error("Error updating user data:", error);
     } finally {
       setIsLoading(false);
@@ -92,23 +90,23 @@ export const UserInfo = () => {
   };
 
   const formatDate = (date: Date | null) => {
-    if (!date) return t("userInfo.notAvailable");
+    if (!date) return "غير متوفر";
     return new Date(date).toLocaleDateString();
   };
 
   const formatBoolean = (value: boolean | null) => {
-    if (value === null) return t("userInfo.notAvailable");
-    return value ? t("userInfo.yes") : t("userInfo.no");
+    if (value === null) return "غير متوفر";
+    return value ? "نعم" : "لا";
   };
 
   const getAccountTypeBadge = (type: "individual" | "business") => {
     return type === "individual" ? (
       <Badge variant="outline" className="bg-blue-100 text-blue-800">
-        {t("userInfo.individual")}
+        فرد
       </Badge>
     ) : (
       <Badge variant="outline" className="bg-purple-100 text-purple-800">
-        {t("userInfo.business")}
+        عمل
       </Badge>
     );
   };
@@ -116,17 +114,17 @@ export const UserInfo = () => {
   return (
     <div
       className="mx-auto p-4"
-      style={{ direction: i18n.language === "ar" ? "rtl" : "ltr" }}
+      style={{ direction: "rtl" }}
     >
       <div className="flex flex-row">
-        <h1 className="text-2xl font-bold mb-6">{t("userInfo.title")}</h1>
+        <h1 className="text-2xl font-bold mb-6">معلومات المستخدم</h1>
       </div>
 
       <div className="flex gap-2 mb-6">
         <div className="relative flex-1">
           <Input
             type="text"
-            placeholder={t("userInfo.userIdPlaceholder")}
+            placeholder="أدخل معرف المستخدم أو البريد الإلكتروني"
             value={userId}
             onChange={(e) => {
               setUserId(e.target.value);
@@ -149,7 +147,7 @@ export const UserInfo = () => {
           </Button>
         </div>
         <Button onClick={handleFetchUser} disabled={isLoading}>
-          {isLoading ? t("userInfo.loading") : t("userInfo.getUser")}
+          {isLoading ? "جاري التحميل..." : "الحصول على المستخدم"}
         </Button>
       </div>
 
@@ -182,7 +180,7 @@ export const UserInfo = () => {
                           onChange={(e) =>
                             handleInputChange("first_name", e.target.value)
                           }
-                          placeholder={t("userInfo.firstName")}
+                           placeholder="الاسم"
                           className="w-32"
                         />
                         <Input
@@ -190,7 +188,7 @@ export const UserInfo = () => {
                           onChange={(e) =>
                             handleInputChange("last_name", e.target.value)
                           }
-                          placeholder={t("userInfo.lastName")}
+                           placeholder="الكنية"
                           className="w-32"
                         />
                       </div>
@@ -203,17 +201,17 @@ export const UserInfo = () => {
                       {getAccountTypeBadge(userData.account_type)}
                       {userData.blocked && (
                         <Badge variant="destructive">
-                          {t("userInfo.blocked")}
+                          محظور
                         </Badge>
                       )}
                       {userData.account_verified && (
                         <CustomBadge variant="active">
-                          {t("userInfo.verified")}
+                          موثق
                         </CustomBadge>
                       )}
                       {userData.deleted_at && (
                         <Badge variant="destructive">
-                          {t("userInfo.deleted")}
+                          محذوف
                         </Badge>
                       )}
                     </div>
@@ -228,7 +226,7 @@ export const UserInfo = () => {
                         onClick={() => setIsEditing(true)}
                       >
                         <Edit className="h-4 w-4 mr-2" />
-                        {t("userInfo.edit")}
+                        تعديل
                       </Button>
                       <SendNotificationPopup
                         is_public={false}
@@ -239,11 +237,11 @@ export const UserInfo = () => {
                           try {
                             await sendNotTeam(messageData);
                             toast.success(
-                              t("notificationPopup.NotificationSuccess")
+                              "تم إرسال الإشعار بنجاح"
                             );
                           } catch {
                             toast.error(
-                              t("notificationPopup.NotificationError")
+                              "فشل إرسال الإشعار"
                             );
                           } finally {
                             setLoadingNotification(false);
@@ -254,7 +252,7 @@ export const UserInfo = () => {
                           variant="outline"
                           className="flex-1 lg:flex-none"
                         >
-                          <MessageCircle /> {t("dialog.buttons.message")}
+                          <MessageCircle /> إرسال إشعار
                         </Button>
                       </SendNotificationPopup>
                     </>
@@ -266,7 +264,7 @@ export const UserInfo = () => {
                         onClick={() => setIsEditing(false)}
                       >
                         <X className="h-4 w-4 mr-2" />
-                        {t("userInfo.cancel")}
+                        إلغاء
                       </Button>
                       <Button
                         size="sm"
@@ -274,7 +272,7 @@ export const UserInfo = () => {
                         disabled={isLoading}
                       >
                         <Save className="h-4 w-4 mr-2" />
-                        {t("userInfo.save")}
+                        حفظ
                       </Button>
                     </>
                   )}
@@ -283,17 +281,17 @@ export const UserInfo = () => {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <h3 className="font-medium">{t("userInfo.basicInfo")}</h3>
+                <h3 className="font-medium">المعلومات الأساسية</h3>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.email")}
+                      البريد الإلكتروني
                     </p>
-                    <p>{userData.email || t("userInfo.notAvailable")}</p>
+                    <p>{userData.email || "غير متوفر"}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.phone")}
+                      رقم الهاتف
                     </p>
                     {isEditing ? (
                       <Input
@@ -307,22 +305,22 @@ export const UserInfo = () => {
                       <p
                         style={{
                           direction: "ltr",
-                          textAlign: i18n.language === "ar" ? "right" : "left",
+                          textAlign: "right",
                         }}
                       >
-                        {userData.phone_number || t("userInfo.notAvailable")}
+                        {userData.phone_number || "غير متوفر"}
                       </p>
                     )}
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.birthDate")}
+                      تاريخ الميلاد
                     </p>
                     <p>{formatDate(userData.birth_date)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.createdAt")}
+                      تاريخ الإنشاء
                     </p>
                     <p>{formatDate(userData.created_at)}</p>
                   </div>
@@ -330,11 +328,11 @@ export const UserInfo = () => {
               </div>
 
               <div className="space-y-2">
-                <h3 className="font-medium">{t("userInfo.accountStatus")}</h3>
+                <h3 className="font-medium">حالة الحساب</h3>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.verified")}
+                      موثق
                     </p>
                     {isEditing ? (
                       <div className="flex items-center space-x-2">
@@ -363,7 +361,7 @@ export const UserInfo = () => {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.phoneVerified")}
+                      الهاتف موثق
                     </p>
                     {isEditing ? (
                       <div className="flex items-center space-x-2">
@@ -391,7 +389,7 @@ export const UserInfo = () => {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.blocked")}
+                      محظور
                     </p>
                     {isEditing ? (
                       <div className="flex items-center space-x-2">
@@ -415,7 +413,7 @@ export const UserInfo = () => {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.deleted")}
+                      محذوف
                     </p>
                     {isEditing ? (
                       <div className="flex items-center space-x-2">
@@ -441,10 +439,10 @@ export const UserInfo = () => {
                     ) : (
                       <p>
                         {userData.deleted_at
-                          ? `${t("userInfo.yes")} (${formatDate(
+                          ? `نعم (${formatDate(
                               userData.deleted_at
                             )})`
-                          : t("userInfo.no")}
+                          : "لا"}
                       </p>
                     )}
                   </div>
@@ -452,10 +450,10 @@ export const UserInfo = () => {
               </div>
 
               <div className="space-y-2">
-                <h3 className="font-medium">{t("userInfo.additionalInfo")}</h3>
+                <h3 className="font-medium">معلومات إضافية</h3>
                 <div>
                   <p className="text-sm text-muted-foreground">
-                    {t("userInfo.roles")}
+                    الأدوار
                   </p>
                   <div className="flex gap-1 flex-wrap">
                     {userData.roles.length > 0 ? (
@@ -465,13 +463,13 @@ export const UserInfo = () => {
                         </Badge>
                       ))
                     ) : (
-                      <p>{t("userInfo.notAvailable")}</p>
+                      <p>غير متوفر</p>
                     )}
                   </div>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">
-                    {t("userInfo.contactData")}
+                    معلومات الاتصال
                   </p>
                   {isEditing ? (
                     <Textarea
@@ -482,7 +480,7 @@ export const UserInfo = () => {
                       className="min-w-[500px]"
                     />
                   ) : (
-                    <p>{userData.contact_data || t("userInfo.notAvailable")}</p>
+                    <p>{userData.contact_data || "غير متوفر"}</p>
                   )}
                 </div>
               </div>
@@ -498,7 +496,7 @@ export const UserInfo = () => {
             <Card className="flex-grow mt-0">
               <CardHeader>
                 <h2 className="text-xl font-semibold flex items-center gap-2">
-                  {t("userInfo.businessInfo")}
+                  معلومات العمل
                   {userData.business_account?.business_name && (
                     <span className="text-muted-foreground">
                       - {userData.business_account?.business_name}
@@ -510,60 +508,58 @@ export const UserInfo = () => {
                 <div className="space-y-2">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.businessType")}
+                      نوع العمل
                     </p>
                     <p>
-                      {userData.business_account?.business_type?.[
-                        i18n.language as "ar" | "en"
-                      ] || t("userInfo.notAvailable")}
+                      {userData.business_account?.business_type?.ar || "غير متوفر"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.businessEmail")}
+                      البريد الإلكتروني للعمل
                     </p>
                     <p>
                       {userData.business_account?.business_email ||
-                        t("userInfo.notAvailable")}
+                        "غير متوفر"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.businessPhone")}
+                      هاتف العمل
                     </p>
                     <p
                       style={{
                         direction: "ltr",
-                        textAlign: i18n.language === "ar" ? "right" : "left",
+                        textAlign: "right",
                       }}
                     >
                       {userData.business_account?.business_phone_number ||
-                        t("userInfo.notAvailable")}
+                        "غير متوفر"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.taxNumber")}
+                      الرقم الضريبي
                     </p>
                     <p>
                       {userData.business_account?.tax_number ||
-                        t("userInfo.notAvailable")}
+                        "غير متوفر"}
                     </p>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.businessAddress")}
+                      عنوان العمل
                     </p>
                     <p>
                       {userData.business_account?.business_address ||
-                        t("userInfo.notAvailable")}
+                        "غير متوفر"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">
-                      {t("userInfo.websiteUrl")}
+                      رابط الموقع
                     </p>
                     <p>
                       {userData.business_account?.website_url ? (
@@ -576,7 +572,7 @@ export const UserInfo = () => {
                           {userData.business_account?.website_url}
                         </a>
                       ) : (
-                        t("userInfo.notAvailable")
+                        "غير متوفر"
                       )}
                     </p>
                   </div>
@@ -585,7 +581,7 @@ export const UserInfo = () => {
               {userData.business_account?.business_description && (
                 <CardFooter className="flex flex-col items-start gap-2">
                   <p className="text-sm text-muted-foreground">
-                    {t("userInfo.businessDescription")}
+                    وصف العمل
                   </p>
                   <p className="text-sm">
                     {userData.business_account?.business_description}
@@ -599,7 +595,7 @@ export const UserInfo = () => {
         !isLoading &&
         !error && (
           <div className="text-center py-8 text-muted-foreground">
-            {t("userInfo.noUserSelected")}
+            لم يتم اختيار مستخدم
           </div>
         )
       )}
