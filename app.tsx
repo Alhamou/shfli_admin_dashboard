@@ -33,7 +33,8 @@ import { UserInfo } from "./src/pages/UsersPage";
 interface AuthContextType {
   isAuthenticated: boolean;
   user: IObjectToken | null;
-  login: (data: ILogin, asGuest?: boolean) => Promise<void>;
+  sendLoginOtp: (identifier: string) => Promise<void>;
+  verifyOtp: (identifier: string, otpCode: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -61,16 +62,26 @@ function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = async (data: ILogin) => {
+  const sendLoginOtp = async (identifier: string) => {
     try {
-      const res = await signin(data);
+      await signin({ identifier, password: "" });
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const verifyOtp = async (identifier: string, otpCode: string) => {
+    try {
+      const { verifyOtp: verifyOtpService } = await import("@/services/authServices");
+      const res = await verifyOtpService({ identifier, otp_code: otpCode });
       if (res.token) {
         saveTokenInLocalStorage(res.token);
         setIsAuthenticated(true);
         setUser(jwtDecode<IObjectToken>(res.token));
       }
-      setIsAuthenticated(true);
-    } catch (err) {}
+    } catch (err) {
+      throw err;
+    }
   };
 
   const logout = () => {
@@ -80,7 +91,9 @@ function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, sendLoginOtp, verifyOtp, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
