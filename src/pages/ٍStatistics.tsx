@@ -1,3 +1,4 @@
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import storageController from "@/controllers/storageController";
 import { Stat } from "@/interfaces";
 import {
@@ -6,7 +7,7 @@ import {
     getSoldStats,
     getUserStats,
 } from "@/services/restApiServices";
-import { RefreshCwIcon } from "lucide-react";
+import { BarChart3, Briefcase, Package, RefreshCw, ShoppingCart, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type DaysOfTheWeek = "Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat";
@@ -24,32 +25,42 @@ const STATS_KEYS = {
   SOLD: "stats_sold",
 };
 
-// Color classes for different stat types
+// Color classes for different stat types - Premium styling
 const statColors = {
   users: {
-    bg: "bg-blue-100 dark:bg-blue-900/30",
-    border: "border-blue-300 dark:border-blue-700",
+    bg: "bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/50 dark:to-blue-900/30",
+    border: "border-blue-200/50 dark:border-blue-800/50",
     text: "text-blue-600 dark:text-blue-400",
+    icon: "bg-blue-500 dark:bg-blue-600",
   },
   ads: {
-    bg: "bg-green-100 dark:bg-green-900/30",
-    border: "border-green-300 dark:border-green-700",
-    text: "text-green-600 dark:text-green-400",
+    bg: "bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/50 dark:to-emerald-900/30",
+    border: "border-emerald-200/50 dark:border-emerald-800/50",
+    text: "text-emerald-600 dark:text-emerald-400",
+    icon: "bg-emerald-500 dark:bg-emerald-600",
   },
   jobs: {
-    bg: "bg-purple-100 dark:bg-purple-900/30",
-    border: "border-purple-300 dark:border-purple-700",
+    bg: "bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/50 dark:to-purple-900/30",
+    border: "border-purple-200/50 dark:border-purple-800/50",
     text: "text-purple-600 dark:text-purple-400",
+    icon: "bg-purple-500 dark:bg-purple-600",
   },
   sold: {
-    bg: "bg-amber-100 dark:bg-amber-900/30",
-    border: "border-amber-300 dark:border-amber-700",
+    bg: "bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/50 dark:to-amber-900/30",
+    border: "border-amber-200/50 dark:border-amber-800/50",
     text: "text-amber-600 dark:text-amber-400",
+    icon: "bg-amber-500 dark:bg-amber-600",
   },
 };
 
-export function StatisticsPage() {
+const statIcons = {
+  users: Users,
+  ads: Package,
+  jobs: Briefcase,
+  sold: ShoppingCart,
+};
 
+export function StatisticsPage() {
   // Stats data
   const [usersStats, setUsersStats] = useState<StatData | null>(null);
   const [adsStats, setAdsStats] = useState<StatData | null>(null);
@@ -168,295 +179,230 @@ export function StatisticsPage() {
   const currentDayName = getCurrentDayName();
 
   return (
-    <div className={`container mx-auto px-4 py-8`}>
-      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-        لوحة إحصائيات النظام
-      </h1>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/25">
+          <BarChart3 className="h-5 w-5 text-primary-foreground" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">لوحة الإحصائيات</h1>
+          <p className="text-sm text-muted-foreground">
+            إحصائيات النظام والتقارير اليومية
+          </p>
+        </div>
+      </div>
 
-      {/* Current Stats Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        {/* Users */}
-        <StatSection
+      {/* Current Stats Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <StatCard
           title="المستخدمين"
+          value={usersStats?.[currentDateKey] || usersStats?.[currentDayName] || 0}
           stat={usersStats}
           loading={loading.users}
           onRefresh={fetchUsersStats}
           type="users"
           formatDate={formatDate}
-          showBtn={false}
-        >
-          {usersStats && (
-            <div className="text-5xl font-bold py-4 text-center">
-              <span className={statColors.users.text}>
-                {usersStats[currentDateKey] || usersStats[currentDayName] || 0}
-              </span>
-            </div>
-          )}
-        </StatSection>
-
-        {/* Ads */}
-        <StatSection
+        />
+        <StatCard
           title="الإعلانات"
+          value={adsStats?.[currentDateKey] || adsStats?.[currentDayName] || 0}
           stat={adsStats}
           loading={loading.ads}
           onRefresh={fetchAdsStats}
           type="ads"
           formatDate={formatDate}
-          showBtn={false}
-        >
-          {adsStats && (
-            <div className="text-5xl font-bold py-4 text-center">
-              <span className={statColors.ads.text}>
-                {adsStats[currentDateKey] || adsStats[currentDayName] || 0}
-              </span>
-            </div>
-          )}
-        </StatSection>
-
-        {/* Jobs */}
-        <StatSection
+        />
+        <StatCard
           title="الوظائف"
+          value={jobsStats?.[currentDateKey] || jobsStats?.[currentDayName] || 0}
           stat={jobsStats}
           loading={loading.jobs}
           onRefresh={fetchJobsStats}
           type="jobs"
           formatDate={formatDate}
-          showBtn={false}
-        >
-          {jobsStats && (
-            <div className="text-5xl font-bold py-4 text-center">
-              <span className={statColors.jobs.text}>
-                {jobsStats[currentDateKey] || jobsStats[currentDayName] || 0}
-              </span>
-            </div>
-          )}
-        </StatSection>
-
-        {/* Sold Items */}
-        <StatSection
+        />
+        <StatCard
           title="المبيعات"
+          value={soldStats?.[currentDateKey] || soldStats?.[currentDayName] || 0}
           stat={soldStats}
           loading={loading.sold}
           onRefresh={fetchSoldStats}
           type="sold"
           formatDate={formatDate}
-          showBtn={false}
-        >
-          {soldStats && (
-            <div className="text-5xl font-bold py-4 text-center">
-              <span className={statColors.sold.text}>
-                {soldStats[currentDateKey] || soldStats[currentDayName] || 0}
-              </span>
-            </div>
-          )}
-        </StatSection>
+        />
       </div>
 
-      {/* Last 9 Days Stats Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      {/* History Sections */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Users History */}
-        <StatSection
+        <StatHistoryCard
           title="سجل المستخدمين"
           stat={usersStats}
           loading={loading.users}
           onRefresh={fetchUsersStats}
           type="users"
           formatDate={formatDate}
-          showBtn
-        >
-          {usersStats && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {getLastNineDaysData(usersStats).map(
-                ({ date, dayName, value }) => (
-                  <StatCard
-                    key={date}
-                    label={dayName}
-                    value={value}
-                    type="users"
-                    highlight={dayName === currentDayName}
-                  />
-                )
-              )}
-            </div>
-          )}
-        </StatSection>
+          currentDayName={currentDayName}
+          getLastNineDaysData={getLastNineDaysData}
+        />
 
         {/* Ads History */}
-        <StatSection
+        <StatHistoryCard
           title="سجل الإعلانات"
           stat={adsStats}
           loading={loading.ads}
           onRefresh={fetchAdsStats}
           type="ads"
           formatDate={formatDate}
-          showBtn
-        >
-          {adsStats && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {getLastNineDaysData(adsStats).map(({ date, dayName, value }) => (
-                <StatCard
-                  key={date}
-                  label={dayName}
-                  value={value}
-                  type="ads"
-                  highlight={dayName === currentDayName}
-                />
-              ))}
-            </div>
-          )}
-        </StatSection>
+          currentDayName={currentDayName}
+          getLastNineDaysData={getLastNineDaysData}
+        />
 
         {/* Jobs History */}
-        <StatSection
+        <StatHistoryCard
           title="سجل الوظائف"
           stat={jobsStats}
           loading={loading.jobs}
           onRefresh={fetchJobsStats}
           type="jobs"
           formatDate={formatDate}
-          showBtn
-        >
-          {jobsStats && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {getLastNineDaysData(jobsStats).map(
-                ({ date, dayName, value }) => (
-                  <StatCard
-                    key={date}
-                    label={dayName}
-                    value={value}
-                    type="jobs"
-                    highlight={dayName === currentDayName}
-                  />
-                )
-              )}
-            </div>
-          )}
-        </StatSection>
+          currentDayName={currentDayName}
+          getLastNineDaysData={getLastNineDaysData}
+        />
+
         {/* Sold History */}
-        <StatSection
+        <StatHistoryCard
           title="سجل المبيعات"
           stat={soldStats}
           loading={loading.sold}
           onRefresh={fetchSoldStats}
           type="sold"
           formatDate={formatDate}
-          showBtn
-        >
-          {soldStats && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {getLastNineDaysData(soldStats).map(
-                ({ date, dayName, value }) => (
-                  <StatCard
-                    key={date}
-                    label={dayName}
-                    value={value}
-                    type="sold"
-                    highlight={dayName === currentDayName}
-                  />
-                )
-              )}
-            </div>
-          )}
-        </StatSection>
+          currentDayName={currentDayName}
+          getLastNineDaysData={getLastNineDaysData}
+        />
       </div>
     </div>
   );
 }
 
-function StatSection({
+// Main stat card component
+function StatCard({
+  title,
+  value,
+  stat,
+  loading,
+  onRefresh,
+  type,
+  formatDate,
+}: {
+  title: string;
+  value: number;
+  stat: StatData | null;
+  loading: boolean;
+  onRefresh: () => void;
+  type: "users" | "ads" | "jobs" | "sold";
+  formatDate: (date?: string) => string;
+}) {
+  const Icon = statIcons[type];
+
+  return (
+    <Card className={`shadow-sm border ${statColors[type].border} ${statColors[type].bg} overflow-hidden`}>
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between">
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className={`text-4xl font-bold ${statColors[type].text}`}>
+              {stat ? value : "—"}
+            </p>
+            {stat?.lastUpdated && (
+              <p className="text-xs text-muted-foreground">
+                آخر تحديث: {formatDate(stat.lastUpdated)}
+              </p>
+            )}
+          </div>
+          <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${statColors[type].icon} shadow-lg`}>
+            <Icon className="h-6 w-6 text-white" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// History card component
+function StatHistoryCard({
   title,
   stat,
   loading,
   onRefresh,
-  children,
   type,
   formatDate,
-  showBtn,
+  currentDayName,
+  getLastNineDaysData,
 }: {
   title: string;
-  stat: any;
+  stat: StatData | null;
   loading: boolean;
   onRefresh: () => void;
-  children: React.ReactNode;
   type: "users" | "ads" | "jobs" | "sold";
   formatDate: (date?: string) => string;
-  showBtn: boolean;
+  currentDayName: string;
+  getLastNineDaysData: (stats: StatData | null) => { date: string; dayName: string; value: number }[];
 }) {
   return (
-    <div
-      className={`rounded-lg shadow p-6 transition-colors duration-200 ${statColors[type].bg} ${statColors[type].border} border`}
-    >
-      <div className={`flex flex-col sm:flex-row justify-between gap-4 mb-4`}>
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-          {title}
-        </h2>
-        <div className={`flex items-center gap-2`}>
+    <Card className="shadow-sm border-border/50">
+      <CardHeader className="pb-3 flex flex-row items-center justify-between">
+        <h3 className="font-semibold">{title}</h3>
+        <div className="flex items-center gap-2">
           {stat?.lastUpdated && (
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-muted-foreground hidden sm:inline">
               {formatDate(stat.lastUpdated)}
             </span>
           )}
-          {showBtn && (
-            <button
-              onClick={onRefresh}
-              disabled={loading}
-              className={`px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-blue-900 transition-colors duration-200 flex items-center gap-1.5`}
-            >
-              {loading ? (
-                <>
-                  <RefreshCwIcon className="animate-spin h-4 w-4" />
-                  جاري التحديث...
-                </>
-              ) : (
-                <>
-                  <RefreshCwIcon className="h-4 w-4" />
-                  تحديث
-                </>
-              )}
-            </button>
-          )}
+          <button
+            onClick={onRefresh}
+            disabled={loading}
+            className={`
+              p-2 rounded-lg transition-all duration-200
+              ${loading
+                ? "bg-muted text-muted-foreground"
+                : "bg-primary/10 text-primary hover:bg-primary/20"
+              }
+            `}
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </button>
         </div>
-      </div>
-
-      {stat ? (
-        children
-      ) : (
-        <div className="h-32 flex items-center justify-center">
-          <p className="text-gray-500 dark:text-gray-400">
-            {loading
-              ? "جاري التحميل..."
-              : "لا توجد بيانات متاحة"}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Reusable StatCard component (unchanged)
-function StatCard({
-  label,
-  value,
-  type,
-  highlight = false,
-}: {
-  label: string;
-  value: number;
-  type: "users" | "ads" | "jobs" | "sold";
-  highlight?: boolean;
-}) {
-  return (
-    <div
-      className={`border rounded-lg p-3 transition-all duration-200 ${
-        highlight
-          ? `border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/30`
-          : `${statColors[type].border} ${statColors[type].bg}`
-      }`}
-    >
-      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-        {label}
-      </h3>
-      <p className={`text-2xl font-bold ${statColors[type].text}`}>{value}</p>
-    </div>
+      </CardHeader>
+      <CardContent>
+        {stat ? (
+          <div className="grid grid-cols-3 gap-3">
+            {getLastNineDaysData(stat).map(({ date, dayName, value }) => (
+              <div
+                key={date}
+                className={`
+                  p-3 rounded-xl border transition-all duration-200
+                  ${dayName === currentDayName
+                    ? `${statColors[type].bg} ${statColors[type].border} shadow-sm`
+                    : "bg-muted/30 border-border/50"
+                  }
+                `}
+              >
+                <p className="text-xs font-medium text-muted-foreground mb-1">{dayName}</p>
+                <p className={`text-xl font-bold ${statColors[type].text}`}>{value}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="h-32 flex items-center justify-center">
+            <p className="text-muted-foreground">
+              {loading ? "جاري التحميل..." : "لا توجد بيانات متاحة"}
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

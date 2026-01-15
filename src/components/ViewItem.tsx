@@ -1,19 +1,20 @@
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { ICreatMainItem } from "@/interfaces";
 import { getItem, getReasons, updateItem } from "@/services/restApiServices";
-import { Loader2 } from "lucide-react";
+import { Loader2, Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ViewItemActions } from "./ViewItemActions";
 import { ViewItemFooter } from "./ViewItemFooter";
 import { ViewItemImages } from "./ViewItemImages";
 import { ViewItemMiddleColumn } from "./ViewItemMiddleColumn";
+import { Badge } from "./ui/badge";
 
 interface ItemDetailViewProps {
   uuid: string;
@@ -170,76 +171,126 @@ export function ItemDetailView({
     setIsEditing(false);
   }, [open, uuid]);
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "active": return "نشط";
+      case "blocked": return "محظور";
+      case "pending": return "معلق";
+      default: return status;
+    }
+  };
+
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case "active": return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+      case "blocked": return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+      default: return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-[85vw] w-full max-h-[100vh] overflow-y-auto p-4 sm:p-6">
-        <DialogHeader></DialogHeader>
-        <DialogTitle></DialogTitle>
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <span className="sr-only">جاري التحميل...</span>
+      <DialogContent className="sm:max-w-[95vw] lg:max-w-[90vw] xl:max-w-[85vw] w-full max-h-[95vh] p-0 flex flex-col">
+        {/* Header */}
+        <DialogHeader className="px-6 py-4 border-b bg-muted/30 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/25">
+                <Package className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg font-semibold">
+                  {item?.title || "تفاصيل المنشور"}
+                </DialogTitle>
+                <div className="flex items-center gap-2 mt-1">
+                  {item && (
+                    <>
+                      <Badge variant="outline" className="text-xs">
+                        ID: {item.id}
+                      </Badge>
+                      <Badge className={`text-xs border-0 ${getStatusVariant(item.is_active)}`}>
+                        {getStatusLabel(item.is_active)}
+                      </Badge>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        ) : error ? (
-          <div className="text-center py-8 text-destructive">
-            {error}
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => {
-                fetchItem(uuid);
-              }}
-            >
-              إعادة المحاولة
-            </Button>
+        </DialogHeader>
+
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <div className="p-6">
+            {loading ? (
+              <div className="flex flex-col justify-center items-center h-64">
+                <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+                <span className="text-muted-foreground">جاري التحميل...</span>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10 mb-4">
+                  <Package className="h-8 w-8 text-destructive" />
+                </div>
+                <p className="text-destructive font-medium mb-2">{error}</p>
+                <Button
+                  variant="outline"
+                  onClick={() => fetchItem(uuid)}
+                  className="mt-2"
+                >
+                  إعادة المحاولة
+                </Button>
+              </div>
+            ) : item ? (
+              <div className="flex flex-col lg:flex-row-reverse gap-6">
+                {/* Images - Left on RTL */}
+                <ViewItemImages item={item} />
+
+                {/* Details - Center */}
+                <ViewItemMiddleColumn
+                  isEditing={isEditing}
+                  item={item}
+                  editedFields={editedFields}
+                  originalItem={originalItem}
+                  setEditedFields={setEditedFields}
+                  setItem={setItem}
+                />
+
+                {/* Actions - Right on RTL */}
+                <ViewItemActions
+                  editedFields={editedFields}
+                  handleEditToggle={handleEditToggle}
+                  handleSave={handleSave}
+                  isEditing={isEditing}
+                  updatingStatus={updatingStatus}
+                  item={item}
+                  fetchItem={fetchItem}
+                  onItemUpdate={onItemUpdate}
+                />
+              </div>
+            ) : null}
           </div>
-        ) : item ? (
-          <div
-            className="flex flex-col lg:flex-row-reverse"
-          >
-            {/* Left Column - Images */}
-            <ViewItemImages item={item} />
+        </div>
 
-            {/* Middle Column - Details */}
-
-            <ViewItemMiddleColumn
-              isEditing={isEditing}
+        {/* Footer - Fixed at bottom with scrollable content */}
+        {item && (
+          <div className="border-t bg-muted/30 px-6 py-4 flex-shrink-0 max-h-[45vh] overflow-y-auto">
+            <ViewItemFooter
+              blockReasons={blockReasons}
+              customReason={customReason}
+              handleBlockAction={handleBlockAction}
+              handleStatusToggle={handleStatusToggle}
               item={item}
-              editedFields={editedFields}
-              originalItem={originalItem}
-              setEditedFields={setEditedFields}
-              setItem={setItem}
-            />
-
-            {/* Right Column - Actions */}
-            <ViewItemActions
-              editedFields={editedFields}
-              handleEditToggle={handleEditToggle}
-              handleSave={handleSave}
-              isEditing={isEditing}
+              selectedReason={selectedReason}
+              setCustomReason={setCustomReason}
+              setSelectedReason={setSelectedReason}
+              setShowReasonInput={setShowReasonInput}
+              showReasonInput={showReasonInput}
               updatingStatus={updatingStatus}
-              item={item}
               fetchItem={fetchItem}
               onItemUpdate={onItemUpdate}
             />
           </div>
-        ) : null}
-        {item && (
-          <ViewItemFooter
-            blockReasons={blockReasons}
-            customReason={customReason}
-            handleBlockAction={handleBlockAction}
-            handleStatusToggle={handleStatusToggle}
-            item={item}
-            selectedReason={selectedReason}
-            setCustomReason={setCustomReason}
-            setSelectedReason={setSelectedReason}
-            setShowReasonInput={setShowReasonInput}
-            showReasonInput={showReasonInput}
-            updatingStatus={updatingStatus}
-            fetchItem={fetchItem}
-            onItemUpdate={onItemUpdate}
-          />
         )}
       </DialogContent>
     </Dialog>

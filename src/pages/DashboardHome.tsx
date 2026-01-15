@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CustomBadge } from "@/components/ui/custom-badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,7 +25,7 @@ import {
     updateItemInArray,
 } from "@/lib/helpFunctions";
 import { getAllItems, updateItem } from "@/services/restApiServices";
-import { Eye, XIcon } from "lucide-react";
+import { Eye, LayoutGrid, Search, Wifi, WifiOff, X } from "lucide-react";
 import "moment";
 import moment from "moment";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -240,116 +241,127 @@ export default function DashboardHome() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Sticky header section */}
-      <div className="sticky top-0 pt-4 pb-2">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="text-2xl font-bold">إدارة العناصر</div>
-            <div
-              className={`w-3 h-3 rounded-full ${
-                isSocketConnected ? "bg-green-500" : "bg-red-500"
-              }`}
-              title={
-                isSocketConnected
-                  ? "الاتصال نشط"
-                  : "الاتصال غير نشط"
-              }
-            />
+    <div className="flex flex-col h-full gap-4">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/25">
+            <LayoutGrid className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">إدارة العناصر</h1>
+            <p className="text-sm text-muted-foreground">
+              {pagination.total} عنصر في النظام
+            </p>
           </div>
         </div>
 
-        <div className="rounded-lg shadow">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        {/* Connection Status */}
+        <div className={`
+          flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300
+          ${isSocketConnected
+            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+            : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+          }
+        `}>
+          {isSocketConnected ? (
+            <>
+              <Wifi className="h-4 w-4" />
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              متصل
+            </>
+          ) : (
+            <>
+              <WifiOff className="h-4 w-4" />
+              غير متصل
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Search Section */}
+      <Card className="shadow-sm border-border/50">
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3">
             <div className="relative">
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="ابحث عن العناصر..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="w-full"
+                className="pr-10 bg-background border-border/50 focus:border-primary transition-colors"
                 style={{ direction: "ltr" }}
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute start-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                onClick={() => {
-                  setSearchTerm("");
-                }}
-              >
-                <XIcon className="h-4 w-4" color="red" />
-                <span className="sr-only">Clear</span>
-              </Button>
+              {searchTerm && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-1 top-1/2 -translate-y-1/2 h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
+                  onClick={() => setSearchTerm("")}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
             <div className="relative">
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="البحث حسب المستخدم..."
                 value={uuidSearchTerm}
                 onChange={handleUuidSearchChange}
-                className="w-full"
+                className="pr-10 bg-background border-border/50 focus:border-primary transition-colors"
                 style={{ direction: "ltr" }}
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute start-1 -top-[-5px] h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                onClick={() => {
-                  setUuidSearchTerm("");
-                }}
-              >
-                <XIcon className="h-4 w-4" color="red" />
-                <span className="sr-only">Clear</span>
-              </Button>
+              {uuidSearchTerm && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-1 top-1/2 -translate-y-1/2 h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
+                  onClick={() => setUuidSearchTerm("")}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
-            <div>
-              <Button onClick={handleFetchClick} disabled={loading}>
-                {loading ? "تحميل..." : "بحث"}
-              </Button>
-            </div>
+            <Button
+              onClick={handleFetchClick}
+              disabled={loading}
+              className="bg-primary hover:bg-primary/90 shadow-sm"
+            >
+              {loading ? "تحميل..." : "بحث"}
+            </Button>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        {/* Table header - also sticky below the search section */}
-        <div className="rounded-md border bg-background">
+      {/* Table Section */}
+      <Card className="flex-1 flex flex-col shadow-sm border-border/50 overflow-hidden">
+        <CardHeader className="py-3 px-4 border-b border-border/50 bg-muted/30">
           <Table>
-            <TableHeader className="sticky top-[210px] bg-background">
-              <TableRow>
-                <TableHead className="text-start">
-                  مميز
-                </TableHead>
-                <TableHead className="text-start">
-                  العنصر
-                </TableHead>
-                <TableHead className="text-start">
-                  الفئة
-                </TableHead>
-                <TableHead className="text-start">
-                  السعر
-                </TableHead>
-                <TableHead className="text-start">
-                  الموقع
-                </TableHead>
-                <TableHead className="text-start">
-                  الإحصائيات
-                </TableHead>
-                <TableHead className="text-start">
-                  الحالة
-                </TableHead>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-0">
+                <TableHead className="text-start font-semibold text-foreground/80 w-16">مميز</TableHead>
+                <TableHead className="text-start font-semibold text-foreground/80">العنصر</TableHead>
+                <TableHead className="text-start font-semibold text-foreground/80">الفئة</TableHead>
+                <TableHead className="text-start font-semibold text-foreground/80">السعر</TableHead>
+                <TableHead className="text-start font-semibold text-foreground/80">الموقع</TableHead>
+                <TableHead className="text-start font-semibold text-foreground/80">الإحصائيات</TableHead>
+                <TableHead className="text-start font-semibold text-foreground/80">الحالة</TableHead>
               </TableRow>
             </TableHeader>
           </Table>
-        </div>
-      </div>
+        </CardHeader>
 
-      {/* Scrollable content section */}
-      <div
-        className="flex-1 overflow-auto"
-        ref={tableContainerRef}
-        style={{ maxHeight: "calc(100vh - 280px)" }}
-      >
-        <div className="rounded-md border border-t-0">
+        <CardContent
+          className="flex-1 overflow-auto p-0"
+          ref={tableContainerRef}
+          style={{ maxHeight: "calc(100vh - 340px)" }}
+        >
           <Table>
             <TableBody>
               {items.map((item, index) => {
@@ -357,21 +369,24 @@ export default function DashboardHome() {
                   .locale("ar")
                   .fromNow();
                 return (
-                  <TableRow key={`${index}`}>
-                    <TableCell>
+                  <TableRow
+                    key={`${index}`}
+                    className="group hover:bg-muted/50 transition-colors duration-150 border-b border-border/30"
+                  >
+                    <TableCell className="w-16">
                       <input
                         type="checkbox"
                         checked={item.position === 1}
                         onChange={() => handlePositionToggle(item)}
-                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
                       />
                     </TableCell>
                     <TableCell
-                      className="flex items-center gap-4 cursor-pointer hover:bg-muted/50"
+                      className="flex items-center gap-4 cursor-pointer py-4"
                       onClick={() => setSelectedItemUuid(item.uuid)}
                     >
                       {item.item_as === "job" ? (
-                        <Avatar className="h-10 w-10">
+                        <Avatar className="h-12 w-12 border-2 border-primary/10 shadow-sm">
                           <AvatarImage
                             src={
                               item.thumbnail ||
@@ -379,14 +394,14 @@ export default function DashboardHome() {
                             }
                             alt={item.title}
                           />
-                          <AvatarFallback>
+                          <AvatarFallback className="bg-primary/10 text-primary font-medium">
                             {item.title.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                       ) : (
-                        <div className="relative h-40 w-40 flex-shrink-0">
+                        <div className="relative h-24 w-24 flex-shrink-0 rounded-xl overflow-hidden shadow-sm border border-border/50 group-hover:shadow-md transition-shadow">
                           <img
-                            className="h-full w-full rounded-md object-cover"
+                            className="h-full w-full object-cover"
                             src={
                               item.thumbnail ||
                               (item.images && item.images[0]?.url)
@@ -399,44 +414,36 @@ export default function DashboardHome() {
                           />
                         </div>
                       )}
-                      <div className="space-y-1 flex-1 min-w-0 max-w-40">
-                        {item.item_as === "job" ? (
-                          <p className="font-normal text-blue-600 dark:text-blue-400 truncate">
-                            {item.need
-                              ? "يبحث عن عمل"
-                              : "تبحث عن موظف"}
+                      <div className="space-y-1 flex-1 min-w-0 max-w-48">
+                        {item.item_as === "job" && (
+                          <p className="text-xs font-medium text-primary">
+                            {item.need ? "يبحث عن عمل" : "تبحث عن موظف"}
                           </p>
-                        ) : (
-                          <></>
                         )}
-                        <p className="font-medium truncate">{item.title}</p>
-                        <p
-                          className={`text-sm text-muted-foreground ${
-                            item.item_as === "job"
-                              ? "line-clamp-3"
-                              : "line-clamp-2"
-                          }`}
-                        >
+                        <p className="font-semibold truncate group-hover:text-primary transition-colors">
+                          {item.title}
+                        </p>
+                        <p className={`text-sm text-muted-foreground ${
+                          item.item_as === "job" ? "line-clamp-3" : "line-clamp-2"
+                        }`}>
                           {item.description}
                         </p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-1">
-                        <p>
-                          {item.category_name?.ar ||
-                            "غير متوفر"}
+                      <div className="space-y-0.5">
+                        <p className="font-medium text-sm">
+                          {item.category_name?.ar || "غير متوفر"}
                         </p>
-                        <p className="text-sm text-muted-foreground">
-                          {item.subcategory_name?.ar ||
-                            "غير متوفر"}
+                        <p className="text-xs text-muted-foreground">
+                          {item.subcategory_name?.ar || "غير متوفر"}
                         </p>
                       </div>
                     </TableCell>
                     <TableCell>
                       {item.price ? (
-                        <div className="space-y-1">
-                          <p className="font-medium">
+                        <div className="space-y-0.5">
+                          <p className="font-semibold text-sm">
                             {formatPrice(
                               item.discount
                                 ? getPriceDiscount(item.price, item.discount)
@@ -445,61 +452,54 @@ export default function DashboardHome() {
                             )}
                           </p>
                           {item.discount > 0 && (
-                            <p className="text-xs text-muted-foreground">
-                              خصم:{" "}
-                              {item.discount}%
+                            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                              خصم: {item.discount}%
                             </p>
                           )}
                         </div>
                       ) : (
-                        "غير متوفر"
+                        <span className="text-sm text-muted-foreground">غير متوفر</span>
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-1">
-                        <p>{item.city}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {item.state}
-                        </p>
+                      <div className="space-y-0.5">
+                        <p className="font-medium text-sm">{item.city}</p>
+                        <p className="text-xs text-muted-foreground">{item.state}</p>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Eye className="h-4 w-4 text-muted-foreground" />
-                          <span>{item.view_count || 0}</span>
+                        <div className="flex items-center gap-1.5 text-sm">
+                          <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="font-medium">{item.view_count || 0}</span>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {activated_at
-                            .replace(/^منذ\s*/, "")
-                            .replace(/\s*ago$/, "")}
+                        <p className="text-xs text-muted-foreground">
+                          {activated_at.replace(/^منذ\s*/, "").replace(/\s*ago$/, "")}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          المستخدم: <br /> {item.user_id}
+                        <p className="text-xs text-muted-foreground">
+                          ID: {item.user_id}
                         </p>
                         <p
-                          className="text-xs text-muted-foreground truncate text-end"
+                          className="text-xs text-muted-foreground"
                           style={{ direction: "ltr" }}
                         >
                           {item.client_details?.phone_number}
                         </p>
-                        <p className="text-sm text-muted-foreground truncate">
+                        <p className="text-xs text-muted-foreground truncate">
                           {(item.client_details?.first_name ?? "") +
                             " " +
                             (item.client_details?.last_name ?? "")}
                         </p>
                         {item.client_details?.account_type === "business" &&
                           item.client_details?.business_name && (
-                            <p className="text-sm text-muted-foreground truncate">
-                              اسم العمل
-                              {": "} <br />
+                            <p className="text-xs text-primary/80 truncate font-medium">
                               {item.client_details?.business_name}
                             </p>
                           )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-1.5">
                         {getStatusBadge(item.is_active)}
                         {item.account_type && (
                           <CustomBadge
@@ -507,9 +507,7 @@ export default function DashboardHome() {
                             size="lg"
                             className="whitespace-nowrap"
                           >
-                            {item.account_type === "business"
-                              ? "عمل"
-                              : "فرد"}
+                            {item.account_type === "business" ? "عمل" : "فرد"}
                           </CustomBadge>
                         )}
                         {item.client_details?.account_verified && (
@@ -546,14 +544,14 @@ export default function DashboardHome() {
               })}
               {loading && (
                 <>
-                  {[...Array(pagination.limit)].map((_, i) => (
+                  {[...Array(5)].map((_, i) => (
                     <TableRow key={`loading-${i}`}>
-                      <TableCell colSpan={6}>
-                        <div className="flex items-center space-x-4 p-4">
-                          <Skeleton className="h-12 w-12 rounded-full" />
-                          <div className="space-y-2">
-                            <Skeleton className="h-4 w-[250px]" />
-                            <Skeleton className="h-4 w-[200px]" />
+                      <TableCell colSpan={7}>
+                        <div className="flex items-center gap-4 p-3">
+                          <Skeleton className="h-24 w-24 rounded-xl" />
+                          <div className="space-y-2 flex-1">
+                            <Skeleton className="h-4 w-48" />
+                            <Skeleton className="h-3 w-32" />
                           </div>
                         </div>
                       </TableCell>
@@ -564,17 +562,20 @@ export default function DashboardHome() {
             </TableBody>
           </Table>
           {!hasMore && items.length > 0 && (
-            <div className="p-4 text-center text-muted-foreground">
+            <div className="p-6 text-center text-sm text-muted-foreground border-t border-border/30">
               لا توجد عناصر أخرى
             </div>
           )}
           {!loading && items.length === 0 && (
-            <div className="p-4 text-center text-muted-foreground">
-              لم يتم العثور على عناصر
+            <div className="p-12 text-center text-muted-foreground">
+              <LayoutGrid className="h-12 w-12 mx-auto mb-3 opacity-30" />
+              <p className="font-medium">لم يتم العثور على عناصر</p>
+              <p className="text-sm">جرب البحث بكلمات مختلفة</p>
             </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
+
       <ItemDetailView
         uuid={selectedItemUuid || ""}
         open={!!selectedItemUuid}

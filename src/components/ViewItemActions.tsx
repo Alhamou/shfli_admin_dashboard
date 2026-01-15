@@ -1,6 +1,6 @@
 import { ICreatMainItem } from "@/interfaces";
 import { sendNotTeam, updateItem } from "@/services/restApiServices";
-import { Edit, Loader2, MessageCircle, Save, X } from "lucide-react";
+import { Edit, ExternalLink, Flag, Loader2, MessageCircle, RefreshCw, Save, Share2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { SendNotificationPopup } from "./SendNotificationPopup";
@@ -15,6 +15,8 @@ import {
     AlertDialogTitle,
 } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
+import { Card, CardContent } from "./ui/card";
+import { Separator } from "./ui/separator";
 
 export const ViewItemActions = ({
   handleEditToggle,
@@ -73,102 +75,121 @@ export const ViewItemActions = ({
 
   return (
     <>
-      <div className="flex flex-row md:flex-col lg:min-w-32 lg:max-w-40 min-w-full mx-8">
-        {isEditing ? (
-          <>
+      <Card className="lg:w-48 xl:w-56 flex-shrink-0 h-fit sticky top-4">
+        <CardContent className="p-4 space-y-3">
+          {/* Edit Actions */}
+          {isEditing ? (
+            <div className="space-y-2">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleSave}
+                disabled={Object.keys(editedFields).length === 0}
+                className="w-full bg-primary hover:bg-primary/90"
+              >
+                <Save className="h-4 w-4 ml-2" />
+                حفظ التعديلات
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleEditToggle}
+                className="w-full hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30"
+              >
+                <X className="h-4 w-4 ml-2" />
+                إلغاء
+              </Button>
+            </div>
+          ) : (
             <Button
               variant="outline"
               size="sm"
               onClick={handleEditToggle}
-              className="flex-1 sm:flex-none"
+              className="w-full hover:bg-primary/10 hover:text-primary hover:border-primary/30"
             >
-              <X className="h-4 w-4 mr-2" /> إلغاء
+              <Edit className="h-4 w-4 ml-2" />
+              تعديل المنشور
             </Button>
-            <Button
-              variant="default"
-              size="sm"
-              onClick={handleSave}
-              disabled={Object.keys(editedFields).length === 0}
-              className="flex-1 sm:flex-none"
-            >
-              <Save className="h-4 w-4 mr-2" /> حفظ التعديلات
+          )}
+
+          <Separator />
+
+          {/* Communication */}
+          <SendNotificationPopup
+            is_public={false}
+            userId={item.user_id}
+            loading={loading}
+            item={item}
+            onSend={async (messageData) => {
+              setIsloading(true);
+              try {
+                await sendNotTeam(messageData);
+                toast.success("تم إرسال الإشعار بنجاح");
+              } catch {
+                toast.error("فشل في إرسال الإشعار");
+              } finally {
+                setIsloading(false);
+              }
+            }}
+          >
+            <Button variant="outline" size="sm" className="w-full">
+              <MessageCircle className="h-4 w-4 ml-2" />
+              مراسلة المستخدم
             </Button>
-          </>
-        ) : (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleEditToggle}
-            className="flex-1 sm:flex-none"
-          >
-            <Edit className="h-4 w-4 mr-2" /> تعديل المنشور
-          </Button>
-        )}
+          </SendNotificationPopup>
 
-        <SendNotificationPopup
-          is_public={false}
-          userId={item.user_id}
-          loading={loading}
-          item={item}
-          onSend={async (messageData) => {
-            setIsloading(true);
-            try {
-              await sendNotTeam(messageData);
-              toast.success("تم إرسال الإشعار بنجاح");
-            } catch {
-              toast.error("فشل في إرسال الإشعار");
-            } finally {
-              setIsloading(false);
-            }
-          }}
-        >
-          <Button variant="outline" className="flex-1 lg:flex-none">
-            <MessageCircle /> مراسلة المستخدم
-          </Button>
-        </SendNotificationPopup>
+          {/* Quick Actions */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="outline" size="sm" className="text-xs">
+              <Share2 className="h-3.5 w-3.5 ml-1" />
+              مشاركة
+            </Button>
+            <Button variant="outline" size="sm" className="text-xs" disabled={updatingStatus}>
+              <Flag className="h-3.5 w-3.5 ml-1" />
+              إبلاغ
+            </Button>
+          </div>
 
-        <Button variant="outline" className="flex-1 lg:flex-none">
-          مشاركة
-        </Button>
-        <Button
-          variant="outline"
-          className="flex-1 lg:flex-none"
-          disabled={updatingStatus}
-        >
-          إبلاغ
-        </Button>
-        {item?.item_for === "bid" && (
-          <Button
-            onClick={openConfirmDialog}
-            variant="outline"
-            disabled={convertingToSale || updatingStatus}
-            className="w-full sm:w-auto"
-          >
-            {convertingToSale ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : null}
-            تحويل إلى منشور عادي
+          {/* View in App */}
+          <Button variant="ghost" size="sm" className="w-full text-muted-foreground hover:text-primary">
+            <ExternalLink className="h-4 w-4 ml-2" />
+            عرض في التطبيق
           </Button>
-        )}
-      </div>
+
+          {/* Bid Conversion */}
+          {item?.item_for === "bid" && (
+            <>
+              <Separator />
+              <Button
+                onClick={openConfirmDialog}
+                variant="secondary"
+                size="sm"
+                disabled={convertingToSale || updatingStatus}
+                className="w-full"
+              >
+                {convertingToSale ? (
+                  <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                ) : (
+                  <RefreshCw className="h-4 w-4 ml-2" />
+                )}
+                تحويل إلى منشور عادي
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
 
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              تأكيد التحويل إلى منشور عادي
-            </AlertDialogTitle>
+            <AlertDialogTitle>تأكيد التحويل إلى منشور عادي</AlertDialogTitle>
             <AlertDialogDescription>
               هل أنت متأكد من رغبتك في تحويل هذا المزاد إلى منشور عادي؟ سيتم حذف جميع المزايدات الحالية.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={closeConfirmDialog}>
-              إلغاء
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConvertToSale}>
-              تأكيد
-            </AlertDialogAction>
+            <AlertDialogCancel onClick={closeConfirmDialog}>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConvertToSale}>تأكيد</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

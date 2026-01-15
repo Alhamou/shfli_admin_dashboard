@@ -1,9 +1,10 @@
 import { Bid_status, ICreatMainItem } from "@/interfaces";
 import { updateItem } from "@/services/restApiServices";
-import { Loader2 } from "lucide-react";
+import { Ban, Check, Clock, Loader2, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { Card, CardContent } from "./ui/card";
 import { CustomBadge } from "./ui/custom-badge";
 import {
     DropdownMenu,
@@ -20,7 +21,7 @@ import {
 } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 
-// Add this new component for bid status form
+// Bid status form component
 const BidStatusForm = ({
   onCancel,
   onSubmit,
@@ -44,67 +45,56 @@ const BidStatusForm = ({
   };
 
   return (
-    <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-      <p className="font-medium">تحديث حالة المزاد</p>
+    <Card className="border-primary/20">
+      <CardContent className="p-4 space-y-4">
+        <p className="font-semibold">تحديث حالة المزاد</p>
+        <div className="space-y-3">
+          <Select
+            onValueChange={(val) => setBidStatus(val as Bid_status)}
+            value={bidStatus || ""}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="اختر حالة المزاد" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">نشط</SelectItem>
+              <SelectItem value="ended">منتهي</SelectItem>
+              <SelectItem value="ask_edit">طلب تعديل</SelectItem>
+              <SelectItem value="blocked">محظور</SelectItem>
+              <SelectItem value="pending">معلق</SelectItem>
+            </SelectContent>
+          </Select>
 
-      <div className="space-y-2">
-        <Select
-          onValueChange={(val) => {
-            setBidStatus(val as Bid_status);
-          }}
-          value={bidStatus || ""}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="اختر حالة المزاد" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="active">
-              نشط
-            </SelectItem>
-            <SelectItem value="ended">
-              منتهي
-            </SelectItem>
-            <SelectItem value="ask_edit">
-              طلب تعديل
-            </SelectItem>
-            <SelectItem value="blocked">
-              محظور
-            </SelectItem>
-            <SelectItem value="pending">
-              معلق
-            </SelectItem>
-          </SelectContent>
-        </Select>
+          {bidStatus && bidStatus !== "active" && (
+            <Textarea
+              placeholder="ملاحظة الحالة"
+              value={statusNote}
+              onChange={(e) => setStatusNote(e.target.value)}
+              className="min-h-[80px]"
+            />
+          )}
+        </div>
 
-        {bidStatus && bidStatus !== "active" && (
-          <Textarea
-            placeholder="ملاحظة الحالة"
-            value={statusNote}
-            onChange={(e) => setStatusNote(e.target.value)}
-            // required={bidStatus !== "active"}
-          />
-        )}
-      </div>
-
-      <div className="flex gap-2 justify-end">
-        <Button variant="outline" onClick={onCancel}>
-          إلغاء
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={
-            !bidStatus || (bidStatus !== "active" && !statusNote) || loading
-          }
-        >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-          تحديث
-        </Button>
-      </div>
-    </div>
+        <div className="flex gap-2 justify-end">
+          <Button variant="outline" size="sm" onClick={onCancel}>
+            إلغاء
+          </Button>
+          <Button
+            size="sm"
+            onClick={handleSubmit}
+            disabled={!bidStatus || (bidStatus !== "active" && !statusNote) || loading}
+            className="bg-primary hover:bg-primary/90"
+          >
+            {loading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+            تحديث
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
-// Add this new component for ban user form
+// Ban user form component
 const BanUserForm = ({
   onCancel,
   onSubmit,
@@ -116,34 +106,33 @@ const BanUserForm = ({
 }) => {
   const [username, setUsername] = useState("");
 
-  const handleSubmit = () => {
-    onSubmit(username);
-  };
-
   return (
-    <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-      <p className="font-medium">حظر مستخدم من المزاد</p>
-
-      <div className="space-y-2">
+    <Card className="border-destructive/20">
+      <CardContent className="p-4 space-y-4">
+        <p className="font-semibold">حظر مستخدم من المزاد</p>
         <input
           type="text"
           placeholder="أدخل اسم المستخدم"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         />
-      </div>
-
-      <div className="flex gap-2 justify-end">
-        <Button variant="outline" onClick={onCancel}>
-          إلغاء
-        </Button>
-        <Button onClick={handleSubmit} disabled={!username || loading}>
-          {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-          إرسال
-        </Button>
-      </div>
-    </div>
+        <div className="flex gap-2 justify-end">
+          <Button variant="outline" size="sm" onClick={onCancel}>
+            إلغاء
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => onSubmit(username)}
+            disabled={!username || loading}
+            variant="destructive"
+          >
+            {loading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+            حظر
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -183,10 +172,9 @@ export const ViewItemFooter = ({
   const [showBidStatusForm, setShowBidStatusForm] = useState(false);
   const [showBanUserForm, setShowBanUserForm] = useState(false);
   const [banningUser, setBanningUser] = useState(false);
-  const [pendingReason, setPendingReason] =
-    useState(`بعد ان تقوم بتعديل هذا المنشور وحفظه، سيتم مراجعته من قبل فريقنا، وبمجعد الانتهاء من المراجعة، ستتلقى اشعارأ بشأن منشورك:
-
-    `);
+  const [pendingReason, setPendingReason] = useState(
+    `بعد ان تقوم بتعديل هذا المنشور وحفظه، سيتم مراجعته من قبل فريقنا، وبمجعد الانتهاء من المراجعة، ستتلقى اشعارأ بشأن منشورك:\n\n`
+  );
 
   const handlePendingAction = () => {
     if (item?.is_active !== "pending") {
@@ -204,10 +192,7 @@ export const ViewItemFooter = ({
     await handleStatusToggle("active");
   };
 
-  const handleBidStatusUpdate = async (
-    status: Bid_status,
-    note?: string
-  ) => {
+  const handleBidStatusUpdate = async (status: Bid_status, note?: string) => {
     try {
       await updateItem(item.uuid, {
         bid_status: status,
@@ -218,6 +203,7 @@ export const ViewItemFooter = ({
       if (updatedItem) {
         onItemUpdate(updatedItem);
       }
+      setShowBidStatusForm(false);
     } catch (error) {
       toast.error("فشل في تحديث حالة المزاد");
     }
@@ -251,117 +237,137 @@ export const ViewItemFooter = ({
   };
 
   const getBidStatusBadge = (status: string) => {
+    const labels: Record<string, string> = {
+      active: "نشط",
+      ended: "منتهي",
+      ask_edit: "طلب تعديل",
+      blocked: "محظور",
+      pending: "معلق",
+    };
     return (
       <CustomBadge
         variant={status === "active" ? "active" : "pending"}
         size="lg"
         className="whitespace-nowrap"
       >
-        {status === "active" ? "نشط" : status === "ended" ? "منتهي" : status === "ask_edit" ? "طلب تعديل" : status === "blocked" ? "محظور" : "معلق"}
+        {labels[status] || status}
       </CustomBadge>
     );
   };
 
   return (
-    <>
+    <div className="space-y-4">
+      {/* Block Reason Form */}
       {showReasonInput && (
-        <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-          <p className="font-medium">اختر سبب الحظر</p>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-start whitespace-normal text-left h-auto min-h-[40px] py-2"
-              >
-                {selectedReason || "اختر سبب الحظر"}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="max-h-80 overflow-y-scroll">
-              {blockReasons.map((reason) => (
+        <Card className="border-destructive/20">
+          <CardContent className="p-4 space-y-4" style={{ direction: "rtl" }}>
+            <p className="font-semibold">اختر سبب الحظر</p>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start whitespace-normal text-right h-auto min-h-[40px] py-2"
+                >
+                  {selectedReason || "اختر سبب الحظر"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="max-h-80 overflow-y-auto">
+                {blockReasons.map((reason) => (
+                  <DropdownMenuItem
+                    key={reason}
+                    onClick={() => setSelectedReason(reason)}
+                    style={{ direction: "rtl" }}
+                  >
+                    {reason}
+                  </DropdownMenuItem>
+                ))}
                 <DropdownMenuItem
-                  key={reason}
-                  onClick={() => setSelectedReason(reason)}
+                  onClick={() => setSelectedReason("آخر")}
                   style={{ direction: "rtl" }}
                 >
-                  {reason}
+                  آخر
                 </DropdownMenuItem>
-              ))}
-              <DropdownMenuItem
-                onClick={() =>
-                  setSelectedReason("آخر")
-                }
-                style={{ direction: "rtl" }}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {selectedReason === "آخر" && (
+              <Textarea
+                placeholder="حدد السبب"
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+                className="min-h-[80px]"
+              />
+            )}
+
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowReasonInput(false);
+                  setSelectedReason("");
+                  setCustomReason("");
+                }}
               >
-                آخر
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {selectedReason === "آخر" && (
-            <Textarea
-              placeholder="حدد السبب"
-              value={customReason}
-              onChange={(e) => setCustomReason(e.target.value)}
-            />
-          )}
-
-          <div className="flex gap-2 justify-end">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowReasonInput(false);
-                setSelectedReason("");
-                setCustomReason("");
-              }}
-            >
-              إلغاء
-            </Button>
-            <Button
-              onClick={() => handleStatusToggle("blocked")}
-              disabled={
-                !selectedReason ||
-                (selectedReason === "آخر" &&
-                  !customReason) ||
-                updatingStatus
-              }
-            >
-              تأكيد
-            </Button>
-          </div>
-        </div>
+                <X className="h-4 w-4 ml-1" />
+                إلغاء
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => handleStatusToggle("blocked")}
+                disabled={
+                  !selectedReason ||
+                  (selectedReason === "آخر" && !customReason) ||
+                  updatingStatus
+                }
+                variant="destructive"
+              >
+                {updatingStatus && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                تأكيد الحظر
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
+      {/* Pending Reason Form */}
       {showPendingInput && (
-        <div
-          className="space-y-4 p-4 border rounded-lg bg-muted/50"
-          style={{ direction: "rtl" }}
-        >
-          <p className="font-medium">سبب التعليق</p>
-          <Textarea
-            placeholder="حدد سبب التعليق"
-            value={pendingReason}
-            onChange={(e) => setPendingReason(e.target.value)}
-          />
-          <div className="flex gap-2 justify-end">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowPendingInput(false);
-                setPendingReason("");
-              }}
-            >
-              إلغاء
-            </Button>
-            <Button
-              onClick={handlePendingSubmit}
-              disabled={!pendingReason || updatingStatus}
-            >
-              تأكيد
-            </Button>
-          </div>
-        </div>
+        <Card className="border-amber-500/20">
+          <CardContent className="p-4 space-y-4" style={{ direction: "rtl" }}>
+            <p className="font-semibold">سبب التعليق</p>
+            <Textarea
+              placeholder="حدد سبب التعليق"
+              value={pendingReason}
+              onChange={(e) => setPendingReason(e.target.value)}
+              className="min-h-[100px]"
+            />
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowPendingInput(false);
+                  setPendingReason("");
+                }}
+              >
+                <X className="h-4 w-4 ml-1" />
+                إلغاء
+              </Button>
+              <Button
+                size="sm"
+                onClick={handlePendingSubmit}
+                disabled={!pendingReason || updatingStatus}
+                className="bg-amber-500 hover:bg-amber-600 text-white"
+              >
+                {updatingStatus && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                تأكيد التعليق
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
+      {/* Bid Status Form */}
       {showBidStatusForm && (
         <BidStatusForm
           onCancel={() => setShowBidStatusForm(false)}
@@ -371,6 +377,7 @@ export const ViewItemFooter = ({
         />
       )}
 
+      {/* Ban User Form */}
       {showBanUserForm && (
         <BanUserForm
           onCancel={() => setShowBanUserForm(false)}
@@ -379,84 +386,98 @@ export const ViewItemFooter = ({
         />
       )}
 
-      <div className="col-span-full border-t pt-4 mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-medium">الحالة:</span>
-          {getStatusBadge(item?.is_active ?? "active")}
+      {/* Main Footer Bar */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        {/* Status Display */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">الحالة:</span>
+            {getStatusBadge(item?.is_active ?? "active")}
+          </div>
           {item?.item_for === "bid" && (
-            <>
-              <span className="font-medium">
-                حالة المزاد:
-              </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground">المزاد:</span>
               {getBidStatusBadge(item?.bid_status ?? "active")}
-            </>
+            </div>
           )}
-          <span className="text-sm">
-            {item?.status_note ? item?.status_note : ""}
-          </span>
+          {item?.status_note && (
+            <span className="text-sm text-muted-foreground truncate max-w-[200px]">
+              ({item.status_note})
+            </span>
+          )}
         </div>
-        <div className="flex gap-2 w-full sm:w-auto">
+
+        {/* Action Buttons */}
+        <div className="flex gap-2 w-full sm:w-auto flex-wrap">
+          {/* Bid-specific buttons */}
           {item?.item_for === "bid" && (
             <>
               <Button
                 onClick={() => setShowBidStatusForm(true)}
                 variant="outline"
-                className="w-full sm:w-auto"
+                size="sm"
+                className="flex-1 sm:flex-none hover:bg-primary/10 hover:text-primary hover:border-primary/30"
               >
+                <Clock className="h-4 w-4 ml-1" />
                 تحديث حالة المزاد
               </Button>
               <Button
                 onClick={() => setShowBanUserForm(true)}
                 variant="outline"
-                className="w-full sm:w-auto"
+                size="sm"
+                className="flex-1 sm:flex-none hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30"
               >
+                <Ban className="h-4 w-4 ml-1" />
                 حظر مستخدم من المزاد
               </Button>
             </>
           )}
-          {item.item_for !== "bid" && (
-            <>
-              {item?.is_active === "pending" ? (
-                <Button
-                  onClick={handleApprove}
-                  variant="default"
-                  disabled={updatingStatus}
-                  className="w-full sm:w-auto bg-green-500 hover:bg-green-600"
-                >
-                  {updatingStatus ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : null}
-                  موافقة
-                </Button>
+
+          {/* Common status buttons for all items */}
+          {item?.is_active === "pending" ? (
+            <Button
+              onClick={handleApprove}
+              disabled={updatingStatus}
+              size="sm"
+              className="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white"
+            >
+              {updatingStatus ? (
+                <Loader2 className="h-4 w-4 animate-spin ml-2" />
               ) : (
-                <Button
-                  onClick={handlePendingAction}
-                  variant="outline"
-                  disabled={updatingStatus}
-                  className={`w-full sm:w-auto bg-orange-500 hover:bg-orange-500`}
-                >
-                  تحديد كمعلق
-                </Button>
+                <Check className="h-4 w-4 ml-1" />
               )}
-              <Button
-                onClick={handleBlockAction}
-                variant={
-                  item?.is_active === "active" ? "destructive" : "default"
-                }
-                disabled={updatingStatus}
-                className="w-full sm:w-auto"
-              >
-                {updatingStatus ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : null}
-                {item?.is_active === "active"
-                  ? "حظر"
-                  : "إلغاء الحظر"}
-              </Button>
-            </>
+              موافقة
+            </Button>
+          ) : (
+            <Button
+              onClick={handlePendingAction}
+              variant="outline"
+              disabled={updatingStatus}
+              size="sm"
+              className="flex-1 sm:flex-none bg-amber-500 hover:bg-amber-600 text-white border-amber-500"
+            >
+              <Clock className="h-4 w-4 ml-1" />
+              تحديد كمعلق
+            </Button>
           )}
+          <Button
+            onClick={handleBlockAction}
+            variant={item?.is_active === "active" ? "destructive" : "default"}
+            disabled={updatingStatus}
+            size="sm"
+            className="flex-1 sm:flex-none"
+          >
+            {updatingStatus ? (
+              <Loader2 className="h-4 w-4 animate-spin ml-2" />
+            ) : item?.is_active === "active" ? (
+              <Ban className="h-4 w-4 ml-1" />
+            ) : (
+              <Check className="h-4 w-4 ml-1" />
+            )}
+            {item?.is_active === "active" ? "حظر" : "إلغاء الحظر"}
+          </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
