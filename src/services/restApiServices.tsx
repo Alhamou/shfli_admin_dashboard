@@ -1,11 +1,11 @@
 import {
-  CountriesInfo,
-  ICreatMainItem,
-  IMessageThread,
-  IResultAndPagination,
-  IUser,
-  NotificationBody,
-  Stat,
+    CountriesInfo,
+    ICreatMainItem,
+    IMessageThread,
+    IResultAndPagination,
+    IUser,
+    NotificationBody,
+    Stat,
 } from "@/interfaces";
 import { get, post, put } from "../controllers/requestController";
 
@@ -76,6 +76,10 @@ export function getJobStats() {
 
 export function getAdStats() {
   return get<Stat[]>(`/team/get_count_items`);
+}
+
+export function getSoldStats() {
+  return get<Stat[]>(`/team/get_count_sold`);
 }
 
 export function sendFirebase(body: { title: string; description: string }) {

@@ -3,6 +3,7 @@ import { Stat } from "@/interfaces";
 import {
     getAdStats,
     getJobStats,
+    getSoldStats,
     getUserStats,
 } from "@/services/restApiServices";
 import { RefreshCwIcon } from "lucide-react";
@@ -20,6 +21,7 @@ const STATS_KEYS = {
   USERS: "stats_users",
   ADS: "stats_ads",
   JOBS: "stats_jobs",
+  SOLD: "stats_sold",
 };
 
 // Color classes for different stat types
@@ -39,6 +41,11 @@ const statColors = {
     border: "border-purple-300 dark:border-purple-700",
     text: "text-purple-600 dark:text-purple-400",
   },
+  sold: {
+    bg: "bg-amber-100 dark:bg-amber-900/30",
+    border: "border-amber-300 dark:border-amber-700",
+    text: "text-amber-600 dark:text-amber-400",
+  },
 };
 
 export function StatisticsPage() {
@@ -47,12 +54,14 @@ export function StatisticsPage() {
   const [usersStats, setUsersStats] = useState<StatData | null>(null);
   const [adsStats, setAdsStats] = useState<StatData | null>(null);
   const [jobsStats, setJobsStats] = useState<StatData | null>(null);
+  const [soldStats, setSoldStats] = useState<StatData | null>(null);
 
   // Loading states
   const [loading, setLoading] = useState({
     users: false,
     ads: false,
     jobs: false,
+    sold: false,
   });
 
   // Load initial data from localStorage or fetch if empty
@@ -61,6 +70,7 @@ export function StatisticsPage() {
       const savedUsers = storageController.get<StatData>(STATS_KEYS.USERS);
       const savedAds = storageController.get<StatData>(STATS_KEYS.ADS);
       const savedJobs = storageController.get<StatData>(STATS_KEYS.JOBS);
+      const savedSold = storageController.get<StatData>(STATS_KEYS.SOLD);
 
       if (!savedUsers) await fetchUsersStats();
       else setUsersStats(savedUsers);
@@ -70,6 +80,9 @@ export function StatisticsPage() {
 
       if (!savedJobs) await fetchJobsStats();
       else setJobsStats(savedJobs);
+
+      if (!savedSold) await fetchSoldStats();
+      else setSoldStats(savedSold);
     };
 
     loadInitialData();
@@ -110,6 +123,7 @@ export function StatisticsPage() {
     fetchStats(getUserStats, "users", setUsersStats);
   const fetchAdsStats = () => fetchStats(getAdStats, "ads", setAdsStats);
   const fetchJobsStats = () => fetchStats(getJobStats, "jobs", setJobsStats);
+  const fetchSoldStats = () => fetchStats(getSoldStats, "sold", setSoldStats);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "أبداً";
@@ -160,7 +174,7 @@ export function StatisticsPage() {
       </h1>
 
       {/* Current Stats Sections */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         {/* Users */}
         <StatSection
           title="المستخدمين"
@@ -217,10 +231,29 @@ export function StatisticsPage() {
             </div>
           )}
         </StatSection>
+
+        {/* Sold Items */}
+        <StatSection
+          title="المبيعات"
+          stat={soldStats}
+          loading={loading.sold}
+          onRefresh={fetchSoldStats}
+          type="sold"
+          formatDate={formatDate}
+          showBtn={false}
+        >
+          {soldStats && (
+            <div className="text-5xl font-bold py-4 text-center">
+              <span className={statColors.sold.text}>
+                {soldStats[currentDateKey] || soldStats[currentDayName] || 0}
+              </span>
+            </div>
+          )}
+        </StatSection>
       </div>
 
       {/* Last 9 Days Stats Sections */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {/* Users History */}
         <StatSection
           title="سجل المستخدمين"
@@ -299,6 +332,32 @@ export function StatisticsPage() {
             </div>
           )}
         </StatSection>
+        {/* Sold History */}
+        <StatSection
+          title="سجل المبيعات"
+          stat={soldStats}
+          loading={loading.sold}
+          onRefresh={fetchSoldStats}
+          type="sold"
+          formatDate={formatDate}
+          showBtn
+        >
+          {soldStats && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {getLastNineDaysData(soldStats).map(
+                ({ date, dayName, value }) => (
+                  <StatCard
+                    key={date}
+                    label={dayName}
+                    value={value}
+                    type="sold"
+                    highlight={dayName === currentDayName}
+                  />
+                )
+              )}
+            </div>
+          )}
+        </StatSection>
       </div>
     </div>
   );
@@ -319,7 +378,7 @@ function StatSection({
   loading: boolean;
   onRefresh: () => void;
   children: React.ReactNode;
-  type: "users" | "ads" | "jobs";
+  type: "users" | "ads" | "jobs" | "sold";
   formatDate: (date?: string) => string;
   showBtn: boolean;
 }) {
@@ -383,7 +442,7 @@ function StatCard({
 }: {
   label: string;
   value: number;
-  type: "users" | "ads" | "jobs";
+  type: "users" | "ads" | "jobs" | "sold";
   highlight?: boolean;
 }) {
   return (

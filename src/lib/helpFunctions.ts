@@ -1,6 +1,5 @@
 import storageController from '@/controllers/storageController';
 import CryptoJS from 'crypto-js';
-import i18next, { t } from 'i18next';
 import { jwtDecode } from 'jwt-decode';
 
 export const doSignature = ()=>{
@@ -53,38 +52,38 @@ export const updateItemInArray = <T extends { uuid: string }>(
 export async function playAudioWithWebAudio(url: string): Promise<void> {
     // First check if we're in Safari
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    
+
     try {
         // Create audio context (with Safari prefix fallback)
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
         const audioContext = new AudioContext();
-        
+
         // Safari requires resuming the audio context on user interaction
         if (isSafari && audioContext.state === 'suspended') {
             await audioContext.resume();
         }
-        
+
         // Fetch the audio file
         const response = await fetch(url);
         const arrayBuffer = await response.arrayBuffer();
-        
+
         // Decode the audio data
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        
+
         // Create a source node
         const source = audioContext.createBufferSource();
         source.buffer = audioBuffer;
-        
+
         // Connect to destination (speakers)
         source.connect(audioContext.destination);
-        
+
         // Start playing
         source.start(0);
-        
+
         console.log('Audio is playing with Web Audio API');
     } catch (error) {
         console.error('Error with Web Audio API:', error);
-        
+
         // Fallback to HTML5 Audio if Web Audio fails
         try {
             const audio = new Audio(url);
@@ -110,7 +109,7 @@ function checkIfPriceEmpty(price: number | undefined) {
     case null:
     case undefined:
     case 0:
-      return t('addAd.$51');
+      return "تواصُل";
     default:
       formatted = price.toLocaleString('en-US');
 
@@ -136,27 +135,19 @@ export function formatPrice(price: number | undefined, currency: string) {
 
 export function setCurrencyFormat(currency: string, isLabel: boolean = false) {
   let formatted: string;
-  const lang = i18next.language;
 
   switch (currency) {
     case 'SY':
-      formatted =
-        lang === 'ar'
-          ? isLabel
-            ? 'ليرة سورية'
-            : 'ليرة'
-          : isLabel
-          ? 'Syrian Pound'
-          : 'SY';
+      formatted = isLabel ? 'ليرة سورية' : 'ليرة';
       break;
     case 'USD':
-      formatted = lang === 'ar' ? 'دولار' : 'USD';
+      formatted = 'دولار';
       break;
     case 'TRY':
-      formatted = lang === 'ar' ? 'تركي' : 'TRY';
+      formatted = 'تركي';
       break;
     case 'FREE':
-      formatted = t('addAd.gift');
+      formatted = 'مجاناً';
       break;
     case null:
     case 'null':
