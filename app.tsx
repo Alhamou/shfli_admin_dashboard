@@ -1,19 +1,14 @@
 import storageController from "@/controllers/storageController";
 import { ILogin, IObjectToken, IUser } from "@/interfaces";
 import { saveTokenInLocalStorage } from "@/lib/helpFunctions";
-import { Admin } from "@/pages/Admin";
-import BidsScreen from "@/pages/Bids";
-import Commercial from "@/pages/Commercial";
-import PendingAds from "@/pages/PendingAds";
-import { StatisticsPage } from "@/pages/ٍStatistics";
-import { signin } from "@/services/authServices";
+import { signin, verifyOtp as verifyOtpService } from "@/services/authServices";
+import { getUserInfo } from "@/services/restApiServices";
 import { jwtDecode } from "jwt-decode";
 import {
-  createContext,
-  useContext,
+  Suspense, createContext, lazy, useContext,
   useEffect,
   useState,
-  type ReactNode,
+  type ReactNode
 } from "react";
 import {
   Navigate,
@@ -24,11 +19,16 @@ import {
 import { Toaster } from "sonner";
 import DashboardLayout from "./src/components/DashboardLayout";
 import Provider from "./src/context/MainProvider";
-import { ChatLogs } from "./src/pages/ChatLogs";
-import DashboardHome from "./src/pages/DashboardHome";
-import { LoginPage } from "./src/pages/LoginPage";
-import SettingsPage from "./src/pages/SettingsPage";
-import { UserInfo } from "./src/pages/UsersPage";
+const Admin = lazy(() => import("@/pages/Admin").then(m => ({ default: m.Admin })));
+const BidsScreen = lazy(() => import("@/pages/Bids"));
+const Commercial = lazy(() => import("@/pages/Commercial"));
+const PendingAds = lazy(() => import("@/pages/PendingAds"));
+const StatisticsPage = lazy(() => import("@/pages/ٍStatistics").then(m => ({ default: m.StatisticsPage })));
+const ChatLogs = lazy(() => import("./src/pages/ChatLogs").then(m => ({ default: m.ChatLogs })));
+const DashboardHome = lazy(() => import("./src/pages/DashboardHome"));
+const LoginPage = lazy(() => import("./src/pages/LoginPage").then(m => ({ default: m.LoginPage })));
+const SettingsPage = lazy(() => import("./src/pages/SettingsPage"));
+const UserInfo = lazy(() => import("./src/pages/UsersPage").then(m => ({ default: m.UserInfo })));
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -65,7 +65,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
           setUser(decoded);
 
           // Fetch full user info using the correct endpoint
-          const { getUserInfo } = await import("@/services/restApiServices");
           const fullUser = await getUserInfo(decoded.id.toString());
           setUser(prev => ({ ...prev, ...fullUser }));
         } catch (err) {
@@ -86,7 +85,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
 
   const verifyOtp = async (identifier: string, otpCode: string) => {
     try {
-      const { verifyOtp: verifyOtpService } = await import("@/services/authServices");
       const res = await verifyOtpService({ identifier, otp_code: otpCode });
       if (res.token) {
         saveTokenInLocalStorage(res.token);
@@ -95,7 +93,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
         setUser(decoded);
 
         // Fetch full user info using the correct endpoint
-        const { getUserInfo } = await import("@/services/restApiServices");
         const fullUser = await getUserInfo(decoded.id.toString());
         setUser((prev) => ({ ...prev, ...fullUser }));
       }
@@ -138,7 +135,8 @@ export default function App() {
     <AuthProvider>
       <Provider>
         <Router>
-          <Routes>
+          <Suspense fallback={<div className="h-screen w-screen flex items-center justify-center">جاري التحميل...</div>}>
+            <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route
               path="/"
@@ -223,9 +221,10 @@ export default function App() {
               />
             </Route>
           </Routes>
-        </Router>
-        <Toaster position="top-right" richColors closeButton />
-      </Provider>
-    </AuthProvider>
+        </Suspense>
+      </Router>
+      <Toaster position="top-right" richColors closeButton />
+    </Provider>
+  </AuthProvider>
   );
 }
