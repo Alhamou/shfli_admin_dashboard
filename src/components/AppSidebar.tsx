@@ -2,28 +2,28 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
-    AlertCircle,
-    ChartColumnIncreasing,
-    Gavel,
-    Home,
-    LogOut,
-    MessageCircle,
-    Settings,
-    Shield,
-    Tv,
-    User,
-    Users,
+  AlertCircle,
+  ChartColumnIncreasing,
+  Gavel,
+  Home,
+  LogOut,
+  MessageCircle,
+  Settings,
+  Shield,
+  Tv,
+  User,
+  Users,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../app";
@@ -119,9 +119,10 @@ export function AppSidebar() {
       <SidebarFooter className="border-t p-4">
         <div className="flex items-center justify-between gap-2">
           <div className="flex flex-col">
-            <span className="text-sm font-medium">{user?.uuid}</span>
-            <span className="text-xs text-muted-foreground">
-              {user?.phone_number}
+            <span className="text-sm font-medium">
+              {user?.first_name || user?.last_name
+                ? `${user?.first_name || ""} ${user?.last_name || ""}`.trim()
+                : user?.username || "مدير النظام"}
             </span>
           </div>
           <Button

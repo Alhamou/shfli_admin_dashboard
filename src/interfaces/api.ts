@@ -300,11 +300,14 @@ export interface IResultAndPaginationMessages {
 export interface IObjectToken {
   id: number;
   uuid: string;
-  email: string;
-  phone_number: string;
-  account_type: string;
+  email: string | null;
+  phone_number: string | null;
+  account_type: "individual" | "business";
   phone_verified: boolean;
   roles: string[];
+  first_name?: string | null;
+  last_name?: string | null;
+  username?: string | null;
 }
 
 export interface IEditedUserData {

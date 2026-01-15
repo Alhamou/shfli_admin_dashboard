@@ -1,5 +1,5 @@
 import storageController from "@/controllers/storageController";
-import { ILogin, IObjectToken } from "@/interfaces";
+import { ILogin, IObjectToken, IUser } from "@/interfaces";
 import { saveTokenInLocalStorage } from "@/lib/helpFunctions";
 import { Admin } from "@/pages/Admin";
 import BidsScreen from "@/pages/Bids";
@@ -9,17 +9,17 @@ import { StatisticsPage } from "@/pages/ٍStatistics";
 import { signin } from "@/services/authServices";
 import { jwtDecode } from "jwt-decode";
 import {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-    type ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
 } from "react";
 import {
-    Navigate,
-    Route,
-    BrowserRouter as Router,
-    Routes,
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
 } from "react-router-dom";
 import { Toaster } from "sonner";
 import DashboardLayout from "./src/components/DashboardLayout";
@@ -32,7 +32,7 @@ import { UserInfo } from "./src/pages/UsersPage";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: IObjectToken | null;
+  user: (IObjectToken & Partial<IUser>) | null;
   sendLoginOtp: (identifier: string) => Promise<void>;
   verifyOtp: (identifier: string, otpCode: string) => Promise<void>;
   logout: () => void;
@@ -52,15 +52,29 @@ function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(
     storageController.has("token")
   );
-  const [user, setUser] = useState<IObjectToken | null>(null);
+  const [user, setUser] = useState<(IObjectToken & Partial<IUser>) | null>(
+    null
+  );
 
   useEffect(() => {
-    if (isAuthenticated) {
-      setUser(
-        jwtDecode<IObjectToken>(storageController.get("token") as string)
-      );
-    }
-  }, []);
+    const initAuth = async () => {
+      if (isAuthenticated) {
+        const token = storageController.get("token") as string;
+        try {
+          const decoded = jwtDecode<IObjectToken>(token);
+          setUser(decoded);
+
+          // Fetch full user info using the correct endpoint
+          const { getUserInfo } = await import("@/services/restApiServices");
+          const fullUser = await getUserInfo(decoded.id.toString());
+          setUser(prev => ({ ...prev, ...fullUser }));
+        } catch (err) {
+          console.error("Auth initialization failed", err);
+        }
+      }
+    };
+    initAuth();
+  }, [isAuthenticated]);
 
   const sendLoginOtp = async (identifier: string) => {
     try {
@@ -77,7 +91,13 @@ function AuthProvider({ children }: { children: ReactNode }) {
       if (res.token) {
         saveTokenInLocalStorage(res.token);
         setIsAuthenticated(true);
-        setUser(jwtDecode<IObjectToken>(res.token));
+        const decoded = jwtDecode<IObjectToken>(res.token);
+        setUser(decoded);
+
+        // Fetch full user info using the correct endpoint
+        const { getUserInfo } = await import("@/services/restApiServices");
+        const fullUser = await getUserInfo(decoded.id.toString());
+        setUser((prev) => ({ ...prev, ...fullUser }));
       }
     } catch (err) {
       throw err;
