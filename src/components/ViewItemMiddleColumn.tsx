@@ -181,7 +181,7 @@ export const ViewItemMiddleColumn = ({
       </Card>
 
       {/* Price Section - Most Important for non-job items */}
-      {item.item_as !== "job" && item.price && (
+      {item.item_as !== "job" && (item.price !== undefined && item.price !== null) && (
         <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">

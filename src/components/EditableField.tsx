@@ -140,7 +140,7 @@ export const EditableField = ({
         )
       ) : (
         <p className={`text-sm ${className}`}>
-          {value
+          {(value !== undefined && value !== null)
             ? fieldName === 'price' ? formatPrice(
                 item.discount
                   ? getPriceDiscount(item.price, item.discount)
