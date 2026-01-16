@@ -231,9 +231,11 @@ export default function PendingAds() {
                   <CardContent className="p-4 space-y-3">
                     <div className="flex justify-between items-start gap-3">
                         <h3 className="font-black text-lg line-clamp-1 leading-tight flex-1">{item.title}</h3>
-                        <p className="font-black text-primary whitespace-nowrap">
-                            {(item.price === 0 || !item.price) ? "تواصل" : formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
-                        </p>
+                        {item.price > 0 && (
+                            <p className="font-black text-primary whitespace-nowrap">
+                                {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                            </p>
+                        )}
                     </div>
                     <div className="flex flex-wrap gap-y-2 gap-x-4 text-xs font-bold text-muted-foreground">
                         <div className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-primary" /> {item.city}</div>
@@ -322,16 +324,18 @@ export default function PendingAds() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="flex flex-col items-center bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">
-                                <p className="font-black text-primary text-base tabular-nums">
-                                  {(item.price === 0 || !item.price) ? "تواصل" : formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
-                                </p>
-                                {item.discount > 0 && item.price > 0 && (
-                                  <div className="mt-1 flex items-center justify-center">
-                                    <span className="text-[9px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded shadow-sm">وفر {item.discount}%</span>
-                                  </div>
-                                )}
-                            </div>
+                            {item.price > 0 && (
+                                <div className="flex flex-col items-center bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">
+                                    <p className="font-black text-primary text-base tabular-nums">
+                                    {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                                    </p>
+                                    {item.discount > 0 && (
+                                    <div className="mt-1 flex items-center justify-center">
+                                        <span className="text-[9px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded shadow-sm">وفر {item.discount}%</span>
+                                    </div>
+                                    )}
+                                </div>
+                            )}
                           </TableCell>
                           <TableCell>
                             <div className="flex flex-col items-center gap-1 whitespace-nowrap">
@@ -414,11 +418,13 @@ export default function PendingAds() {
                                 </div>
                                 <h3 className="text-xl font-black text-white leading-tight line-clamp-1">{item.title}</h3>
                              </div>
-                             <div className="text-right">
-                                <p className="text-2xl font-black text-primary drop-shadow-md">
-                                    {(item.price === 0 || !item.price) ? "تواصل" : formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
-                                </p>
-                             </div>
+                              <div className="text-right">
+                                 {item.price > 0 && (
+                                    <p className="text-2xl font-black text-primary drop-shadow-md">
+                                        {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                                    </p>
+                                 )}
+                              </div>
                         </div>
                     </div>
                     <CardContent className="p-6">
