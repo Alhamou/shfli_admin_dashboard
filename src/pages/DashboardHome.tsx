@@ -5,27 +5,27 @@ import { CustomBadge } from "@/components/ui/custom-badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { ItemDetailView } from "@/components/ViewItem";
 import { connectSocket, socket } from "@/controllers/requestController";
 import storageController from "@/controllers/storageController";
 import { ICreatMainItem } from "@/interfaces";
 import {
-    formatPrice,
-    getPriceDiscount,
-    isUUIDv4,
-    playAudioWithWebAudio,
-    toQueryString,
-    updateItemInArray,
+  formatPrice,
+  getPriceDiscount,
+  isUUIDv4,
+  playAudioWithWebAudio,
+  toQueryString,
+  updateItemInArray,
 } from "@/lib/helpFunctions";
 import { getAllItems, updateItem } from "@/services/restApiServices";
-import { Eye, LayoutGrid, Search, Wifi, WifiOff, X } from "lucide-react";
+import { Briefcase, Clock, Eye, Hash, LayoutGrid, MapPin, MoreHorizontal, Search, Tag, Users, Wifi, WifiOff, X } from "lucide-react";
 import "moment";
 import moment from "moment";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -38,7 +38,6 @@ export default function DashboardHome() {
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState(initialQuery);
   const [hasMore, setHasMore] = useState(true);
-  const tableContainerRef = useRef<HTMLDivElement>(null);
   const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [uuidSearchTerm, setUuidSearchTerm] = useState("");
@@ -70,7 +69,6 @@ export default function DashboardHome() {
             : {}),
         });
         const response = await getAllItems(query);
-        console.log(response.result);
         setItems((prev) =>
           page === 1 ? response.result : [...prev, ...response.result]
         );
@@ -88,31 +86,19 @@ export default function DashboardHome() {
     },
     [loading]
   );
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleUuidSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUuidSearchTerm(e.target.value);
-  };
 
   const handleFetchClick = () => {
     fetchItems(1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
   };
 
-  // Initial fetch
   useEffect(() => {
     fetchItems(pagination.page, pagination.limit);
   }, []);
 
   const handleItemUpdate = useCallback(
     (updatedItem: ICreatMainItem) => {
-      // Update items in the table
       setItems((prev) => updateItemInArray(prev, updatedItem));
-
-      // If the updated item is currently being viewed, update it in the dialog
       if (selectedItemUuid === updatedItem.uuid) {
-        // This will trigger a refetch in ItemDetailView
         setSelectedItemUuid(null);
       }
     },
@@ -123,458 +109,385 @@ export default function DashboardHome() {
     const newPosition = item.position === 1 ? 0 : 1;
     try {
       await updateItem(item.uuid, { position: newPosition });
-      fetchItems(
-        pagination.page,
-        pagination.limit,
-        searchTerm.trim(),
-        uuidSearchTerm.trim()
-      );
-      toast.success("تم تحديث العنصر بنجاح");
+      setItems((prev) => prev.map(i => i.uuid === item.uuid ? { ...i, position: newPosition } : i));
+      toast.success("تم تحديث الأولوية بنجاح");
     } catch (error) {
-      toast.error("فشل تحديث العنصر");
+      toast.error("فشل تحديث الأولوية");
     }
   };
 
-  // Infinite scroll effect
+  const observerTarget = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const container = tableContainerRef.current;
-    if (!container || loading || !hasMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          fetchItems(
+            pagination.page + 1,
+            pagination.limit,
+            searchTerm.trim(),
+            uuidSearchTerm.trim()
+          );
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
 
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = container;
-      // Load more when we're within 200px of the bottom
-      if (scrollHeight - (scrollTop + clientHeight) < 200) {
-        fetchItems(
-          pagination.page + 1,
-          pagination.limit,
-          searchTerm.trim(),
-          uuidSearchTerm.trim()
-        );
-      }
-    };
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
 
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore, pagination, fetchItems, searchTerm, uuidSearchTerm]);
+    return () => observer.disconnect();
+  }, [hasMore, loading, pagination.page, pagination.limit, searchTerm, uuidSearchTerm, fetchItems]);
 
   useEffect(() => {
     moment.updateLocale("ar", {
-      relativeTime: {
-        future: "في %s",
-        past: "منذ %s",
-        s: "ثوان",
-        m: "دقيقة",
-        mm: "%d دقائق",
-        h: "ساعة",
-        hh: "%d ساعات",
-        d: "يوم",
-        dd: "%d أيام",
-        M: "شهر",
-        MM: "%d أشهر",
-        y: "سنة",
-        yy: "%d سنوات",
-      },
-    });
-  }, []);
-
-  useEffect(() => {
-    // Connect with error handling
+        relativeTime: {
+          future: "في %s",
+          past: "منذ %s",
+          s: "ثوان",
+          m: "دقيقة",
+          mm: "%d دقائق",
+          h: "ساعة",
+          hh: "%d ساعات",
+          d: "يوم",
+          dd: "%d أيام",
+          M: "شهر",
+          MM: "%d أشهر",
+          y: "سنة",
+          yy: "%d سنوات",
+        },
+      });
     connectSocket();
-
-    // Debug events
-    const onConnect = () => {
-      console.log("Connected socket");
-      setIsSocketConnected(true);
-    };
-
-    const onDisconnect = () => {
-      console.log("Socket disconnected");
-      setIsSocketConnected(false);
-    };
-
-    const onError = (err: Error) => {
-      console.error("Socket error:", err.message);
-      setIsSocketConnected(false);
-    };
-
+    const onConnect = () => setIsSocketConnected(true);
+    const onDisconnect = () => setIsSocketConnected(false);
     const onMessage = (message: ICreatMainItem) => {
-      console.log("new item received", message);
       setItems((prev) => [message, ...prev]);
-      const muted = storageController.get("audio");
-      if (muted && muted === "muted") {
-      } else {
+      if (storageController.get("audio") !== "muted") {
         playAudioWithWebAudio("/twinkle.mp3");
       }
     };
-
-    // Connection check interval
-    const checkConnectionInterval = setInterval(() => {
-      if (!socket.connected) {
-        console.log("Socket disconnected, attempting to reconnect...");
-        socket.connect();
-      }
-    }, 5000); // Check every 5 seconds
-
-    // Setup event listeners
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
-    socket.on("connect_error", onError);
     socket.on("message", onMessage);
-
     return () => {
-      // Cleanup
-      clearInterval(checkConnectionInterval);
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
-      socket.off("connect_error", onError);
       socket.off("message", onMessage);
-      socket.disconnect();
     };
   }, []);
 
   const getStatusBadge = (status: "active" | "pending" | "blocked") => {
     return (
-      <CustomBadge variant={status} size="lg" className="whitespace-nowrap">
+      <CustomBadge variant={status} size="sm" className="rounded-lg px-2 py-1">
         {status === "active" ? "نشط" : status === "pending" ? "معلق" : "محظور"}
       </CustomBadge>
     );
   };
 
   return (
-    <div className="flex flex-col h-full gap-4">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/25">
-            <LayoutGrid className="h-5 w-5 text-primary-foreground" />
+    <div className="flex flex-col h-full space-y-8 animate-in fade-in duration-500">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-black tracking-tight text-foreground">قائمة العناصر</h1>
+            <div className={`
+                flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300
+                ${isSocketConnected
+                  ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shadow-[0_0_15px_-5px_rgba(16,185,129,0.3)]"
+                  : "bg-red-500/10 text-red-500 border border-red-500/20"
+                }
+              `}>
+                <span className={`h-1.5 w-1.5 rounded-full ${isSocketConnected ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`} />
+                {isSocketConnected ? "مباشر" : "منقطع"}
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">إدارة العناصر</h1>
-            <p className="text-sm text-muted-foreground">
-              {pagination.total} عنصر في النظام
-            </p>
-          </div>
+          <p className="text-muted-foreground font-medium">
+            لديك <span className="text-primary font-bold">{pagination.total}</span> إعلان متاح في النظام للمراجعة والإدارة.
+          </p>
         </div>
 
-        {/* Connection Status */}
-        <div className={`
-          flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300
-          ${isSocketConnected
-            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-            : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-          }
-        `}>
-          {isSocketConnected ? (
-            <>
-              <Wifi className="h-4 w-4" />
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              متصل
-            </>
-          ) : (
-            <>
-              <WifiOff className="h-4 w-4" />
-              غير متصل
-            </>
-          )}
+        <div className="flex items-center gap-3">
+            {/* Action buttons could go here */}
         </div>
       </div>
 
-      {/* Search Section */}
-      <Card className="shadow-sm border-border/50">
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3">
-            <div className="relative">
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Advanced Filter Card */}
+      <Card className="border-border/40 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm overflow-hidden rounded-3xl">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto] gap-4">
+            <div className="relative group">
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
-                placeholder="ابحث عن العناصر..."
+                placeholder="ابحث بالاسم أو الرقم التعريفي للإعلان..."
                 value={searchTerm}
-                onChange={handleSearchChange}
-                className="pr-10 bg-background border-border/50 focus:border-primary transition-colors"
-                style={{ direction: "ltr" }}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="h-14 pr-12 bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all font-medium"
+                style={{ direction: "rtl" }}
               />
               {searchTerm && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute left-1 top-1/2 -translate-y-1/2 h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
-                  onClick={() => setSearchTerm("")}
-                >
-                  <X className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 text-muted-foreground hover:text-destructive transition-colors" onClick={() => setSearchTerm("")}>
+                  <X className="h-5 w-5" />
                 </Button>
               )}
             </div>
-            <div className="relative">
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="relative group">
+              <Users className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input
-                placeholder="البحث حسب المستخدم..."
+                placeholder="ابحث بمعرف المستخدم أو الرقم..."
                 value={uuidSearchTerm}
-                onChange={handleUuidSearchChange}
-                className="pr-10 bg-background border-border/50 focus:border-primary transition-colors"
-                style={{ direction: "ltr" }}
+                onChange={(e) => setUuidSearchTerm(e.target.value)}
+                className="h-14 pr-12 bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all font-medium"
+                style={{ direction: "rtl" }}
               />
               {uuidSearchTerm && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute left-1 top-1/2 -translate-y-1/2 h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
-                  onClick={() => setUuidSearchTerm("")}
-                >
-                  <X className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 text-muted-foreground hover:text-destructive transition-colors" onClick={() => setUuidSearchTerm("")}>
+                  <X className="h-5 w-5" />
                 </Button>
               )}
             </div>
-            <Button
-              onClick={handleFetchClick}
-              disabled={loading}
-              className="bg-primary hover:bg-primary/90 shadow-sm"
-            >
-              {loading ? "تحميل..." : "بحث"}
+            <Button onClick={handleFetchClick} disabled={loading} className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all active:scale-95 font-bold text-lg">
+              {loading ? "جاري البحث..." : "تطبيق الفلتر"}
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Table Section */}
-      <Card className="flex-1 flex flex-col shadow-sm border-border/50 overflow-hidden">
-        <CardHeader className="py-3 px-4 border-b border-border/50 bg-muted/30">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent border-0">
-                <TableHead className="text-start font-semibold text-foreground/80 w-16">مميز</TableHead>
-                <TableHead className="text-start font-semibold text-foreground/80">العنصر</TableHead>
-                <TableHead className="text-start font-semibold text-foreground/80">الفئة</TableHead>
-                <TableHead className="text-start font-semibold text-foreground/80">السعر</TableHead>
-                <TableHead className="text-start font-semibold text-foreground/80">الموقع</TableHead>
-                <TableHead className="text-start font-semibold text-foreground/80">الإحصائيات</TableHead>
-                <TableHead className="text-start font-semibold text-foreground/80">الحالة</TableHead>
-              </TableRow>
-            </TableHeader>
-          </Table>
-        </CardHeader>
+      {/* Content Section: Cards for Mobile, Table for Desktop */}
+      <div className="flex-1 min-h-0">
+        <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 pr-1">
 
-        <CardContent
-          className="flex-1 overflow-auto p-0"
-          ref={tableContainerRef}
-          style={{ maxHeight: "calc(100vh - 340px)" }}
-        >
-          <Table>
-            <TableBody>
-              {items.map((item, index) => {
-                const activated_at = moment(item.activated_at)
-                  .locale("ar")
-                  .fromNow();
-                return (
+          {/* Mobile Display: Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
+            {items.map((item) => (
+              <Card key={item.uuid} className="group hover:shadow-2xl transition-all duration-500 border-border/50 rounded-3xl overflow-hidden active:scale-[0.98]" onClick={() => setSelectedItemUuid(item.uuid)}>
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  {item.item_as === 'job' && !(item.thumbnail || (item.images && item.images[0]?.url)) ? (
+                    <div className="w-full h-full bg-blue-500/10 flex flex-col items-center justify-center gap-2">
+                        <Briefcase className="h-12 w-12 text-blue-500/30" />
+                        <span className="text-sm text-blue-500/40 font-black">إعلان وظيفة</span>
+                    </div>
+                  ) : (
+                    <img
+                      src={item.thumbnail || (item.images && item.images[0]?.url) || "/placeholder-item.png"}
+                      alt={item.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  )}
+                  <div className="absolute bottom-3 right-3 left-3 flex justify-between items-end pointer-events-none">
+                    <div className="bg-primary px-3 py-1.5 rounded-xl shadow-lg ring-1 ring-white/20 pointer-events-auto">
+                        <p className="text-white font-black text-sm">
+                            {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                        </p>
+                    </div>
+                  </div>
+                </div>
+                <CardContent className="p-4 space-y-3">
+                  <div className="space-y-1">
+                    <h3 className="font-black text-lg truncate group-hover:text-primary transition-colors">{item.title}</h3>
+                    <div className="flex items-center gap-2 text-muted-foreground text-xs font-bold uppercase tracking-tight">
+                        <Tag className="h-3 w-3" />
+                        <span>{item.category_name?.ar}</span>
+                        <span>•</span>
+                        <span>{item.subcategory_name?.ar}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-border/40">
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium">
+                        <MapPin className="h-3.5 w-3.5" />
+                        <span>{item.city}, {item.state}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium">
+                        <Clock className="h-3.5 w-3.5" />
+                        <span>{moment(item.activated_at).locale("ar").fromNow()}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium">
+                        <Eye className="h-3.5 w-3.5" />
+                        <span>{item.view_count || 0}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Desktop Display: Modern Responsive Table */}
+          <div className="hidden lg:block bg-card rounded-3xl border border-border/40 shadow-xl shadow-black/5 overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="h-16 hover:bg-transparent border-border/40">
+                  <TableHead className="w-16 pr-6"></TableHead>
+                  <TableHead className="w-[350px] font-black uppercase text-xs tracking-widest">العنصر</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest">التصنيف</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest">السعر والقيمة</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest">الموقع الجغرافي</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest">الإحصائيات</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest">المستخدم</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-left pl-6">الحالة</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {items.map((item) => (
                   <TableRow
-                    key={`${index}`}
-                    className="group hover:bg-muted/50 transition-colors duration-150 border-b border-border/30"
+                    key={item.uuid}
+                    className="group border-border/30 hover:bg-muted/30 transition-all cursor-pointer"
+                    onClick={() => setSelectedItemUuid(item.uuid)}
                   >
-                    <TableCell className="w-16">
-                      <input
-                        type="checkbox"
-                        checked={item.position === 1}
-                        onChange={() => handlePositionToggle(item)}
-                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
-                      />
-                    </TableCell>
-                    <TableCell
-                      className="flex items-center gap-4 cursor-pointer py-4"
-                      onClick={() => setSelectedItemUuid(item.uuid)}
-                    >
-                      {item.item_as === "job" ? (
-                        <Avatar className="h-12 w-12 border-2 border-primary/10 shadow-sm">
-                          <AvatarImage
-                            src={
-                              item.thumbnail ||
-                              (item.images && item.images[0]?.url)
-                            }
-                            alt={item.title}
-                          />
-                          <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                            {item.title.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      ) : (
-                        <div className="relative h-24 w-24 flex-shrink-0 rounded-xl overflow-hidden shadow-sm border border-border/50 group-hover:shadow-md transition-shadow">
-                          <img
-                            className="h-full w-full object-cover"
-                            src={
-                              item.thumbnail ||
-                              (item.images && item.images[0]?.url)
-                            }
-                            alt={item.title}
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "/placeholder-item.png";
-                            }}
-                          />
-                        </div>
-                      )}
-                      <div className="space-y-1 flex-1 min-w-0 max-w-48">
-                        {item.item_as === "job" && (
-                          <p className="text-xs font-medium text-primary">
-                            {item.need ? "يبحث عن عمل" : "تبحث عن موظف"}
-                          </p>
-                        )}
-                        <p className="font-semibold truncate group-hover:text-primary transition-colors">
-                          {item.title}
-                        </p>
-                        <p className={`text-sm text-muted-foreground ${
-                          item.item_as === "job" ? "line-clamp-3" : "line-clamp-2"
-                        }`}>
-                          {item.description}
-                        </p>
-                      </div>
+                    <TableCell className="pr-6" onClick={(e) => e.stopPropagation()}>
+                       <input
+                            type="checkbox"
+                            checked={item.position === 1}
+                            onChange={() => handlePositionToggle(item)}
+                            className="h-5 w-5 rounded-lg border-muted-foreground/30 text-primary transition-all cursor-pointer"
+                        />
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-0.5">
-                        <p className="font-medium text-sm">
-                          {item.category_name?.ar || "غير متوفر"}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.subcategory_name?.ar || "غير متوفر"}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {item.price ? (
-                        <div className="space-y-0.5">
-                          <p className="font-semibold text-sm">
-                            {formatPrice(
-                              item.discount
-                                ? getPriceDiscount(item.price, item.discount)
-                                : item.price,
-                              item?.currency
-                            )}
-                          </p>
-                          {item.discount > 0 && (
-                            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                              خصم: {item.discount}%
-                            </p>
+                      <div className="flex items-center gap-4 py-3">
+                        <div className="h-20 w-20 flex-shrink-0 rounded-2xl overflow-hidden bg-muted flex items-center justify-center shadow-inner group-hover:shadow-md transition-all">
+                          {item.item_as === 'job' && !(item.thumbnail || (item.images && item.images[0]?.url)) ? (
+                            <div className="w-full h-full bg-blue-500/10 flex flex-col items-center justify-center gap-1">
+                                <Briefcase className="h-8 w-8 text-blue-500/40" />
+                                <span className="text-[10px] text-blue-500/50 font-black">وظيفة</span>
+                            </div>
+                          ) : (
+                            <img
+                              src={item.thumbnail || (item.images && item.images[0]?.url) || "/placeholder-item.png"}
+                              alt={item.title}
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              onError={(e) => (e.currentTarget.src = "/placeholder-item.png")}
+                            />
                           )}
                         </div>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">غير متوفر</span>
-                      )}
+                        <div className="min-w-0 space-y-1">
+                          <p className="font-black text-foreground group-hover:text-primary transition-colors truncate">{item.title}</p>
+                          <p className="text-xs text-muted-foreground/80 line-clamp-1 font-medium">{item.description}</p>
+                          <div className="flex items-center gap-2 pt-1">
+                            {item.item_as === 'job' && <CustomBadge className="h-5 px-2 text-[10px] bg-blue-500/10 text-blue-500 border-none font-black">{item.need ? "باحث" : "موظِف"}</CustomBadge>}
+                            {item.account_type === 'business' && <CustomBadge className="h-5 px-2 text-[10px] bg-primary/10 text-primary border-none font-black">عمل تجاري</CustomBadge>}
+                          </div>
+                        </div>
+                      </div>
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-0.5">
-                        <p className="font-medium text-sm">{item.city}</p>
-                        <p className="text-xs text-muted-foreground">{item.state}</p>
-                      </div>
+                       <div className="space-y-1">
+                         <div className="flex items-center gap-1.5 text-sm font-bold">
+                            <Tag className="h-3.5 w-3.5 text-primary/60" />
+                            <span>{item.category_name?.ar}</span>
+                         </div>
+                         <p className="text-xs text-muted-foreground font-medium">{item.subcategory_name?.ar}</p>
+                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 text-sm">
-                          <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-                          <span className="font-medium">{item.view_count || 0}</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {activated_at.replace(/^منذ\s*/, "").replace(/\s*ago$/, "")}
+                        <p className="font-black text-foreground text-base">
+                            {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          ID: {item.user_id}
-                        </p>
-                        <p
-                          className="text-xs text-muted-foreground"
-                          style={{ direction: "ltr" }}
-                        >
-                          {item.client_details?.phone_number}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {(item.client_details?.first_name ?? "") +
-                            " " +
-                            (item.client_details?.last_name ?? "")}
-                        </p>
-                        {item.client_details?.account_type === "business" &&
-                          item.client_details?.business_name && (
-                            <p className="text-xs text-primary/80 truncate font-medium">
-                              {item.client_details?.business_name}
-                            </p>
-                          )}
+                        {item.discount > 0 && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 px-1.5 py-0.5 rounded-md">وفر {item.discount}%</span>
+                            <span className="text-xs text-muted-foreground line-through opacity-50">{formatPrice(item.price, item?.currency)}</span>
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-1.5">
-                        {getStatusBadge(item.is_active)}
-                        {item.account_type && (
-                          <CustomBadge
-                            variant={"unknown"}
-                            size="lg"
-                            className="whitespace-nowrap"
-                          >
-                            {item.account_type === "business" ? "عمل" : "فرد"}
-                          </CustomBadge>
-                        )}
-                        {item.client_details?.account_verified && (
-                          <CustomBadge
-                            variant={"rent"}
-                            size="lg"
-                            className="whitespace-nowrap"
-                          >
-                            موثق
-                          </CustomBadge>
-                        )}
-                        {item.archived && (
-                          <CustomBadge
-                            variant="archived"
-                            size="lg"
-                            className="whitespace-nowrap"
-                          >
-                            مؤرشف
-                          </CustomBadge>
-                        )}
-                        {item.reserved && (
-                          <CustomBadge
-                            variant="reserved"
-                            size="lg"
-                            className="whitespace-nowrap"
-                          >
-                            محجوز
-                          </CustomBadge>
-                        )}
+                      <div className="flex flex-col space-y-1">
+                        <div className="flex items-center gap-1.5 text-sm font-bold">
+                            <MapPin className="h-3.5 w-3.5 text-red-500/60" />
+                            <span>{item.city}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium">{item.state}</p>
                       </div>
                     </TableCell>
-                  </TableRow>
-                );
-              })}
-              {loading && (
-                <>
-                  {[...Array(5)].map((_, i) => (
-                    <TableRow key={`loading-${i}`}>
-                      <TableCell colSpan={7}>
-                        <div className="flex items-center gap-4 p-3">
-                          <Skeleton className="h-24 w-24 rounded-xl" />
-                          <div className="space-y-2 flex-1">
-                            <Skeleton className="h-4 w-48" />
-                            <Skeleton className="h-3 w-32" />
-                          </div>
+                    <TableCell>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-4">
+                           <div className="flex items-center gap-1.5 text-xs font-bold" title="المشاهدات">
+                                <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+                                <span>{item.view_count || 0}</span>
+                           </div>
+                           <div className="flex items-center gap-1.5 text-xs font-bold" title="التوقيت">
+                                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                                <span>{moment(item.activated_at).locale("ar").fromNow(true)}</span>
+                           </div>
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </>
-              )}
-            </TableBody>
-          </Table>
-          {!hasMore && items.length > 0 && (
-            <div className="p-6 text-center text-sm text-muted-foreground border-t border-border/30">
-              لا توجد عناصر أخرى
+                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/60 font-mono">
+                            <Hash className="h-3 w-3" />
+                            <span>{item.uuid.substring(0, 8)}...</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                       <div className="flex items-center gap-3">
+                          <Avatar className="h-9 w-9 border border-border/50 ring-2 ring-primary/5">
+                            <AvatarFallback className="bg-muted text-foreground text-[10px] font-black">
+                                {item.client_details?.first_name?.charAt(0) || "U"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold truncate max-w-[120px]">
+                                {(item.client_details?.first_name ?? "") + " " + (item.client_details?.last_name ?? "")}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground font-medium" style={{ direction: 'ltr' }}>{item.client_details?.phone_number}</p>
+                          </div>
+                       </div>
+                    </TableCell>
+                    <TableCell className="text-left pl-6">
+                       <div className="flex flex-col items-start gap-2">
+                          {getStatusBadge(item.is_active)}
+                          <div className="flex flex-wrap gap-1">
+                            {item.client_details?.account_verified && <div className="h-4 w-4 rounded-full bg-blue-500 text-white flex items-center justify-center" title="موثق"><CheckCircleIcon className="h-3 w-3" /></div>}
+                            {item.archived && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1 rounded">مؤرشف</span>}
+                          </div>
+                       </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Loading Skeletons */}
+          {loading && (
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+               {[...Array(6)].map((_, i) => (
+                 <div key={i} className="lg:hidden h-64 w-full bg-muted rounded-3xl animate-pulse" />
+               ))}
+               <div className="hidden lg:block h-[400px] w-full bg-muted/30 rounded-3xl animate-pulse" />
             </div>
           )}
+
+          {/* Empty States */}
           {!loading && items.length === 0 && (
-            <div className="p-12 text-center text-muted-foreground">
-              <LayoutGrid className="h-12 w-12 mx-auto mb-3 opacity-30" />
-              <p className="font-medium">لم يتم العثور على عناصر</p>
-              <p className="text-sm">جرب البحث بكلمات مختلفة</p>
+            <div className="py-20 text-center flex flex-col items-center animate-in zoom-in-95 duration-500">
+               <div className="h-24 w-24 rounded-full bg-muted/50 flex items-center justify-center mb-6">
+                <X className="h-10 w-10 text-muted-foreground/30 font-black" />
+               </div>
+               <h3 className="text-2xl font-black text-foreground mb-2">لا توجد نتائج بحث</h3>
+               <p className="text-muted-foreground max-w-xs mx-auto">لم نتمكن من العثور على أي عناصر تطابق معايير البحث الحالية.</p>
+               <Button variant="outline" className="mt-8 rounded-xl font-bold" onClick={() => {setSearchTerm(""); setUuidSearchTerm(""); fetchItems(1, 25)}}>إعادة تعيين الكل</Button>
             </div>
           )}
-        </CardContent>
-      </Card>
+
+          {!hasMore && items.length > 0 && (
+              <div className="py-10 text-center text-muted-foreground font-bold text-sm">
+                  لقد وصلت إلى نهاية القائمة ✨
+              </div>
+          )}
+
+          {/* Observer Target */}
+          <div ref={observerTarget} className="h-10 w-full flex items-center justify-center">
+            {loading && items.length > 0 && (
+              <div className="flex items-center gap-2 text-primary font-bold animate-pulse">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                <span>جاري تحميل المزيد...</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
       <ItemDetailView
         uuid={selectedItemUuid || ""}
@@ -585,3 +498,23 @@ export default function DashboardHome() {
     </div>
   );
 }
+
+function CheckCircleIcon(props: any) {
+    return (
+      <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+        <polyline points="22 4 12 14.01 9 11.01" />
+      </svg>
+    )
+  }

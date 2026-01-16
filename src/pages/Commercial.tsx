@@ -1,4 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { CustomBadge } from "@/components/ui/custom-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -20,7 +22,7 @@ import {
     updateItemInArray,
 } from "@/lib/helpFunctions";
 import { getAllCommercialItems, updateItem } from "@/services/restApiServices";
-import { Eye } from "lucide-react";
+import { Briefcase, Clock, Eye, Hash, LayoutGrid, List, MapPin, MoreHorizontal, ShoppingBag, Tag } from "lucide-react";
 import "moment";
 import moment from "moment";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -28,14 +30,14 @@ import { toast } from "sonner";
 
 const initialQuery = { page: 1, limit: 25, total: 0 };
 
-export default function DashboardHome() {
+export default function Commercial() {
   const [items, setItems] = useState<ICreatMainItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState(initialQuery);
   const [hasMore, setHasMore] = useState(true);
-  const tableContainerRef = useRef<HTMLDivElement>(null);
   const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"items" | "jobs">("items");
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   const fetchItems = useCallback(
     async (
@@ -89,12 +91,8 @@ export default function DashboardHome() {
 
   const handleItemUpdate = useCallback(
     (updatedItem: ICreatMainItem) => {
-      // Update items in the table
       setItems((prev) => updateItemInArray(prev, updatedItem));
-
-      // If the updated item is currently being viewed, update it in the dialog
       if (selectedItemUuid === updatedItem.uuid) {
-        // This will trigger a refetch in ItemDetailView
         setSelectedItemUuid(null);
       }
     },
@@ -103,31 +101,38 @@ export default function DashboardHome() {
 
   const handlePositionToggle = async (item: ICreatMainItem) => {
     const newPosition = item.position === 1 ? 0 : 1;
+    setItems(prev => prev.map(i => i.uuid === item.uuid ? { ...i, position: newPosition } : i));
+
     try {
       await updateItem(item.uuid, { position: newPosition });
-      fetchItems(pagination.page, pagination.limit);
-      toast.success("تم تحديث العنصر بنجاح");
+      toast.success("تم تحديث حالة التمييز بنجاح");
     } catch (error) {
-      toast.error("فشل تحديث العنصر");
+      setItems(prev => prev.map(i => i.uuid === item.uuid ? { ...i, position: item.position } : i));
+      toast.error("فشل تحديث حالة التمييز");
     }
   };
 
-  // Infinite scroll effect
+  const observerTarget = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const container = tableContainerRef.current;
-    if (!container || loading || !hasMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          fetchItems(
+            pagination.page + 1,
+            pagination.limit
+          );
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
 
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = container;
-      // Load more when we're within 200px of the bottom
-      if (scrollHeight - (scrollTop + clientHeight) < 200) {
-        fetchItems(pagination.page + 1, pagination.limit);
-      }
-    };
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
 
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore, pagination, fetchItems]);
+    return () => observer.disconnect();
+  }, [hasMore, loading, pagination.page, pagination.limit, fetchItems]);
 
   useEffect(() => {
     moment.updateLocale("ar", {
@@ -151,308 +156,380 @@ export default function DashboardHome() {
 
   const getStatusBadge = (status: "active" | "pending" | "blocked") => {
     return (
-      <CustomBadge variant={status} size="lg" className="whitespace-nowrap">
+      <CustomBadge variant={status} size="lg" className="px-3 py-1 font-bold shadow-sm whitespace-nowrap">
         {status === "active" ? "نشط" : status === "pending" ? "معلق" : "محظور"}
       </CustomBadge>
     );
   };
 
-  // Filter items based on active tab
   const filteredItems = items.filter((item) => {
     if (activeTab === "jobs") return item.item_as === "job";
     return item.item_as !== "job";
   });
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Sticky header section */}
-      <div className="sticky top-0 pt-4 pb-2">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="text-2xl font-bold">إدارة العناصر</div>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+             <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 shadow-inner">
+                <ShoppingBag className="h-5 w-5" />
+             </div>
+             <h1 className="text-2xl font-black tracking-tight text-foreground">الإعلانات التجارية</h1>
           </div>
+          <p className="text-muted-foreground font-medium flex items-center gap-2 mr-13">
+            <span className="inline-flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+            إجمالي العناصر: {pagination.total}
+          </p>
         </div>
 
-        <div className="rounded-lg shadow">
-          <Tabs
+        <div className="flex items-center gap-2 bg-muted/30 p-1 rounded-2xl border border-border/40">
+           <Button
+            variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('table')}
+            className={`rounded-xl px-4 font-bold transition-all ${viewMode === 'table' ? 'shadow-md bg-background' : 'text-muted-foreground'}`}
+           >
+              <List className="h-4 w-4 ml-2" /> جدول
+           </Button>
+           <Button
+            variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => setViewMode('grid')}
+            className={`rounded-xl px-4 font-bold transition-all ${viewMode === 'grid' ? 'shadow-md bg-background' : 'text-muted-foreground'}`}
+           >
+              <LayoutGrid className="h-4 w-4 ml-2" /> بطاقات
+           </Button>
+        </div>
+      </div>
+
+      {/* Tabs Section */}
+      <div className="flex justify-start">
+        <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as "items" | "jobs")}
-            className="mb-4"
-            style={{ direction: "rtl" }}
-          >
-            <TabsList>
-              <TabsTrigger value="items">
-                العناصر
+            className="w-full md:w-auto"
+        >
+            <TabsList className="h-12 bg-muted/50 p-1 rounded-xl border border-border/40 min-w-[300px]">
+              <TabsTrigger value="items" className="flex-1 rounded-lg font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4" /> العناصر
               </TabsTrigger>
-              <TabsTrigger value="jobs">الوظائف</TabsTrigger>
+              <TabsTrigger value="jobs" className="flex-1 rounded-lg font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all flex items-center gap-2">
+                <Briefcase className="h-4 w-4" /> الوظائف
+              </TabsTrigger>
             </TabsList>
-          </Tabs>
-        </div>
-
-        {/* Table header - also sticky below the tabs section */}
-        <div className="rounded-md border bg-background">
-          <Table>
-            <TableHeader className="sticky top-[180px] bg-background">
-              <TableRow>
-                <TableHead className="text-start">
-                  مميز
-                </TableHead>
-                <TableHead className="text-start">
-                  العنصر
-                </TableHead>
-                <TableHead className="text-start">
-                  الفئة
-                </TableHead>
-                <TableHead className="text-start">
-                  السعر
-                </TableHead>
-                <TableHead className="text-start">
-                  الموقع
-                </TableHead>
-                <TableHead className="text-start">
-                  الإحصائيات
-                </TableHead>
-                <TableHead className="text-start">
-                  الحالة
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-          </Table>
-        </div>
+        </Tabs>
       </div>
 
-      {/* Scrollable content section */}
+      {/* Main Content Area */}
       <div
-        className="flex-1 overflow-auto"
-        ref={tableContainerRef}
-        style={{ maxHeight: "calc(100vh - 250px)" }}
+        className="h-[calc(100vh-250px)] overflow-y-auto pr-2 -mr-2 custom-scrollbar"
       >
-        <div className="rounded-md border border-t-0">
-          <Table>
-            <TableBody>
-              {filteredItems.map((item, index) => {
-                const activated_at = moment(item.activated_at)
-                  .locale("ar")
-                  .fromNow();
-                return (
-                  <TableRow key={`${index}`}>
-                    <TableCell>
-                      <input
-                        type="checkbox"
-                        checked={item.position === 1}
-                        onChange={() => handlePositionToggle(item)}
-                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+        <div className="space-y-6 pb-20">
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 md:hidden gap-4">
+              {filteredItems.map((item) => (
+                <Card
+                    key={item.uuid}
+                    className="overflow-hidden border-border/40 shadow-lg shadow-black/5 hover:shadow-xl transition-all rounded-3xl group cursor-pointer"
+                    onClick={() => setSelectedItemUuid(item.uuid)}
+                >
+                  <div className="relative h-48 w-full overflow-hidden">
+                    {item.item_as === 'job' && !(item.thumbnail || (item.images && item.images[0]?.url)) ? (
+                      <div className="w-full h-full bg-blue-500/10 flex flex-col items-center justify-center gap-2">
+                        <Briefcase className="h-12 w-12 text-blue-500/30" />
+                        <span className="text-xs text-blue-500/40 font-black">إعلان وظيفة</span>
+                      </div>
+                    ) : (
+                      <img
+                        src={item.thumbnail || (item.images && item.images[0]?.url) || "/placeholder-item.png"}
+                        alt={item.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
-                    </TableCell>
-                    <TableCell
-                      className="flex items-center gap-4 cursor-pointer hover:bg-muted/50"
-                      onClick={() => setSelectedItemUuid(item.uuid)}
-                    >
-                      {item.item_as === "job" ? (
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage
-                            src={
-                              item.thumbnail ||
-                              (item.images && item.images[0]?.url)
-                            }
-                            alt={item.title}
-                          />
-                          <AvatarFallback>
-                            {item.title.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      ) : (
-                        <div className="relative h-40 w-40 flex-shrink-0">
-                          <img
-                            className="h-full w-full rounded-md object-cover"
-                            src={
-                              item.thumbnail ||
-                              (item.images && item.images[0]?.url)
-                            }
-                            alt={item.title}
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = "/placeholder-item.png";
-                            }}
-                          />
-                        </div>
-                      )}
-                      <div className="space-y-1 flex-1 min-w-0 max-w-40">
-                        {item.item_as === "job" ? (
-                          <p className="font-normal text-blue-600 dark:text-blue-400 truncate">
-                            {item.need
-                              ? "يبحث عن عمل"
-                              : "تبحث عن موظف"}
-                          </p>
-                        ) : (
-                          <></>
-                        )}
-                        <p className="font-medium truncate">{item.title}</p>
-                        <p
-                          className={`text-sm text-muted-foreground ${
-                            item.item_as === "job"
-                              ? "line-clamp-3"
-                              : "line-clamp-2"
-                          }`}
+                    )}
+                     <div className="absolute top-3 left-3 flex flex-col gap-2">
+                        <div
+                         onClick={(e) => { e.stopPropagation(); handlePositionToggle(item); }}
+                         className={`h-10 w-10 rounded-2xl backdrop-blur-md flex items-center justify-center transition-all shadow-lg border ${item.position === 1 ? 'bg-primary text-white border-primary/20' : 'bg-black/20 text-white border-white/20 hover:bg-black/40'}`}
                         >
-                          {item.description}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <p>
-                          {item.category_name?.ar ||
-                            "غير متوفر"}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {item.subcategory_name?.ar ||
-                            "غير متوفر"}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {item.price ? (
-                        <div className="space-y-1">
-                          <p className="font-medium">
-                            {formatPrice(
-                              item.discount
-                                ? getPriceDiscount(item.price, item.discount)
-                                : item.price,
-                              item?.currency
-                            )}
-                          </p>
-                          {item.discount > 0 && (
-                            <p className="text-xs text-muted-foreground">
-                              خصم:{" "}
-                              {item.discount}%
-                            </p>
-                          )}
+                            <Tag className={`h-5 w-5 ${item.position === 1 ? 'fill-current' : ''}`} />
                         </div>
-                      ) : (
-                        "غير متوفر"
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <p>{item.city}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {item.state}
+                    </div>
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+                      {getStatusBadge(item.is_active)}
+                    </div>
+                  </div>
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex justify-between items-start gap-3">
+                        <h3 className="font-black text-lg line-clamp-1 leading-tight flex-1">{item.title}</h3>
+                        <p className="font-black text-primary whitespace-nowrap">
+                            {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
                         </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Eye className="h-4 w-4 text-muted-foreground" />
-                          <span>{item.view_count || 0}</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {activated_at
-                            .replace(/^منذ\s*/, "")
-                            .replace(/\s*ago$/, "")}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          المستخدم: <br /> {item.user_id}
-                        </p>
-                        <p
-                          className="text-xs text-muted-foreground truncate text-end"
-                          style={{ direction: "ltr" }}
+                    </div>
+                    <div className="flex flex-wrap gap-y-2 gap-x-4 text-xs font-bold text-muted-foreground">
+                        <div className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-primary" /> {item.city}</div>
+                        <div className="flex items-center gap-1.5"><Tag className="h-3.5 w-3.5 text-primary" /> {item.category_name?.ar}</div>
+                        <div className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-primary" /> {moment(item.activated_at).locale("ar").fromNow()}</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Desktop View: Table or Grid */}
+            <div className={`hidden md:block ${viewMode === 'grid' ? 'grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6' : ''}`}>
+              {viewMode === 'table' ? (
+                <div className="rounded-[2.5rem] border border-border/40 bg-card/30 backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/5">
+                  <Table>
+                    <TableHeader className="bg-muted/50">
+                      <TableRow className="hover:bg-transparent border-border/40 h-16">
+                        <TableHead className="w-[80px] text-center font-black uppercase tracking-widest text-[10px] text-muted-foreground">تميز</TableHead>
+                        <TableHead className="min-w-[350px] font-black uppercase tracking-widest text-[10px] text-muted-foreground mr-1">{activeTab === 'jobs' ? 'الوظيفة' : 'العنصر'}</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-center">التصنيف</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-center">السعر</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-center">الموقع</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-center">الناشر</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-center">الحالة</TableHead>
+                        <TableHead className="w-[60px]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredItems.map((item) => (
+                        <TableRow
+                            key={item.uuid}
+                            className="group hover:bg-primary/5 transition-all duration-300 border-border/30 h-28 cursor-pointer"
+                            onClick={() => setSelectedItemUuid(item.uuid)}
                         >
-                          {item.client_details?.phone_number}
-                        </p>
-                        <p className="text-sm text-muted-foreground truncate">
-                          {(item.client_details?.first_name ?? "") +
-                            " " +
-                            (item.client_details?.last_name ?? "")}
-                        </p>
-                        {item.client_details?.account_type === "business" &&
-                          item.client_details?.business_name && (
-                            <p className="text-sm text-muted-foreground truncate">
-                              اسم العمل
-                              {": "} <br />
-                              {item.client_details?.business_name}
-                            </p>
-                          )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        {getStatusBadge(item.is_active)}
-                        {item.account_type && (
-                          <CustomBadge
-                            variant={"unknown"}
-                            size="lg"
-                            className="whitespace-nowrap"
-                          >
-                            {item.account_type === "business"
-                              ? "عمل"
-                              : "فرد"}
-                          </CustomBadge>
-                        )}
-                        {item.client_details?.account_verified && (
-                          <CustomBadge
-                            variant={"rent"}
-                            size="lg"
-                            className="whitespace-nowrap"
-                          >
-                            موثق
-                          </CustomBadge>
-                        )}
-                        {item.archived && (
-                          <CustomBadge
-                            variant="archived"
-                            size="lg"
-                            className="whitespace-nowrap"
-                          >
-                            مؤرشف
-                          </CustomBadge>
-                        )}
-                        {item.reserved && (
-                          <CustomBadge
-                            variant="reserved"
-                            size="lg"
-                            className="whitespace-nowrap"
-                          >
-                            محجوز
-                          </CustomBadge>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-              {loading && (
-                <>
-                  {[...Array(pagination.limit)].map((_, i) => (
-                    <TableRow key={`loading-${i}`}>
-                      <TableCell colSpan={6}>
-                        <div className="flex items-center space-x-4 p-4">
-                          <Skeleton className="h-12 w-12 rounded-full" />
-                          <div className="space-y-2">
-                            <Skeleton className="h-4 w-[250px]" />
-                            <Skeleton className="h-4 w-[200px]" />
+                          <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
+                             <div className="flex justify-center">
+                                <label className="relative inline-flex items-center cursor-pointer group/toggle">
+                                    <input
+                                        type="checkbox"
+                                        checked={item.position === 1}
+                                        onChange={() => handlePositionToggle(item)}
+                                        className="sr-only peer"
+                                    />
+                                    <div className="w-11 h-6 bg-muted-foreground/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary transition-colors"></div>
+                                </label>
+                             </div>
+                          </TableCell>
+                          <TableCell className="p-4">
+                            <div className="flex items-center gap-5">
+                              <div className="relative h-20 w-20 flex-shrink-0 group-hover:scale-105 transition-transform duration-500 flex items-center justify-center bg-muted rounded-2xl overflow-hidden border border-border/20 shadow-lg">
+                                {item.item_as === 'job' && !(item.thumbnail || (item.images && item.images[0]?.url)) ? (
+                                  <div className="w-full h-full bg-blue-500/10 flex items-center justify-center">
+                                    <Briefcase className="h-8 w-8 text-blue-500/30" />
+                                  </div>
+                                ) : (
+                                  <img
+                                    className="h-full w-full object-cover"
+                                    src={item.thumbnail || (item.images && item.images[0]?.url) || "/placeholder-item.png"}
+                                    alt={item.title}
+                                  />
+                                )}
+                                <div className="absolute -top-1 -right-1 h-6 w-6 bg-blue-500 rounded-lg flex items-center justify-center text-white shadow-lg border-2 border-background">
+                                    {activeTab === 'jobs' ? <Briefcase className="h-3 w-3" /> : <ShoppingBag className="h-3 w-3" />}
+                                </div>
+                              </div>
+                              <div className="space-y-1.5 flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                    <h4 className="font-black text-base truncate tracking-tight">{item.title}</h4>
+                                    <span className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded text-muted-foreground">ID: {item.id}</span>
+                                </div>
+                                <p className="text-xs text-muted-foreground font-medium line-clamp-2 leading-relaxed h-8">
+                                  {item.description}
+                                </p>
+                                <div className="flex items-center gap-3">
+                                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
+                                      <Clock className="h-3 w-3" />
+                                      {moment(item.activated_at).locale("ar").fromNow()}
+                                   </div>
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <div className="inline-flex flex-col items-center gap-1">
+                                <span className="font-black text-sm">{item.category_name?.ar}</span>
+                                <span className="text-[10px] font-bold text-muted-foreground px-2 py-0.5 bg-muted rounded-full">{item.subcategory_name?.ar}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-center">
+                                <p className="font-black text-primary text-base">
+                                  {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                                </p>
+                                {item.discount > 0 && (
+                                  <CustomBadge className="bg-emerald-500 hover:bg-emerald-600 text-[10px] h-5 px-1.5 rounded-lg border-0">خصم {item.discount}%</CustomBadge>
+                                )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col items-center gap-1 whitespace-nowrap">
+                                <div className="flex items-center gap-1.5 font-bold text-sm">
+                                    <MapPin className="h-3.5 w-3.5 text-primary" />
+                                    {item.city}
+                                </div>
+                                <span className="text-[10px] font-bold text-muted-foreground italic">{item.state}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                             <div className="flex items-center gap-3 justify-center">
+                                <div className="text-right">
+                                    <p className="font-black text-sm leading-tight">{(item.client_details?.first_name ?? "") + " " + (item.client_details?.last_name ?? "")}</p>
+                                    <p className="text-[10px] font-bold text-muted-foreground tabular-nums" style={{ direction: 'ltr' }}>{item.client_details?.phone_number}</p>
+                                </div>
+                                <Avatar className="h-10 w-10 border-2 border-background shadow-md">
+                                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-black">
+                                        {(item.client_details?.first_name?.charAt(0) ?? "") + (item.client_details?.last_name?.charAt(0) ?? "")}
+                                    </AvatarFallback>
+                                </Avatar>
+                             </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {getStatusBadge(item.is_active)}
+                          </TableCell>
+                          <TableCell>
+                             <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Button variant="ghost" size="icon" className="rounded-xl h-10 w-10">
+                                   <MoreHorizontal className="h-5 w-5" />
+                                </Button>
+                             </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                filteredItems.map((item) => (
+                  <Card
+                    key={item.uuid}
+                    className="overflow-hidden border-border/40 shadow-xl shadow-black/5 hover:shadow-2xl transition-all rounded-[2rem] group cursor-pointer border-t-0"
+                    onClick={() => setSelectedItemUuid(item.uuid)}
+                  >
+                    <div className="relative h-64 overflow-hidden">
+                        {item.item_as === 'job' && !(item.thumbnail || (item.images && item.images[0]?.url)) ? (
+                          <div className="w-full h-full bg-blue-500/10 flex flex-col items-center justify-center gap-2">
+                            <Briefcase className="h-16 w-16 text-blue-500/30" />
+                            <span className="text-sm text-blue-500/40 font-black">إعلان وظيفة</span>
                           </div>
+                        ) : (
+                          <img
+                              src={item.thumbnail || (item.images && item.images[0]?.url) || "/placeholder-item.png"}
+                              alt={item.title}
+                              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:via-black/40 transition-all duration-500"></div>
+
+                        <div className="absolute top-4 left-4 flex flex-col gap-2">
+                            <div
+                                onClick={(e) => { e.stopPropagation(); handlePositionToggle(item); }}
+                                className={`h-12 w-12 rounded-[1.2rem] backdrop-blur-md flex items-center justify-center transition-all shadow-2xl border-2 ${item.position === 1 ? 'bg-primary text-white border-primary/20 scale-110' : 'bg-black/20 text-white border-white/20 hover:bg-black/40 hover:scale-105'}`}
+                            >
+                                <Tag className={`h-6 w-6 ${item.position === 1 ? 'fill-current' : ''}`} />
+                            </div>
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </>
+
+                        <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                            {getStatusBadge(item.is_active)}
+                            <CustomBadge variant="unknown" className="bg-black/40 backdrop-blur-md text-white border-white/10">{activeTab === 'jobs' ? 'وظيفة تجارية' : 'إعلان تجاري'}</CustomBadge>
+                        </div>
+
+                        <div className="absolute bottom-4 right-4 left-4 flex justify-between items-end">
+                             <div className="space-y-1">
+                                <div className="flex items-center gap-2 text-white/70 text-[10px] font-black uppercase tracking-widest">
+                                    <MapPin className="h-3 w-3" />
+                                    {item.city}، {item.state}
+                                </div>
+                                <h3 className="text-xl font-black text-white leading-tight line-clamp-1">{item.title}</h3>
+                             </div>
+                             <div className="text-right">
+                                <p className="text-2xl font-black text-primary drop-shadow-md">
+                                    {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                                </p>
+                             </div>
+                        </div>
+                    </div>
+                    <CardContent className="p-6">
+                        <p className="text-sm font-medium text-muted-foreground line-clamp-2 leading-relaxed mb-6 h-10">
+                            {item.description}
+                        </p>
+                        <div className="flex items-center justify-between pt-4 border-t border-border/40">
+                             <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10 border-2 border-background shadow-md">
+                                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-black">
+                                        {(item.client_details?.first_name?.charAt(0) ?? "") + (item.client_details?.last_name?.charAt(0) ?? "")}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="text-right">
+                                    <p className="font-black text-xs leading-none mb-1">{(item.client_details?.first_name ?? "") + " " + (item.client_details?.last_name ?? "")}</p>
+                                    <span className="text-[10px] font-bold text-muted-foreground italic">{moment(item.activated_at).locale("ar").fromNow()}</span>
+                                </div>
+                             </div>
+                             <div className="flex items-center gap-4 text-muted-foreground font-black text-[10px]">
+                                <div className="flex items-center gap-1.5">
+                                    <Eye className="h-4 w-4" />
+                                    {item.view_count || 0}
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <Hash className="h-4 w-4" />
+                                    {item.id}
+                                </div>
+                             </div>
+                        </div>
+                    </CardContent>
+                  </Card>
+                ))
               )}
-            </TableBody>
-          </Table>
-          {!hasMore && filteredItems.length > 0 && (
-            <div className="p-4 text-center text-muted-foreground">
-              لا توجد عناصر أخرى
             </div>
-          )}
-          {!loading && filteredItems.length === 0 && (
-            <div className="p-4 text-center text-muted-foreground">
-              لم يتم العثور على عناصر
+
+            {/* Pagination / Loading States */}
+            {loading && (
+              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6' : 'space-y-4'}>
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={`loading-${i}`} className={viewMode === 'grid' ? "h-[450px] rounded-[2rem]" : "h-28 w-full rounded-3xl"} />
+                ))}
+              </div>
+            )}
+
+            {!hasMore && filteredItems.length > 0 && (
+              <div className="py-12 text-center animate-in fade-in duration-1000">
+                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-muted/30 border border-border/40">
+                    <div className="h-2 w-2 rounded-full bg-muted-foreground/30"></div>
+                    <p className="text-sm font-black text-muted-foreground">لا توجد المزيد من الإعلانات</p>
+                    <div className="h-2 w-2 rounded-full bg-muted-foreground/30"></div>
+                </div>
+              </div>
+            )}
+
+            {!loading && filteredItems.length === 0 && (
+              <div className="py-32 text-center flex flex-col items-center animate-in zoom-in-95 duration-500">
+                <div className="h-24 w-24 rounded-full bg-blue-500/10 flex items-center justify-center mb-6 shadow-shadow text-blue-600">
+                   <ShoppingBag className="h-10 w-10 animate-bounce" />
+                </div>
+                <h3 className="text-2xl font-black text-foreground mb-3">لا توجد عناصر تجارية</h3>
+                <p className="text-muted-foreground max-w-sm font-medium leading-relaxed">
+                  لم يتم العثور على أي عناصر تجارية في هذا القسم حالياً.
+                </p>
+              </div>
+            )}
+
+            {/* Observer Target */}
+            <div ref={observerTarget} className="h-10 w-full flex items-center justify-center mb-6">
+              {loading && filteredItems.length > 0 && (
+                <div className="flex items-center gap-2 text-primary font-bold animate-pulse">
+                  <span className="h-2 w-2 rounded-full bg-primary" />
+                  <span>جاري تحميل المزيد...</span>
+                </div>
+              )}
             </div>
-          )}
         </div>
       </div>
+
+      {/* Item Detail View */}
       <ItemDetailView
         uuid={selectedItemUuid || ""}
         open={!!selectedItemUuid}

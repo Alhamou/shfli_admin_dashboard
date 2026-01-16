@@ -16,6 +16,7 @@ export const EditableField = ({
   setItem,
   originalItem,
   isEditing,
+  className = "",
 }: {
   label: string;
   value: string | number | boolean | null | undefined;
@@ -28,6 +29,7 @@ export const EditableField = ({
   editedFields: Partial<ICreatMainItem>;
   originalItem: ICreatMainItem | null;
   isEditing: boolean;
+  className?: string;
 }) => {
 
   const handleFieldChange = (
@@ -120,13 +122,13 @@ export const EditableField = ({
           <Textarea
             value={value?.toString() || ""}
             onChange={(e) => handleFieldChange(fieldName, e.target.value)}
-            className="min-h-[100px] border-2 border-blue-500"
+            className={`min-h-[100px] border-2 border-primary/30 focus-visible:border-primary transition-colors ${className}`}
           />
         ) : (
           <Input
             type={type}
             value={value?.toString() || ""}
-            className="border-2 border-blue-500"
+            className={`border-2 border-primary/30 focus-visible:border-primary transition-colors ${className}`}
             onChange={(e) => {
               const val =
                 type === "number"
@@ -137,7 +139,7 @@ export const EditableField = ({
           />
         )
       ) : (
-        <p className="text-sm">
+        <p className={`text-sm ${className}`}>
           {value
             ? fieldName === 'price' ? formatPrice(
                 item.discount

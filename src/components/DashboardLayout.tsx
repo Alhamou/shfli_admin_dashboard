@@ -7,17 +7,17 @@ export default function DashboardLayout() {
   return (
     <SidebarProvider>
       <div
-        className="flex min-h-screen flex-row flex-grow bg-gradient-to-br from-background via-background to-muted/30"
+        className="flex min-h-screen w-full flex-row bg-background text-foreground"
         style={{
           direction: "rtl",
           textAlign: "right",
         }}
       >
         <AppSidebar />
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
           <DashboardHeader />
-          <main className="flex-1 p-4 md:p-6 overflow-auto">
-            <div className="mx-auto max-w-[1600px]">
+          <main className="flex-1 p-4 md:p-8 lg:p-10">
+            <div className="mx-auto max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
               <Outlet />
             </div>
           </main>

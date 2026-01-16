@@ -2,20 +2,21 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import storageController from "@/controllers/storageController"
-import { Bell, BellOff, Menu } from "lucide-react"
+import { Bell, BellOff, Menu, Search } from "lucide-react"
 import { useState } from "react"
 import { ThemeToggle } from "./ThemeToggle"
+import { Input } from "./ui/input"
 
 export function DashboardHeader() {
   const [muted, setMuted] = useState(storageController.get('audio') === 'muted' ? true : false)
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-border/50 bg-background/80 backdrop-blur-xl px-4 shadow-sm">
-      {/* Sidebar trigger with better styling */}
+    <header className="sticky top-0 z-40 flex h-20 shrink-0 items-center gap-4 bg-background/60 backdrop-blur-xl px-6 transition-all duration-300">
+      {/* Mobile Sidebar Trigger */}
       <Button
         variant="ghost"
         size="icon"
-        className="h-9 w-9 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors duration-200 lg:hidden"
+        className="h-10 w-10 rounded-xl hover:bg-primary/5 hover:text-primary transition-all duration-200 lg:hidden"
         asChild
       >
         <SidebarTrigger>
@@ -23,41 +24,59 @@ export function DashboardHeader() {
         </SidebarTrigger>
       </Button>
 
-      <SidebarTrigger className="hidden lg:flex h-9 w-9 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors duration-200" />
-
-      <Separator orientation="vertical" className="h-6 bg-border/50" />
-
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Right side actions */}
-      <div className="flex items-center gap-2">
-        <ThemeToggle />
-
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            muted ? storageController.set('audio', 'unmuted') : storageController.set('audio', 'muted')
-            setMuted(!muted)
-          }}
-          className={`
-            h-9 w-9 rounded-lg transition-all duration-200
-            ${muted
-              ? "hover:bg-destructive/10 hover:text-destructive"
-              : "hover:bg-primary/10 hover:text-primary"
-            }
-          `}
-        >
-          {!muted
-            ? <Bell className="h-4 w-4" />
-            : <BellOff className="h-4 w-4 text-muted-foreground" />
-          }
-        </Button>
+      {/* Desktop Sidebar Trigger */}
+      <div className="hidden lg:flex items-center gap-4">
+        <SidebarTrigger className="h-10 w-10 rounded-xl hover:bg-primary/5 hover:text-primary transition-all duration-200 shadow-sm border border-border/50" />
+        <Separator orientation="vertical" className="h-8 bg-border/50" />
       </div>
 
-      {/* Bottom gradient border effect */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      {/* Modern Search Bar (Global) - Scalable for future */}
+      <div className="flex-1 max-w-md hidden md:block">
+        <div className="relative group">
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <Input
+            placeholder="البحث السريع..."
+            className="h-10 pr-10 bg-muted/30 border-transparent focus:bg-background focus:ring-2 focus:ring-primary/20 rounded-xl transition-all"
+            style={{ direction: 'rtl' }}
+          />
+        </div>
+      </div>
+
+      <div className="flex-1 md:hidden" />
+
+      {/* Right side actions */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-2xl border border-border/50">
+          <ThemeToggle />
+
+          <Separator orientation="vertical" className="h-6 bg-border/50 mx-1" />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              const newState = !muted
+              storageController.set('audio', newState ? 'muted' : 'unmuted')
+              setMuted(newState)
+            }}
+            className={`
+              h-9 w-9 rounded-xl transition-all duration-300
+              ${muted
+                ? "text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                : "text-primary hover:bg-primary/10"
+              }
+            `}
+          >
+            {!muted
+              ? <Bell className="h-4.5 w-4.5" />
+              : <BellOff className="h-4.5 w-4.5" />
+            }
+          </Button>
+        </div>
+      </div>
+
+      {/* Enhanced Bottom Border */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-border/60 to-transparent" />
     </header>
   )
 }

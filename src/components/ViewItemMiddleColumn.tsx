@@ -1,23 +1,23 @@
 import { ICreatMainItem } from "@/interfaces";
 import { formatPrice, getPriceDiscount } from "@/lib/helpFunctions";
 import {
-    Briefcase,
-    Building2,
-    Calendar,
-    Clock,
-    CreditCard,
-    DollarSign,
-    Eye,
-    Globe,
-    Heart,
-    Mail,
-    MapPin,
-    Package,
-    Percent,
-    Phone,
-    Tag,
-    Truck,
-    User
+  Briefcase,
+  Building2,
+  Calendar,
+  Clock,
+  CreditCard,
+  DollarSign,
+  Eye,
+  Globe,
+  Heart,
+  Mail,
+  MapPin,
+  Package,
+  Percent,
+  Phone,
+  Tag,
+  Truck,
+  User
 } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction } from "react";
@@ -158,13 +158,20 @@ export const ViewItemMiddleColumn = ({
                 <div>
                   <p className="text-xs text-muted-foreground">السعر</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-primary">
-                      {formatPrice(
-                        item.discount ? getPriceDiscount(item.price, item.discount) : item.price,
-                        item?.currency
-                      )}
-                    </span>
-                    {item.discount > 0 && (
+                    <EditableField
+                      label=""
+                      value={item.price}
+                      fieldName="price"
+                      type="number"
+                      editedFields={editedFields}
+                      isEditing={isEditing}
+                      item={item}
+                      originalItem={originalItem}
+                      setEditedFields={setEditedFields}
+                      setItem={setItem}
+                      className="text-2xl font-bold text-primary"
+                    />
+                    {item.discount > 0 && !isEditing && (
                       <span className="text-sm line-through text-muted-foreground">
                         {formatPrice(item.price, item?.currency)}
                       </span>
@@ -250,19 +257,52 @@ export const ViewItemMiddleColumn = ({
         <Card>
           <CardContent className="p-4">
             <SectionHeader title="الموقع" icon={<MapPin className="h-4 w-4 text-primary" />} />
-            <div className="space-y-3">
-              <InfoField
+            <div className="space-y-4">
+              <EditableField
                 label="العنوان"
                 value={item.address}
+                fieldName="address"
+                editedFields={editedFields}
+                isEditing={isEditing}
+                item={item}
+                originalItem={originalItem}
+                setEditedFields={setEditedFields}
+                setItem={setItem}
+                className="font-bold"
               />
-              <div className="grid grid-cols-2 gap-3">
-                <InfoField label="المدينة" value={item.city} />
-                <InfoField label="المنطقة" value={item.state} />
+              <div className="grid grid-cols-2 gap-4">
+                <EditableField
+                  label="المدينة"
+                  value={item.city}
+                  fieldName="city"
+                  editedFields={editedFields}
+                  isEditing={isEditing}
+                  item={item}
+                  originalItem={originalItem}
+                  setEditedFields={setEditedFields}
+                  setItem={setItem}
+                  className="font-bold"
+                />
+                <EditableField
+                  label="المنطقة"
+                  value={item.state}
+                  fieldName="state"
+                  editedFields={editedFields}
+                  isEditing={isEditing}
+                  item={item}
+                  originalItem={originalItem}
+                  setEditedFields={setEditedFields}
+                  setItem={setItem}
+                  className="font-bold"
+                />
               </div>
               {item.latitude && item.longitude && (
-                <p className="text-xs text-muted-foreground">
-                  📍 {item.latitude}, {item.longitude}
-                </p>
+                <div className="pt-2 border-t border-border/80">
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">الإحداثيات الجغرافية</p>
+                  <code className="text-[10px] font-mono bg-muted px-2 py-1 rounded" style={{ direction: 'ltr' }}>
+                    {item.latitude}, {item.longitude}
+                  </code>
+                </div>
               )}
             </div>
           </CardContent>
@@ -276,19 +316,35 @@ export const ViewItemMiddleColumn = ({
           <CardContent className="p-4">
             <SectionHeader title="التواصل" icon={<Phone className="h-4 w-4 text-primary" />} />
             <div className="space-y-3">
-              {item.contact_whatsapp && (
-                <InfoField
-                  icon={<Phone className="h-4 w-4 text-primary" />}
+              <div className="flex-1">
+                <EditableField
                   label="واتساب"
-                  value={<span style={{ direction: "ltr" }}>{item.contact_whatsapp}</span>}
+                  value={item.contact_whatsapp}
+                  fieldName="contact_whatsapp"
+                  editedFields={editedFields}
+                  isEditing={isEditing}
+                  item={item}
+                  originalItem={originalItem}
+                  setEditedFields={setEditedFields}
+                  setItem={setItem}
+                  className="font-bold underline tabular-nums"
                 />
-              )}
-              {item.item_as !== "job" && item.contact_phone && (
-                <InfoField
-                  icon={<Phone className="h-4 w-4 text-primary" />}
-                  label="الهاتف"
-                  value={<span style={{ direction: "ltr" }}>{item.contact_phone}</span>}
-                />
+              </div>
+              {item.item_as !== "job" && (
+                <div className="flex-1">
+                  <EditableField
+                    label="الهاتف"
+                    value={item.contact_phone}
+                    fieldName="contact_phone"
+                    editedFields={editedFields}
+                    isEditing={isEditing}
+                    item={item}
+                    originalItem={originalItem}
+                    setEditedFields={setEditedFields}
+                    setItem={setItem}
+                    className="font-bold underline tabular-nums"
+                  />
+                </div>
               )}
             </div>
           </CardContent>

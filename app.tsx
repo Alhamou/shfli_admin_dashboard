@@ -5,29 +5,29 @@ import { signin, verifyOtp as verifyOtpService } from "@/services/authServices";
 import { getUserInfo } from "@/services/restApiServices";
 import { jwtDecode } from "jwt-decode";
 import {
-  Suspense, createContext, lazy, useContext,
-  useEffect,
-  useState,
-  type ReactNode
+    Suspense, createContext, lazy, useContext,
+    useEffect,
+    useState,
+    type ReactNode
 } from "react";
 import {
-  Navigate,
-  Route,
-  BrowserRouter as Router,
-  Routes,
+    Navigate,
+    Route,
+    BrowserRouter as Router,
+    Routes,
 } from "react-router-dom";
 import { Toaster } from "sonner";
 import DashboardLayout from "./src/components/DashboardLayout";
 import Provider from "./src/context/MainProvider";
-const Admin = lazy(() => import("@/pages/Admin").then(m => ({ default: m.Admin })));
-const BidsScreen = lazy(() => import("@/pages/Bids"));
-const Commercial = lazy(() => import("@/pages/Commercial"));
-const PendingAds = lazy(() => import("@/pages/PendingAds"));
-const StatisticsPage = lazy(() => import("@/pages/ٍStatistics").then(m => ({ default: m.StatisticsPage })));
+const Admin = lazy(() => import("./src/pages/Admin").then(m => ({ default: m.default })));
+const BidsScreen = lazy(() => import("./src/pages/Bids").then(m => ({ default: m.default })));
+const Commercial = lazy(() => import("./src/pages/Commercial").then(m => ({ default: m.default })));
+const PendingAds = lazy(() => import("./src/pages/PendingAds").then(m => ({ default: m.default })));
+const StatisticsPage = lazy(() => import("./src/pages/Statistics").then(m => ({ default: m.default })));
 const ChatLogs = lazy(() => import("./src/pages/ChatLogs").then(m => ({ default: m.ChatLogs })));
-const DashboardHome = lazy(() => import("./src/pages/DashboardHome"));
+const DashboardHome = lazy(() => import("./src/pages/DashboardHome").then(m => ({ default: m.default })));
 const LoginPage = lazy(() => import("./src/pages/LoginPage").then(m => ({ default: m.LoginPage })));
-const SettingsPage = lazy(() => import("./src/pages/SettingsPage"));
+const SettingsPage = lazy(() => import("./src/pages/SettingsPage").then(m => ({ default: m.default })));
 const UserInfo = lazy(() => import("./src/pages/UsersPage").then(m => ({ default: m.UserInfo })));
 
 interface AuthContextType {

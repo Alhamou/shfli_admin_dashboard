@@ -62,7 +62,7 @@ export function AppSidebar() {
     ...(user?.roles.includes("admin")
       ? [
           {
-            title: "ادمن",
+            title: "المدراء",
             url: "/admin",
             icon: User,
           },
@@ -100,26 +100,27 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar side="right" className="border-l-0">
-      {/* Premium Header with Gradient */}
-      <SidebarHeader className="border-b border-sidebar-border px-5 py-5 bg-gradient-to-l from-primary/5 to-transparent">
-        <div className="flex items-center gap-3 rtl:space-x-reverse">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/25">
-            <Zap className="h-5 w-5 text-primary-foreground" />
+    <Sidebar side="right" className="border-l-0 shadow-2xl">
+      <SidebarHeader className="px-6 py-8">
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-blue-600 shadow-xl shadow-primary/30 ring-4 ring-primary/10">
+            <Zap className="h-6 w-6 text-primary-foreground animate-pulse" />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-bold tracking-tight bg-gradient-to-l from-primary to-primary/70 bg-clip-text text-transparent">
-              SHFLI Admin
+            <span className="text-xl font-black tracking-tight bg-gradient-to-l from-primary to-blue-600 bg-clip-text text-transparent">
+              SHFLI
             </span>
-            <span className="text-xs text-muted-foreground">لوحة التحكم</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+              Admin Dashboard
+            </span>
           </div>
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-3 py-4">
+      <SidebarContent className="px-4 py-2">
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
+            <SidebarMenu className="gap-2">
               {menuItems.map((item) => {
                 const isActive = location.pathname === item.url;
                 return (
@@ -128,35 +129,36 @@ export function AppSidebar() {
                       asChild
                       isActive={isActive}
                       className={`
-                        group relative rounded-xl transition-all duration-200 ease-out
-                        hover:bg-sidebar-accent hover:shadow-sm
+                        group relative h-12 rounded-2xl transition-all duration-300 ease-in-out px-4
+                        hover:bg-primary/5 active:scale-95
                         ${isActive
-                          ? "bg-gradient-to-l from-primary/15 to-primary/5 shadow-sm border border-primary/10"
-                          : ""
+                          ? "bg-primary/10 shadow-sm border border-primary/20"
+                          : "bg-transparent border border-transparent"
                         }
                       `}
                     >
-                      <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
+                      <Link to={item.url} className="flex items-center gap-4 w-full">
                         <div className={`
-                          flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200
+                          flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-300
                           ${isActive
-                            ? "bg-primary text-primary-foreground shadow-md shadow-primary/30"
-                            : "bg-sidebar-accent text-sidebar-foreground group-hover:bg-primary/10 group-hover:text-primary"
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 rotate-3"
+                            : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary group-hover:-rotate-3"
                           }
                         `}>
-                          <item.icon className="h-4 w-4" />
+                          <item.icon className="h-5 w-5" />
                         </div>
                         <span className={`
-                          font-medium transition-colors duration-200
+                          text-sm font-bold transition-colors duration-300
                           ${isActive
                             ? "text-primary"
-                            : "text-sidebar-foreground group-hover:text-foreground"
+                            : "text-muted-foreground group-hover:text-foreground"
                           }
                         `}>
                           {item.title}
                         </span>
+
                         {isActive && (
-                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-primary rounded-l-full shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
                         )}
                       </Link>
                     </SidebarMenuButton>
@@ -168,32 +170,34 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Premium Footer */}
-      <SidebarFooter className="border-t border-sidebar-border p-4 bg-gradient-to-t from-sidebar-accent/50 to-transparent">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <Avatar className="h-10 w-10 border-2 border-primary/20 shadow-sm">
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
+      <SidebarFooter className="p-6 mt-auto">
+        <div className="relative group overflow-hidden rounded-3xl bg-muted/30 p-4 border border-border/50 transition-all duration-300 hover:bg-muted/50 hover:shadow-lg">
+          <div className="flex items-center gap-4 relative z-10">
+            <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-md transition-transform duration-300 group-hover:scale-105">
+              <AvatarFallback className="bg-gradient-to-br from-primary/20 via-primary/10 to-transparent text-primary font-black text-lg">
                 {getUserInitials()}
               </AvatarFallback>
             </Avatar>
-            <div className="flex flex-col min-w-0">
-              <span className="text-sm font-semibold truncate">
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-sm font-bold truncate text-foreground leading-tight">
                 {getUserDisplayName()}
               </span>
-              <span className="text-xs text-muted-foreground">
-                {user?.roles?.includes("admin") ? "مسؤول" : "مشرف"}
+              <span className="text-xs font-semibold text-muted-foreground/80 bg-primary/5 px-2 py-0.5 rounded-full w-fit mt-1 border border-primary/10 uppercase tracking-tighter">
+                {user?.roles?.includes("admin") ? "Administrator" : "Moderator"}
               </span>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={logout}
+              className="h-10 w-10 rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all duration-300 group-hover:rotate-12"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={logout}
-            className="h-9 w-9 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors duration-200"
-          >
-            <LogOut className="h-4 w-4" />
-          </Button>
+
+          {/* Subtle background decoration */}
+          <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
         </div>
       </SidebarFooter>
     </Sidebar>
