@@ -91,7 +91,7 @@ export const LoginPage = () => {
       {/* Decorative Background Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] animate-pulse"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[120px]"></div>
-      <div className="absolute top-[20%] right-[-5%] w-[20%] h-[20%] bg-emerald-500/10 rounded-full blur-[100px] animate-bounce duration-[10s]"></div>
+      <div className="absolute top-[20%] right-[-5%] w-[20%] h-[20%] bg-emerald-500/10 rounded-full blur-[100px] animate-bounce [animation-duration:10s]"></div>
 
       <div className="w-full max-w-sm z-10 p-4">
         <div className="flex flex-col items-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

@@ -3,28 +3,28 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
-  AlertCircle,
-  ChartColumnIncreasing,
-  Gavel,
-  Home,
-  LogOut,
-  MessageCircle,
-  Settings,
-  Tv,
-  User,
-  Users,
-  Zap,
+    AlertCircle,
+    ChartColumnIncreasing,
+    Gavel,
+    Home,
+    LogOut,
+    MessageCircle,
+    Settings,
+    Tv,
+    User,
+    Users,
+    Zap,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../app";
@@ -103,8 +103,8 @@ export function AppSidebar() {
     <Sidebar side="right" className="border-l-0 shadow-2xl">
       <SidebarHeader className="px-6 py-8">
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-blue-600 shadow-xl shadow-primary/30 ring-4 ring-primary/10">
-            <Zap className="h-6 w-6 text-primary-foreground animate-pulse" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-xl shadow-black/5 ring-4 ring-primary/10 overflow-hidden">
+            <img src="/shfli-logo.png" alt="SHFLI Logo" className="h-10 w-10 object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-black tracking-tight bg-gradient-to-l from-primary to-blue-600 bg-clip-text text-transparent">
