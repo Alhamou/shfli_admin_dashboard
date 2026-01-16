@@ -292,14 +292,14 @@ export default function PendingAds() {
                                   />
                                 )}
                                 {item.item_as === 'job' && (
-                                    <div className="absolute -top-1 -right-1 h-6 w-6 bg-blue-500 rounded-lg flex items-center justify-center text-white shadow-lg border-2 border-background">
+                                    <div className="absolute top-1 right-1 h-6 w-6 bg-blue-500 rounded-lg flex items-center justify-center text-white shadow-lg border-2 border-background z-10">
                                         <Clock className="h-3 w-3" />
                                     </div>
                                 )}
                               </div>
                               <div className="space-y-1.5 flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <h4 className="font-black text-base truncate tracking-tight max-w-[250px]">{item.title}</h4>
+                                    <h4 className="font-black text-base truncate tracking-tight max-w-[250px] group-hover:text-indigo-600 group-hover:underline underline-offset-4 decoration-2 decoration-indigo-600/30 transition-all duration-300">{item.title}</h4>
                                     <span className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded text-muted-foreground">ID: {item.id}</span>
                                 </div>
                                 <p className="text-xs text-muted-foreground font-medium line-clamp-2 leading-relaxed h-8 max-w-[200px]">
@@ -322,12 +322,14 @@ export default function PendingAds() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="text-center">
-                                <p className="font-black text-primary text-base">
+                            <div className="flex flex-col items-center bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">
+                                <p className="font-black text-primary text-base tabular-nums">
                                   {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
                                 </p>
                                 {item.discount > 0 && (
-                                  <CustomBadge className="bg-emerald-500 hover:bg-emerald-600 text-[10px] h-5 px-1.5 rounded-lg border-0">خصم {item.discount}%</CustomBadge>
+                                  <div className="mt-1 flex items-center justify-center">
+                                    <span className="text-[9px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded shadow-sm">وفر {item.discount}%</span>
+                                  </div>
                                 )}
                             </div>
                           </TableCell>

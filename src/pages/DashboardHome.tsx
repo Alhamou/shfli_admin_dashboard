@@ -360,7 +360,7 @@ export default function DashboardHome() {
                           )}
                         </div>
                         <div className="min-w-0 space-y-1">
-                          <p className="font-black text-foreground group-hover:text-primary transition-colors truncate max-w-[250px]">{item.title}</p>
+                          <p className="font-black text-foreground group-hover:text-indigo-600 group-hover:underline underline-offset-4 decoration-2 decoration-indigo-600/30 transition-all duration-300 truncate max-w-[250px]">{item.title}</p>
                           <p className="text-xs text-muted-foreground/80 line-clamp-1 font-medium max-w-[200px]">{item.description}</p>
                           <div className="flex items-center gap-2 pt-1">
                             {item.item_as === 'job' && <CustomBadge className="h-5 px-2 text-[10px] bg-blue-500/10 text-blue-500 border-none font-black">{item.need ? "باحث" : "موظِف"}</CustomBadge>}
@@ -379,14 +379,14 @@ export default function DashboardHome() {
                        </div>
                     </TableCell>
                     <TableCell>
-                      <div className="space-y-1">
-                        <p className="font-black text-foreground text-base">
+                      <div className="inline-flex flex-col items-center bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">
+                        <p className="font-black text-primary text-base tabular-nums">
                             {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
                         </p>
                         {item.discount > 0 && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 px-1.5 py-0.5 rounded-md">وفر {item.discount}%</span>
-                            <span className="text-xs text-muted-foreground line-through opacity-50">{formatPrice(item.price, item?.currency)}</span>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <span className="text-[10px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded-md shadow-sm">وفر {item.discount}%</span>
+                            <span className="text-[10px] text-muted-foreground line-through opacity-60 font-bold tabular-nums">{formatPrice(item.price, item?.currency)}</span>
                           </div>
                         )}
                       </div>
@@ -402,13 +402,17 @@ export default function DashboardHome() {
                     </TableCell>
                     <TableCell>
                       <div className="space-y-2">
-                        <div className="flex items-center gap-4">
-                           <div className="flex items-center gap-1.5 text-xs font-bold" title="المشاهدات">
-                                <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-                                <span>{item.view_count || 0}</span>
+                        <div className="flex flex-col gap-2">
+                           <div className="flex items-center gap-2 text-xs font-bold" title="المشاهدات">
+                                <div className="h-6 w-6 rounded-md bg-blue-500/10 flex items-center justify-center">
+                                    <Eye className="h-3.5 w-3.5 text-blue-600" />
+                                </div>
+                                <span>{item.view_count || 0} مشاهدة</span>
                            </div>
-                           <div className="flex items-center gap-1.5 text-xs font-bold" title="التوقيت">
-                                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                           <div className="flex items-center gap-2 text-xs font-bold" title="التوقيت">
+                                <div className="h-6 w-6 rounded-md bg-amber-500/10 flex items-center justify-center">
+                                    <Clock className="h-3.5 w-3.5 text-amber-600" />
+                                </div>
                                 <span>{moment(item.activated_at).locale("ar").fromNow(true)}</span>
                            </div>
                         </div>
