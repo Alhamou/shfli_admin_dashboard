@@ -320,7 +320,7 @@ export default function BidsScreen() {
                     <div className="flex justify-between items-start gap-3">
                         <h3 className="font-black text-lg line-clamp-1 leading-tight flex-1">{item.title}</h3>
                         <p className="font-black text-primary whitespace-nowrap">
-                            {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                            {(item.price === 0 || !item.price) ? "تواصل" : formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-y-2 gap-x-4 text-xs font-bold text-muted-foreground">
@@ -409,7 +409,7 @@ export default function BidsScreen() {
                           <TableCell>
                             <div className="flex flex-col items-center bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">
                                 <p className="font-black text-primary text-base tabular-nums">
-                                  {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                                  {(item.price === 0 || !item.price) ? "تواصل" : formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
                                 </p>
                             </div>
                           </TableCell>
@@ -487,11 +487,11 @@ export default function BidsScreen() {
                                 </div>
                                 <h3 className="text-xl font-black text-white leading-tight line-clamp-1">{item.title}</h3>
                              </div>
-                             <div className="text-right">
-                                <p className="text-2xl font-black text-primary drop-shadow-md">
-                                    {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
-                                </p>
-                             </div>
+                              <div className="text-right">
+                                 <p className="text-2xl font-black text-primary drop-shadow-md">
+                                     {(item.price === 0 || !item.price) ? "تواصل" : formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                                 </p>
+                              </div>
                         </div>
                     </div>
                     <CardContent className="p-6">
