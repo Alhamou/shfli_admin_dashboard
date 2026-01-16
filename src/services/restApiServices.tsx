@@ -82,6 +82,22 @@ export function getSoldStats() {
   return get<Stat[]>(`/team/get_count_sold`);
 }
 
+export function getEligibleUsersCount() {
+  return get<number>(`/team/get_count_eligible_users`);
+}
+
+export function getMessageStats() {
+  return get<Stat[]>(`/team/get_count_messages`);
+}
+
+export function getVerifiedUsersCount() {
+  return get<number>(`/team/get_count_verified_users`);
+}
+
+export function verifyEligibleUsers() {
+  return post<{ id: number }[]>(`/team/verify_eligible_users`, {});
+}
+
 export function sendFirebase(body: { title: string; description: string }) {
   return post<void>(`/admin/send_firebase_all`, body);
 }

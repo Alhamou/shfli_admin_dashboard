@@ -1,16 +1,20 @@
 import { AnnouncementDialog } from "@/components/FirebaseAnnouncement";
 import { SendNotificationPopup } from "@/components/SendNotificationPopup";
+import { VerifyResultsDialog } from "@/components/VerifyResultsDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { connectSocket, socket } from "@/controllers/requestController";
-import { sendFirebase, sendNotAdmin } from "@/services/restApiServices";
-import { Bell, Megaphone, ShieldAlert, Sparkles, Wifi, WifiOff } from "lucide-react";
+import { getEligibleUsersCount, sendFirebase, sendNotAdmin, verifyEligibleUsers } from "@/services/restApiServices";
+import { Bell, Megaphone, RefreshCw, ShieldAlert, ShieldCheck, Sparkles, Wifi, WifiOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Admin() {
   const [loadingNotification, setLoadingNotification] = useState(false);
+  const [loadingVerify, setLoadingVerify] = useState(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [verifiedUsersResult, setVerifiedUsersResult] = useState<{ id: number }[]>([]);
+  const [isResultDialogOpen, setIsResultDialogOpen] = useState(false);
 
   const handleSendNotification = async (messageData: any) => {
     setLoadingNotification(true);
@@ -33,6 +37,22 @@ export default function Admin() {
       toast.success("تم إرسال الإعلان بنجاح");
     } catch {
       toast.error("فشل في إرسال الإعلان");
+    }
+  };
+
+  const handleVerifyUsers = async () => {
+    setLoadingVerify(true);
+    try {
+      const response = await verifyEligibleUsers();
+      if (response && response.length > 0) {
+        setVerifiedUsersResult(response);
+        setIsResultDialogOpen(true);
+      }
+      toast.success("تم بدء عملية توثيق المستخدمين بنجاح");
+    } catch {
+      toast.error("فشل في بدء عملية التوثيق");
+    } finally {
+      setLoadingVerify(false);
     }
   };
 
@@ -178,6 +198,40 @@ export default function Admin() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Verify Users Card */}
+        <Card className="group border-border/40 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm overflow-hidden rounded-[2.5rem] hover:shadow-2xl transition-all duration-500">
+          <CardHeader className="p-8 pb-4">
+            <div className="h-16 w-16 rounded-[1.5rem] bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner">
+               <ShieldCheck className="h-8 w-8" />
+            </div>
+            <CardTitle className="text-2xl font-black">توثيق المستخدمين</CardTitle>
+            <CardDescription className="text-base font-medium leading-relaxed">تجهيز وتوثيق كافة المستخدمين الذين استوفوا معايير النشاط المطلوبة.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-8 pt-4">
+            <div className="space-y-6">
+                <ul className="space-y-3">
+                    <li className="flex items-center gap-3 text-sm font-bold text-muted-foreground/80">
+                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
+                        عملية آلية لفحص معايير النشاط
+                    </li>
+                    <li className="flex items-center gap-3 text-sm font-bold text-muted-foreground/80">
+                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
+                        إضافة شارة التوثيق للحسابات المؤهلة
+                    </li>
+                </ul>
+
+                <Button
+                    onClick={handleVerifyUsers}
+                    disabled={loadingVerify}
+                    className="w-full h-16 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-500/20 font-black text-lg transition-all active:scale-95 flex items-center gap-3"
+                >
+                    {loadingVerify ? <RefreshCw className="h-5 w-5 animate-spin" /> : <ShieldCheck className="h-5 w-5" />}
+                    توثيق المستخدمين المؤهلين
+                </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Info Alert */}
@@ -190,6 +244,12 @@ export default function Admin() {
             <p className="text-sm font-medium text-muted-foreground leading-relaxed">تذكر أن الإشعارات العامة تصل لجميع المستخدمين المسجلين في النظام. يرجى مراجعة المحتوى بعناية قبل الإرسال لتجنب الإزعاج أو الأخطاء اللغوية.</p>
          </div>
       </div>
+
+      <VerifyResultsDialog
+        isOpen={isResultDialogOpen}
+        onClose={() => setIsResultDialogOpen(false)}
+        verifiedUsers={verifiedUsersResult}
+      />
     </div>
   );
 }

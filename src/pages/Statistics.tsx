@@ -5,11 +5,14 @@ import storageController from "@/controllers/storageController";
 import { Stat } from "@/interfaces";
 import {
     getAdStats,
+    getEligibleUsersCount,
     getJobStats,
+    getMessageStats,
     getSoldStats,
     getUserStats,
+    getVerifiedUsersCount,
 } from "@/services/restApiServices";
-import { ArrowDownRight, ArrowUpRight, BarChart3, Briefcase, Calendar, Package, RefreshCw, ShoppingCart, TrendingUp, Users } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, BarChart3, Briefcase, Calendar, MessageSquare, Package, RefreshCw, ShieldCheck, ShoppingCart, TrendingUp, UserCheck, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
@@ -26,6 +29,9 @@ const STATS_KEYS = {
   ADS: "stats_ads",
   JOBS: "stats_jobs",
   SOLD: "stats_sold",
+  MESSAGES: "stats_messages",
+  ELIGIBLE: "stats_eligible",
+  VERIFIED: "stats_verified",
 };
 
 const statColors = {
@@ -57,6 +63,27 @@ const statColors = {
     border: "border-amber-500/20",
     icon: <ShoppingCart className="h-6 w-6" />
   },
+  messages: {
+    gradient: ["#ec4899", "#db2777"],
+    bg: "bg-pink-500/10",
+    text: "text-pink-600",
+    border: "border-pink-500/20",
+    icon: <MessageSquare className="h-6 w-6" />
+  },
+  eligible: {
+    gradient: ["#06b6d4", "#0891b2"],
+    bg: "bg-cyan-500/10",
+    text: "text-cyan-600",
+    border: "border-cyan-500/20",
+    icon: <UserCheck className="h-6 w-6" />
+  },
+  verified: {
+    gradient: ["#10b981", "#059669"],
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-600",
+    border: "border-emerald-500/20",
+    icon: <ShieldCheck className="h-6 w-6" />
+  },
 };
 
 export default function StatisticsPage() {
@@ -64,12 +91,18 @@ export default function StatisticsPage() {
   const [adsStats, setAdsStats] = useState<StatData | null>(null);
   const [jobsStats, setJobsStats] = useState<StatData | null>(null);
   const [soldStats, setSoldStats] = useState<StatData | null>(null);
+  const [messagesStats, setMessagesStats] = useState<StatData | null>(null);
+  const [eligibleCount, setEligibleCount] = useState<number | null>(null);
+  const [verifiedCount, setVerifiedCount] = useState<number | null>(null);
 
   const [loading, setLoading] = useState({
     users: false,
     ads: false,
     jobs: false,
     sold: false,
+    messages: false,
+    eligible: false,
+    verified: false,
   });
 
   useEffect(() => {
@@ -78,11 +111,17 @@ export default function StatisticsPage() {
       const savedAds = storageController.get<StatData>(STATS_KEYS.ADS);
       const savedJobs = storageController.get<StatData>(STATS_KEYS.JOBS);
       const savedSold = storageController.get<StatData>(STATS_KEYS.SOLD);
+      const savedMessages = storageController.get<StatData>(STATS_KEYS.MESSAGES);
+      const savedEligible = storageController.get<number>(STATS_KEYS.ELIGIBLE);
+      const savedVerified = storageController.get<number>(STATS_KEYS.VERIFIED);
 
       if (!savedUsers) await fetchUsersStats(); else setUsersStats(savedUsers);
       if (!savedAds) await fetchAdsStats(); else setAdsStats(savedAds);
       if (!savedJobs) await fetchJobsStats(); else setJobsStats(savedJobs);
       if (!savedSold) await fetchSoldStats(); else setSoldStats(savedSold);
+      if (!savedMessages) await fetchMessagesStats(); else setMessagesStats(savedMessages);
+      if (savedEligible === null) await fetchEligibleStats(); else setEligibleCount(savedEligible);
+      if (savedVerified === null) await fetchVerifiedStats(); else setVerifiedCount(savedVerified);
     };
     loadInitialData();
   }, []);
@@ -114,6 +153,25 @@ export default function StatisticsPage() {
   const fetchAdsStats = () => fetchStats(getAdStats, "ads", setAdsStats);
   const fetchJobsStats = () => fetchStats(getJobStats, "jobs", setJobsStats);
   const fetchSoldStats = () => fetchStats(getSoldStats, "sold", setSoldStats);
+  const fetchMessagesStats = () => fetchStats(getMessageStats, "messages", setMessagesStats);
+
+  const fetchSingleStat = async (
+    apiCall: () => Promise<number>,
+    key: string,
+    setter: (data: number) => void
+  ) => {
+    try {
+      setLoading((prev) => ({ ...prev, [key]: true }));
+      const response = await apiCall();
+      storageController.set(STATS_KEYS[key.toUpperCase() as keyof typeof STATS_KEYS], response);
+      setter(response);
+    } finally {
+      setLoading((prev) => ({ ...prev, [key]: false }));
+    }
+  };
+
+  const fetchEligibleStats = () => fetchSingleStat(getEligibleUsersCount, "eligible", setEligibleCount);
+  const fetchVerifiedStats = () => fetchSingleStat(getVerifiedUsersCount, "verified", setVerifiedCount);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "أبداً";
@@ -141,9 +199,10 @@ export default function StatisticsPage() {
       users: formatForChart(usersStats),
       ads: formatForChart(adsStats),
       jobs: formatForChart(jobsStats),
-      sold: formatForChart(soldStats)
+      sold: formatForChart(soldStats),
+      messages: formatForChart(messagesStats)
     };
-  }, [usersStats, adsStats, jobsStats, soldStats]);
+  }, [usersStats, adsStats, jobsStats, soldStats, messagesStats]);
 
   const currentDateKey = new Date().toISOString().split("T")[0];
   const currentDayName = new Date().toLocaleDateString("ar", { weekday: "short" }) as DaysOfTheWeek;
@@ -167,7 +226,7 @@ export default function StatisticsPage() {
 
         <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" className="rounded-xl font-bold bg-background/50 border-border/40 h-10 px-4 transition-all active:scale-95" onClick={() => {
-                fetchUsersStats(); fetchAdsStats(); fetchJobsStats(); fetchSoldStats();
+                fetchUsersStats(); fetchAdsStats(); fetchJobsStats(); fetchSoldStats(); fetchMessagesStats(); fetchEligibleStats(); fetchVerifiedStats();
             }}>
                 <RefreshCw className={`h-4 w-4 ml-2 ${Object.values(loading).some(v => v) ? 'animate-spin' : ''}`} />
                 تحديث كافة البيانات
@@ -177,27 +236,44 @@ export default function StatisticsPage() {
 
       {/* Hero Stats Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-        {(['users', 'ads', 'jobs', 'sold'] as const).map((type) => {
-            const stats = type === 'users' ? usersStats : type === 'ads' ? adsStats : type === 'jobs' ? jobsStats : soldStats;
-            const value = stats?.[currentDateKey] || stats?.[currentDayName] || 0;
+        {(['users', 'ads', 'jobs', 'sold', 'messages', 'eligible', 'verified'] as const).map((type) => {
+            const stats = type === 'users' ? usersStats : type === 'ads' ? adsStats : type === 'jobs' ? jobsStats : type === 'sold' ? soldStats : type === 'messages' ? messagesStats : null;
+            const singleValue = type === 'eligible' ? eligibleCount : type === 'verified' ? verifiedCount : null;
+
+            const value = stats ? (stats?.[currentDateKey] || stats?.[currentDayName] || 0) : singleValue;
             const isLoad = loading[type];
             const config = statColors[type];
+
+            const getLabel = (t: string) => {
+                switch(t) {
+                    case 'users': return 'المستخدمين الجدد';
+                    case 'ads': return 'الإعلانات المنشورة';
+                    case 'jobs': return 'الوظائف المعلنة';
+                    case 'sold': return 'عمليات البيع';
+                    case 'messages': return 'الرسائل المرسلة';
+                    case 'eligible': return 'مؤهل للتوثيق';
+                    case 'verified': return 'الموثقين حالياً';
+                    default: return '';
+                }
+            }
 
             return (
                 <Card key={type} className={`group border-border/40 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm overflow-hidden rounded-[2rem] hover:shadow-2xl transition-all duration-500 border-t-0`}>
                   <CardContent className="p-6 relative">
                     <div className="flex items-start justify-between">
                         <div className="space-y-4">
-                            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">{type === 'users' ? 'المستخدمين الجدد' : type === 'ads' ? 'الإعلانات المنشورة' : type === 'jobs' ? 'الوظائف المعلنة' : 'عمليات البيع'}</p>
+                            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">{getLabel(type)}</p>
                             <h2 className="text-4xl font-black tracking-tighter tabular-nums">
-                                {isLoad ? <Skeleton className="h-10 w-16" /> : (stats ? value : "—")}
+                                {isLoad ? <Skeleton className="h-10 w-16" /> : (value !== null ? value : "—")}
                             </h2>
-                            <div className="flex items-center gap-2">
-                                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${config.bg} ${config.text} flex items-center gap-1`}>
-                                   <TrendingUp className="h-3 w-3" /> +12%
-                                </span>
-                                <span className="text-[10px] font-bold text-muted-foreground">منذ أمس</span>
-                            </div>
+                            {type !== 'eligible' && type !== 'verified' && (
+                                <div className="flex items-center gap-2">
+                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${config.bg} ${config.text} flex items-center gap-1`}>
+                                    <TrendingUp className="h-3 w-3" /> +12%
+                                    </span>
+                                    <span className="text-[10px] font-bold text-muted-foreground">منذ أمس</span>
+                                </div>
+                            )}
                         </div>
                         <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${config.bg} ${config.text}`}>
                             {config.icon}
@@ -338,6 +414,40 @@ export default function StatisticsPage() {
                         />
                         <Bar dataKey="count" radius={[6, 6, 0, 0]} barSize={20} fill="#f59e0b" />
                     </BarChart>
+                </ResponsiveContainer>
+           </CardContent>
+        </Card>
+
+        {/* Messages Activity Chart */}
+        <Card className="border-border/40 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm overflow-hidden rounded-[2.5rem]">
+           <CardHeader className="p-8 pb-0">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle className="text-xl font-black">نشاط المحادثات</CardTitle>
+                        <CardDescription className="font-bold text-muted-foreground/70">إجمالي الرسائل المرسلة يومياً بين المستخدمين</CardDescription>
+                    </div>
+                    <Button variant="ghost" size="icon" className="rounded-xl h-10 w-10 text-pink-600 bg-pink-50" onClick={fetchMessagesStats}>
+                        <RefreshCw className={`h-4 w-4 ${loading.messages ? 'animate-spin' : ''}`} />
+                    </Button>
+                </div>
+           </CardHeader>
+           <CardContent className="p-8 pt-6 h-[350px]">
+                <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData.messages}>
+                        <defs>
+                            <linearGradient id="colorMessages" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor="#ec4899" stopOpacity={0}/>
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#88888820" />
+                        <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 'bold' }} />
+                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 'bold' }} />
+                        <Tooltip
+                             contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(8px)' }}
+                        />
+                        <Area type="monotone" dataKey="count" stroke="#ec4899" strokeWidth={3} fillOpacity={1} fill="url(#colorMessages)" />
+                    </AreaChart>
                 </ResponsiveContainer>
            </CardContent>
         </Card>
