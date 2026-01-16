@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CustomBadge } from "@/components/ui/custom-badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
 import {
     Table,
     TableBody,
@@ -80,27 +79,10 @@ export default function PendingAds() {
   const handleItemUpdate = useCallback(
     (updatedItem: ICreatMainItem) => {
       setItems((prev) => updateItemInArray(prev, updatedItem));
-      if (selectedItemUuid === updatedItem.uuid) {
-        setSelectedItemUuid(null);
-      }
     },
-    [selectedItemUuid]
+    []
   );
 
-  const handlePositionToggle = async (item: ICreatMainItem) => {
-    const newPosition = item.position === 1 ? 0 : 1;
-    // Optimistic update
-    setItems(prev => prev.map(i => i.uuid === item.uuid ? { ...i, position: newPosition } : i));
-
-    try {
-      await updateItem(item.uuid, { position: newPosition });
-      toast.success("تم تحديث حالة التمييز بنجاح");
-    } catch (error) {
-      // Revert on error
-      setItems(prev => prev.map(i => i.uuid === item.uuid ? { ...i, position: item.position } : i));
-      toast.error("فشل تحديث حالة التمييز");
-    }
-  };
 
   const observerTarget = useRef<HTMLDivElement>(null);
 
@@ -215,14 +197,6 @@ export default function PendingAds() {
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     )}
-                     <div className="absolute top-3 left-3 flex flex-col gap-2">
-                        <div
-                         onClick={(e) => { e.stopPropagation(); handlePositionToggle(item); }}
-                         className={`h-10 w-10 rounded-2xl backdrop-blur-md flex items-center justify-center transition-all shadow-lg border ${item.position === 1 ? 'bg-primary text-white border-primary/20' : 'bg-black/20 text-white border-white/20 hover:bg-black/40'}`}
-                        >
-                            <Tag className={`h-5 w-5 ${item.position === 1 ? 'fill-current' : ''}`} />
-                        </div>
-                    </div>
                     <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
                       {getStatusBadge(item.is_active)}
                       <CustomBadge variant="unknown" className="bg-black/40 backdrop-blur-md text-white border-white/10">{item.item_as === 'job' ? 'وظيفة' : 'إعلان'}</CustomBadge>
@@ -254,7 +228,6 @@ export default function PendingAds() {
                   <Table>
                     <TableHeader className="bg-muted/50">
                       <TableRow className="hover:bg-transparent border-border/40 h-16">
-                        <TableHead className="w-[80px] text-right font-black uppercase tracking-widest text-[10px] text-muted-foreground">تميز</TableHead>
                         <TableHead className="w-[280px] font-black uppercase tracking-widest text-[10px] text-muted-foreground mr-1 text-right">تفاصيل الإعلان</TableHead>
                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">التصنيف</TableHead>
                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">السعر</TableHead>
@@ -271,14 +244,6 @@ export default function PendingAds() {
                             className="group hover:bg-primary/5 transition-all duration-300 border-border/30 h-28 cursor-pointer"
                             onClick={() => setSelectedItemUuid(item.uuid)}
                         >
-                          <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex justify-center">
-                                 <Switch
-                                     checked={item.position === 1}
-                                     onCheckedChange={() => handlePositionToggle(item)}
-                                 />
-                              </div>
-                          </TableCell>
                           <TableCell className="p-4">
                             <div className="flex items-center gap-5">
                               <div className="relative h-20 w-20 flex-shrink-0 group-hover:scale-105 transition-transform duration-500 flex items-center justify-center bg-muted rounded-2xl overflow-hidden border border-border/20 shadow-lg">
@@ -396,14 +361,6 @@ export default function PendingAds() {
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:via-black/40 transition-all duration-500"></div>
 
-                        <div className="absolute top-4 left-4 flex flex-col gap-2">
-                            <div
-                                onClick={(e) => { e.stopPropagation(); handlePositionToggle(item); }}
-                                className={`h-12 w-12 rounded-[1.2rem] backdrop-blur-md flex items-center justify-center transition-all shadow-2xl border-2 ${item.position === 1 ? 'bg-primary text-white border-primary/20 scale-110' : 'bg-black/20 text-white border-white/20 hover:bg-black/40 hover:scale-105'}`}
-                            >
-                                <Tag className={`h-6 w-6 ${item.position === 1 ? 'fill-current' : ''}`} />
-                            </div>
-                        </div>
 
                         <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
                             {getStatusBadge(item.is_active)}

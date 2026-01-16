@@ -3,11 +3,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select"
 import { SYRIA_COUNTRY } from "@/constants/phone"
 import { useProvider } from "@/context/MainProvider"
@@ -16,7 +16,7 @@ import { ArrowRight, ChevronLeft, Loader2, Lock, MessageSquare, Phone, Shield, S
 import { useEffect, useState } from "react"
 import { Navigate } from "react-router-dom"
 import { toast } from "sonner"
-import { useAuth } from "../../app"
+import { useAuth } from "../context/AuthContext"
 
 export const LoginPage = () => {
   const { isAuthenticated, user, logout, sendLoginOtp, verifyOtp } = useAuth();

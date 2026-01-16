@@ -43,6 +43,7 @@ class LocalStorageController {
    */
   public clear(): void {
     localStorage.clear();
+    sessionStorage.clear();
   }
 
   /**

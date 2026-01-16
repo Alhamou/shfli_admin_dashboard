@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import { ICreatMainItem } from "@/interfaces";
 import { getItem, getReasons, updateItem } from "@/services/restApiServices";
@@ -101,6 +101,20 @@ export function ItemDetailView({
       toast.error("فشل في تحميل أسباب الحظر");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePositionToggle = async () => {
+    if (!item) return;
+    const newPosition = item.position === 1 ? 0 : 1;
+    try {
+      await updateItem(item.uuid, { position: newPosition });
+      const updatedItem = { ...item, position: newPosition };
+      setItem(updatedItem);
+      onItemUpdate(updatedItem);
+      toast.success("تم تحديث حالة التمييز بنجاح");
+    } catch (error) {
+      toast.error("فشل تحديث حالة التمييز");
     }
   };
 
@@ -254,6 +268,7 @@ export function ItemDetailView({
                   originalItem={originalItem}
                   setEditedFields={setEditedFields}
                   setItem={setItem}
+                  onPositionToggle={handlePositionToggle}
                 />
 
                 {/* Actions - Right on RTL */}

@@ -1,25 +1,25 @@
 import { ICreatMainItem } from "@/interfaces";
 import { formatPrice, getPriceDiscount } from "@/lib/helpFunctions";
 import {
-  Briefcase,
-  Building2,
-  Calendar,
-  Check as CheckIcon,
-  Clock,
-  Copy,
-  CreditCard,
-  DollarSign,
-  Eye,
-  Globe,
-  Heart,
-  Mail,
-  MapPin,
-  Package,
-  Percent,
-  Phone,
-  Tag,
-  Truck,
-  User
+    Briefcase,
+    Building2,
+    Calendar,
+    Check as CheckIcon,
+    Clock,
+    Copy,
+    CreditCard,
+    DollarSign,
+    Eye,
+    Globe,
+    Heart,
+    Mail,
+    MapPin,
+    Package,
+    Percent,
+    Phone,
+    Tag,
+    Truck,
+    User
 } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction } from "react";
@@ -28,7 +28,9 @@ import { EditableField } from "./EditableField";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
+import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
+import { Switch } from "./ui/switch";
 
 interface InfoFieldProps {
   icon?: React.ReactNode;
@@ -67,6 +69,7 @@ export const ViewItemMiddleColumn = ({
   originalItem,
   setEditedFields,
   setItem,
+  onPositionToggle,
 }: {
   item: ICreatMainItem;
   isEditing: boolean;
@@ -74,6 +77,7 @@ export const ViewItemMiddleColumn = ({
   originalItem: ICreatMainItem | null;
   setEditedFields: Dispatch<SetStateAction<Partial<ICreatMainItem>>>;
   setItem: Dispatch<SetStateAction<ICreatMainItem | null>>;
+  onPositionToggle?: () => void;
 }) => {
   const activated_at = moment(item?.activated_at).locale("ar").fromNow();
   const updated_at = item.updated_at ? moment(item.updated_at).locale("ar").fromNow() : null;
@@ -414,12 +418,12 @@ export const ViewItemMiddleColumn = ({
         </CardContent>
       </Card>
 
-      {/* Options - Delivery, Installment, Negotiable */}
-      {item.item_as !== "job" && (
-        <Card>
-          <CardContent className="p-4">
-            <SectionHeader title="الخيارات" icon={<Truck className="h-4 w-4 text-primary" />} />
-            <div className="flex flex-wrap gap-3">
+      {/* Options - Delivery, Installment, Negotiable & Commercial */}
+      <Card>
+        <CardContent className="p-4">
+          <SectionHeader title="خيارات المنشور" icon={<Truck className="h-4 w-4 text-primary" />} />
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap gap-3 pb-4 border-b border-border/40">
               <Badge variant={item.delivery_available ? "default" : "secondary"} className="text-sm py-1.5 px-3">
                 <Truck className="h-4 w-4 ml-1" />
                 التوصيل: {item.delivery_available ? "متاح" : "غير متاح"}
@@ -433,9 +437,21 @@ export const ViewItemMiddleColumn = ({
                 التفاوض: {item.obo ? "متاح" : "غير متاح"}
               </Badge>
             </div>
-          </CardContent>
-        </Card>
-      )}
+
+            <div className="flex items-center justify-between bg-primary/5 p-4 rounded-xl border border-primary/10">
+              <div className="space-y-0.5">
+                <Label htmlFor="commercial-toggle" className="text-base font-bold">إعلان تجاري</Label>
+                <p className="text-xs text-muted-foreground font-medium">تمييز هذا المنشور كإعلان تجاري ليظهر في الواجهة</p>
+              </div>
+              <Switch
+                id="commercial-toggle"
+                checked={item.position === 1}
+                onCheckedChange={onPositionToggle}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Job-specific Section */}
       {item.item_as === "job" && (

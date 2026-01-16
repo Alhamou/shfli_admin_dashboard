@@ -1,6 +1,6 @@
 import { doSignature } from "@/lib/helpFunctions";
-import storageController from "./storageController";
 import { io, Socket } from "socket.io-client";
+import storageController from "./storageController";
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
@@ -111,6 +111,12 @@ export async function handleError(
   endpoint: string,
   res: Response,
 ): Promise<void> {
+  if (res.status === 401) {
+    storageController.clear();
+    window.location.href = '/login';
+    return;
+  }
+
   if (!res.ok) {
     const errorText = await res.text();
 

@@ -28,7 +28,7 @@ import {
     Zap,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../../app";
+import { useAuth } from "../context/AuthContext";
 
 export function AppSidebar() {
   const location = useLocation();

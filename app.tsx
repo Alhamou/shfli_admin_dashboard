@@ -1,24 +1,19 @@
-import storageController from "@/controllers/storageController";
-import { ILogin, IObjectToken, IUser } from "@/interfaces";
-import { saveTokenInLocalStorage } from "@/lib/helpFunctions";
-import { signin, verifyOtp as verifyOtpService } from "@/services/authServices";
-import { getUserInfo } from "@/services/restApiServices";
-import { jwtDecode } from "jwt-decode";
 import {
-    Suspense, createContext, lazy, useContext,
-    useEffect,
-    useState,
-    type ReactNode
+  Suspense, lazy,
+  useEffect,
+  type ReactNode
 } from "react";
 import {
-    Navigate,
-    Route,
-    BrowserRouter as Router,
-    Routes,
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
 } from "react-router-dom";
 import { Toaster } from "sonner";
 import DashboardLayout from "./src/components/DashboardLayout";
+import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import Provider from "./src/context/MainProvider";
+
 const Admin = lazy(() => import("./src/pages/Admin").then(m => ({ default: m.default })));
 const BidsScreen = lazy(() => import("./src/pages/Bids").then(m => ({ default: m.default })));
 const Commercial = lazy(() => import("./src/pages/Commercial").then(m => ({ default: m.default })));
@@ -30,95 +25,17 @@ const LoginPage = lazy(() => import("./src/pages/LoginPage").then(m => ({ defaul
 const SettingsPage = lazy(() => import("./src/pages/SettingsPage").then(m => ({ default: m.default })));
 const UserInfo = lazy(() => import("./src/pages/UsersPage").then(m => ({ default: m.UserInfo })));
 
-interface AuthContextType {
-  isAuthenticated: boolean;
-  user: (IObjectToken & Partial<IUser>) | null;
-  sendLoginOtp: (identifier: string) => Promise<void>;
-  verifyOtp: (identifier: string, otpCode: string) => Promise<void>;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
-
-function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    storageController.has("token")
-  );
-  const [user, setUser] = useState<(IObjectToken & Partial<IUser>) | null>(
-    null
-  );
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  const { isAuthenticated, user, logout } = useAuth();
 
   useEffect(() => {
-    const initAuth = async () => {
-      if (isAuthenticated) {
-        const token = storageController.get("token") as string;
-        try {
-          const decoded = jwtDecode<IObjectToken>(token);
-          setUser(decoded);
-
-          // Fetch full user info using the correct endpoint
-          const fullUser = await getUserInfo(decoded.id.toString());
-          setUser(prev => ({ ...prev, ...fullUser }));
-        } catch (err) {
-          console.error("Auth initialization failed", err);
-        }
+    if (isAuthenticated && user) {
+      const isAuthorized = user?.roles?.some((role: string) => ["admin", "team"].includes(role));
+      if (!isAuthorized) {
+        logout();
       }
-    };
-    initAuth();
-  }, [isAuthenticated]);
-
-  const sendLoginOtp = async (identifier: string) => {
-    try {
-      await signin({ identifier, password: "" });
-    } catch (err) {
-      throw err;
     }
-  };
-
-  const verifyOtp = async (identifier: string, otpCode: string) => {
-    try {
-      const res = await verifyOtpService({ identifier, otp_code: otpCode });
-      if (res.token) {
-        saveTokenInLocalStorage(res.token);
-        setIsAuthenticated(true);
-        const decoded = jwtDecode<IObjectToken>(res.token);
-        setUser(decoded);
-
-        // Fetch full user info using the correct endpoint
-        const fullUser = await getUserInfo(decoded.id.toString());
-        setUser((prev) => ({ ...prev, ...fullUser }));
-      }
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  const logout = () => {
-    storageController.clear();
-    setIsAuthenticated(false);
-    setUser(null);
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{ isAuthenticated, user, sendLoginOtp, verifyOtp, logout }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { isAuthenticated, user } = useAuth();
-  const isAuthorized = user?.roles.some(role => ["admin", "team"].includes(role));
+  }, [isAuthenticated, user, logout]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -129,6 +46,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
     return <div className="h-screen w-screen flex items-center justify-center">جاري التحقق من الصلاحيات...</div>;
   }
 
+  const isAuthorized = user?.roles?.some((role: string) => ["admin", "team"].includes(role));
   if (!isAuthorized) {
     return <Navigate to="/login" replace state={{ error: "unauthorized" }} />;
   }
@@ -138,11 +56,20 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 
 function ProtectedRouteAdmin({ children }: { children: ReactNode }) {
   const { isAuthenticated, user } = useAuth();
-  return isAuthenticated && user?.roles.includes("admin") ? (
-    <>{children}</>
-  ) : (
-    <Navigate to="/login" replace />
-  );
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (isAuthenticated && !user) {
+    return <div className="h-screen w-screen flex items-center justify-center">جاري التحقق من الصلاحيات...</div>;
+  }
+
+  if (!user?.roles?.includes("admin")) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
 }
 
 export default function App() {
