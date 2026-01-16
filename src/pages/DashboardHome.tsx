@@ -178,10 +178,21 @@ export default function DashboardHome() {
     };
   }, []);
 
-  const getStatusBadge = (status: "active" | "pending" | "blocked") => {
+  const getStatusBadge = (status: string) => {
+    let variant: any = "unknown";
+    let label = "غير معروف";
+
+    switch(status) {
+        case 'active': variant = 'active'; label = 'نشط'; break;
+        case 'pending': variant = 'pending'; label = 'معلق'; break;
+        case 'blocked': variant = 'blocked'; label = 'محظور'; break;
+        case 'ended': variant = 'archived'; label = 'منتهي'; break;
+        case 'ask_edit': variant = 'reserved'; label = 'طلب تعديل'; break;
+    }
+
     return (
-      <CustomBadge variant={status} size="sm" className="rounded-lg px-2 py-1">
-        {status === "active" ? "نشط" : status === "pending" ? "معلق" : "محظور"}
+      <CustomBadge variant={variant} size="lg" className="px-3 py-1 font-bold shadow-sm whitespace-nowrap">
+        {label}
       </CustomBadge>
     );
   };
@@ -276,6 +287,9 @@ export default function DashboardHome() {
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   )}
+                  <div className="absolute top-3 left-3 pointer-events-auto z-10">
+                    {getStatusBadge(item.is_active)}
+                  </div>
                   <div className="absolute bottom-3 right-3 left-3 flex justify-between items-end pointer-events-none">
                     <div className="bg-primary px-3 py-1.5 rounded-xl shadow-lg ring-1 ring-white/20 pointer-events-auto">
                         <p className="text-white font-black text-sm">
