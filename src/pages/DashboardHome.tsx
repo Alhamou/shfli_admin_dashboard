@@ -293,7 +293,7 @@ export default function DashboardHome() {
                   <div className="absolute bottom-3 right-3 left-3 flex justify-between items-end pointer-events-none">
                     <div className="bg-primary px-3 py-1.5 rounded-xl shadow-lg ring-1 ring-white/20 pointer-events-auto">
                         <p className="text-white font-black text-sm">
-                            {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                            {(item.price === 0 || !item.price) ? "تواصل" : formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
                         </p>
                     </div>
                   </div>
@@ -395,9 +395,9 @@ export default function DashboardHome() {
                     <TableCell>
                       <div className="inline-flex flex-col items-center bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">
                         <p className="font-black text-primary text-base tabular-nums">
-                            {formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
+                            {(item.price === 0 || !item.price) ? "تواصل" : formatPrice(item.discount ? getPriceDiscount(item.price, item.discount) : item.price, item?.currency)}
                         </p>
-                        {item.discount > 0 && (
+                        {item.discount > 0 && item.price > 0 && (
                           <div className="flex items-center gap-1.5 mt-1">
                             <span className="text-[10px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded-md shadow-sm">وفر {item.discount}%</span>
                             <span className="text-[10px] text-muted-foreground line-through opacity-60 font-bold tabular-nums">{formatPrice(item.price, item?.currency)}</span>
