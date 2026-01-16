@@ -12,6 +12,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar";
 import {
     AlertCircle,
@@ -32,6 +33,7 @@ import { useAuth } from "../../app";
 export function AppSidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { setOpenMobile } = useSidebar();
 
   const menuItems = [
     {
@@ -128,6 +130,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive}
+                      onClick={() => setOpenMobile(false)}
                       className={`
                         group relative h-12 rounded-2xl transition-all duration-300 ease-in-out px-4
                         hover:bg-primary/5 active:scale-95
