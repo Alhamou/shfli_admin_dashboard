@@ -117,8 +117,23 @@ function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+  const { isAuthenticated, user } = useAuth();
+  const isAuthorized = user?.roles.some(role => ["admin", "team"].includes(role));
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Wait for user data to load before checking authorization
+  if (isAuthenticated && !user) {
+    return <div className="h-screen w-screen flex items-center justify-center">جاري التحقق من الصلاحيات...</div>;
+  }
+
+  if (!isAuthorized) {
+    return <Navigate to="/login" replace state={{ error: "unauthorized" }} />;
+  }
+
+  return <>{children}</>;
 }
 
 function ProtectedRouteAdmin({ children }: { children: ReactNode }) {

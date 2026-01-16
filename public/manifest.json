@@ -1,7 +1,7 @@
 {
     "name": "Shfli",
     "short_name": "Shfli",
-    "description": "المنصة الأولى للبيع والشراء وفرص العمل في سوريا",
+    "description": "لوحة تحكم إدارة مشروع شفلي",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",

@@ -3,11 +3,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select"
 import { SYRIA_COUNTRY } from "@/constants/phone"
 import { useProvider } from "@/context/MainProvider"
@@ -19,7 +19,7 @@ import { toast } from "sonner"
 import { useAuth } from "../../app"
 
 export const LoginPage = () => {
-  const { isAuthenticated, sendLoginOtp, verifyOtp } = useAuth();
+  const { isAuthenticated, user, logout, sendLoginOtp, verifyOtp } = useAuth();
   const { countriesDialCodes, countryCode, setCountryCode } = useProvider();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isLoadingCountries, setIsLoadingCountries] = useState(false);
@@ -82,8 +82,15 @@ export const LoginPage = () => {
     }
   };
 
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+  if (isAuthenticated && user) {
+    const isAuthorized = user.roles.some(role => ["admin", "team"].includes(role));
+    if (isAuthorized) {
+        return <Navigate to="/" replace />;
+    } else {
+        // Log out unauthorized users to prevent redirect loops
+        logout();
+        toast.error("عذراً، لا تملك صلاحيات الوصول للوحة التحكم");
+    }
   }
 
   return (
