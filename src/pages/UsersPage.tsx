@@ -320,31 +320,18 @@ export const UserInfo = () => {
                                 </div>
                                 <span className="font-bold">{status.label}</span>
                             </div>
-                            {isEditing ? (
-                                <Switch
-                                    checked={status.isDelete ? !!(editData.deleted_at ?? userData.deleted_at) : !!(editData[status.id as keyof IUser] ?? userData[status.id as keyof IUser] ?? false)}
-                                    onCheckedChange={(checked) => {
-                                        if (status.isDelete) {
-                                            handleInputChange("deleted_at", checked ? new Date().getTime() : null);
-                                        } else {
-                                            handleInputChange(status.id as keyof IUser, checked);
-                                        }
-                                    }}
-                                    style={{ direction: "ltr" }}
-                                />
-                            ) : (
-                                <div className={`h-6 w-12 rounded-full relative transition-colors duration-300 ${
-                                    (status.isDelete ? !!userData.deleted_at : !!userData[status.id as keyof IUser])
-                                    ? 'bg-emerald-500'
-                                    : 'bg-muted-foreground/20'
-                                }`}>
-                                    <div className={`absolute top-1 bottom-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${
-                                        (status.isDelete ? !!userData.deleted_at : !!userData[status.id as keyof IUser])
-                                        ? 'left-1'
-                                        : 'right-1'
-                                    }`} />
-                                </div>
-                            )}
+                            <Switch
+                                checked={status.isDelete ? !!(editData.deleted_at ?? userData.deleted_at) : !!(editData[status.id as keyof IUser] ?? userData[status.id as keyof IUser] ?? false)}
+                                onCheckedChange={(checked) => {
+                                    if (status.isDelete) {
+                                        handleInputChange("deleted_at", checked ? new Date().getTime() : null);
+                                    } else {
+                                        handleInputChange(status.id as keyof IUser, checked);
+                                    }
+                                }}
+                                disabled={!isEditing}
+                                className={status.isDelete ? "data-[state=checked]:bg-red-500" : "data-[state=checked]:bg-emerald-500"}
+                            />
                         </div>
                     ))}
                   </div>

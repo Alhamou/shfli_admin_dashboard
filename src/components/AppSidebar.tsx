@@ -170,34 +170,36 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-6 mt-auto">
-        <div className="relative group overflow-hidden rounded-3xl bg-muted/30 p-4 border border-border/50 transition-all duration-300 hover:bg-muted/50 hover:shadow-lg">
-          <div className="flex items-center gap-4 relative z-10">
-            <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-md transition-transform duration-300 group-hover:scale-105">
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 via-primary/10 to-transparent text-primary font-black text-lg">
-                {getUserInitials()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-sm font-bold truncate text-foreground leading-tight">
-                {getUserDisplayName()}
-              </span>
-              <span className="text-xs font-semibold text-muted-foreground/80 bg-primary/5 px-2 py-0.5 rounded-full w-fit mt-1 border border-primary/10 uppercase tracking-tighter">
-                {user?.roles?.includes("admin") ? "Administrator" : "Moderator"}
-              </span>
+      <SidebarFooter className="p-4 mt-auto">
+        <div className="flex flex-col gap-3">
+          <div className="relative group overflow-hidden rounded-[1.5rem] bg-muted/40 p-4 border border-border/50 transition-all duration-300 hover:bg-muted/60">
+            <div className="flex items-center gap-3 relative z-10 w-full mb-1">
+              <Avatar className="h-11 w-11 border-2 border-primary/20 shadow-md shrink-0">
+                <AvatarFallback className="bg-gradient-to-br from-primary via-primary/80 to-blue-600 text-white font-black text-base">
+                  {getUserInitials()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col min-w-0 flex-1">
+                <span className="text-sm font-black truncate text-foreground leading-tight">
+                  {getUserDisplayName()}
+                </span>
+                <span className="text-[10px] font-bold text-primary/70 bg-primary/5 px-2 py-0.5 rounded-full w-fit mt-1 border border-primary/10 uppercase tracking-tighter">
+                  {user?.roles?.includes("admin") ? "Administrator" : "Moderator"}
+                </span>
+              </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={logout}
-              className="h-10 w-10 rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all duration-300 group-hover:rotate-12"
-            >
-              <LogOut className="h-5 w-5" />
-            </Button>
+            {/* Subtle decorative element */}
+            <div className="absolute -right-2 -bottom-2 w-16 h-16 bg-primary/5 rounded-full blur-2xl transition-opacity opacity-0 group-hover:opacity-100" />
           </div>
 
-          {/* Subtle background decoration */}
-          <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
+          <Button
+            variant="ghost"
+            onClick={logout}
+            className="w-full h-11 rounded-xl bg-destructive/5 hover:bg-destructive hover:text-white text-destructive font-black text-xs flex items-center justify-center gap-3 transition-all duration-300 group shadow-sm border border-destructive/10"
+          >
+            <LogOut className="h-4 w-4 transition-transform group-hover:rotate-12" />
+            <span>تسجيل الخروج</span>
+          </Button>
         </div>
       </SidebarFooter>
     </Sidebar>

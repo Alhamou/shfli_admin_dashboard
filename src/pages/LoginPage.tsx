@@ -110,9 +110,14 @@ export const LoginPage = () => {
                     {step === "phone" ? "تسجـيل الدخول" : "تأكيد الهوية"}
                 </CardTitle>
                 <CardDescription className="font-bold text-muted-foreground/70 leading-relaxed px-4">
-                    {step === "phone"
-                      ? "أدخل رقم هاتفك للوصول إلى لوحة الإدارة العليا للمنصة"
-                      : `أدخل الرمز المرسل إلى الرقم ${phoneNumber}`}
+                    {step === "phone" ? (
+                      "أدخل رقم هاتفك للوصول إلى لوحة الإدارة العليا للمنصة"
+                    ) : (
+                      <div className="flex items-center justify-center gap-2">
+                        <span>أدخل الرمز المرسل إلى الرقم</span>
+                        <span dir="ltr" className="text-primary font-black">{phoneNumber}</span>
+                      </div>
+                    )}
                 </CardDescription>
             </CardHeader>
 
@@ -124,6 +129,17 @@ export const LoginPage = () => {
                                 <Phone className="h-3 w-3 text-primary" /> رقم الجوال
                             </Label>
                             <div className="flex gap-2">
+                                <Input
+                                    type="tel"
+                                    value={phoneNumber}
+                                    onChange={handlePhoneChange}
+                                    disabled={isLoading}
+                                    placeholder="000 000 000"
+                                    className="flex-1 h-14 bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all font-black text-lg tracking-wider tabular-nums placeholder:tracking-normal placeholder:font-normal placeholder:opacity-30 text-left"
+                                    style={{ direction: "ltr" }}
+                                    required
+                                />
+
                                 <Select
                                     value={countryCode.dialCode}
                                     onValueChange={handleCountryChange}
@@ -147,17 +163,6 @@ export const LoginPage = () => {
                                         ))}
                                     </SelectContent>
                                 </Select>
-
-                                <Input
-                                    type="tel"
-                                    value={phoneNumber}
-                                    onChange={handlePhoneChange}
-                                    disabled={isLoading}
-                                    placeholder="000 000 000"
-                                    className="flex-1 h-14 bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all font-black text-lg tracking-wider tabular-nums placeholder:tracking-normal placeholder:font-normal placeholder:opacity-30"
-                                    style={{ direction: "ltr" }}
-                                    required
-                                />
                             </div>
                         </div>
 
@@ -187,7 +192,7 @@ export const LoginPage = () => {
                                 type="text"
                                 maxLength={4}
                                 placeholder="0 0 0 0"
-                                className="h-20 text-center text-4xl font-black tracking-[0.5em] bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-3xl transition-all tabular-nums shadow-inner"
+                                className="h-20 text-center text-4xl font-black tracking-[0.5em] bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-3xl transition-all tabular-nums shadow-inner text-left"
                                 style={{ direction: "ltr" }}
                                 value={otpCode}
                                 onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ""))}

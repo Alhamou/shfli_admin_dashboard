@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CustomBadge } from "@/components/ui/custom-badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -318,14 +319,14 @@ export default function DashboardHome() {
             <Table>
               <TableHeader>
                 <TableRow className="h-16 hover:bg-transparent border-border/40">
-                  <TableHead className="w-16 pr-6"></TableHead>
-                  <TableHead className="w-[350px] font-black uppercase text-xs tracking-widest">العنصر</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest">التصنيف</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest">السعر والقيمة</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest">الموقع الجغرافي</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest">الإحصائيات</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest">المستخدم</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest text-left pl-6">الحالة</TableHead>
+                  <TableHead className="w-16 pr-6 text-right"></TableHead>
+                  <TableHead className="w-[280px] font-black uppercase text-xs tracking-widest text-right">العنصر</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right">التصنيف</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right">السعر والقيمة</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right">الموقع الجغرافي</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right">الإحصائيات</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right">المستخدم</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right pl-6">الحالة</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -336,12 +337,10 @@ export default function DashboardHome() {
                     onClick={() => setSelectedItemUuid(item.uuid)}
                   >
                     <TableCell className="pr-6" onClick={(e) => e.stopPropagation()}>
-                       <input
-                            type="checkbox"
-                            checked={item.position === 1}
-                            onChange={() => handlePositionToggle(item)}
-                            className="h-5 w-5 rounded-lg border-muted-foreground/30 text-primary transition-all cursor-pointer"
-                        />
+                        <Switch
+                             checked={item.position === 1}
+                             onCheckedChange={() => handlePositionToggle(item)}
+                         />
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-4 py-3">
@@ -361,8 +360,8 @@ export default function DashboardHome() {
                           )}
                         </div>
                         <div className="min-w-0 space-y-1">
-                          <p className="font-black text-foreground group-hover:text-primary transition-colors truncate">{item.title}</p>
-                          <p className="text-xs text-muted-foreground/80 line-clamp-1 font-medium">{item.description}</p>
+                          <p className="font-black text-foreground group-hover:text-primary transition-colors truncate max-w-[250px]">{item.title}</p>
+                          <p className="text-xs text-muted-foreground/80 line-clamp-1 font-medium max-w-[200px]">{item.description}</p>
                           <div className="flex items-center gap-2 pt-1">
                             {item.item_as === 'job' && <CustomBadge className="h-5 px-2 text-[10px] bg-blue-500/10 text-blue-500 border-none font-black">{item.need ? "باحث" : "موظِف"}</CustomBadge>}
                             {item.account_type === 'business' && <CustomBadge className="h-5 px-2 text-[10px] bg-primary/10 text-primary border-none font-black">عمل تجاري</CustomBadge>}

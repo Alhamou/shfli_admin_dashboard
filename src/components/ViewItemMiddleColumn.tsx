@@ -4,7 +4,9 @@ import {
   Briefcase,
   Building2,
   Calendar,
+  Check as CheckIcon,
   Clock,
+  Copy,
   CreditCard,
   DollarSign,
   Eye,
@@ -21,8 +23,10 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction } from "react";
+import { toast } from "sonner";
 import { EditableField } from "./EditableField";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Separator } from "./ui/separator";
 
@@ -89,6 +93,32 @@ export const ViewItemMiddleColumn = ({
       case "pending": return "معلق";
       default: return status;
     }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("تم النسخ إلى الحافظة");
+  };
+
+  const ShortUUID = ({ uuid }: { uuid: string }) => {
+    if (!uuid) return "غير متوفر";
+    const short = `${uuid.substring(0, 8)}...${uuid.substring(uuid.length - 4)}`;
+    return (
+      <div className="flex items-center gap-2 group/uuid">
+        <code className="text-[10px] font-mono bg-muted/50 px-1.5 py-0.5 rounded transition-colors group-hover/uuid:bg-muted" style={{ direction: 'ltr' }}>
+          {short}
+        </code>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 rounded-md hover:bg-primary/10 hover:text-primary transition-all opacity-70 hover:opacity-100"
+          onClick={() => copyToClipboard(uuid)}
+          title="نسخ المعرف الكامل"
+        >
+          <Copy className="h-3 w-3" />
+        </Button>
+      </div>
+    );
   };
 
   return (
@@ -258,41 +288,20 @@ export const ViewItemMiddleColumn = ({
           <CardContent className="p-4">
             <SectionHeader title="الموقع" icon={<MapPin className="h-4 w-4 text-primary" />} />
             <div className="space-y-4">
-              <EditableField
+              <InfoField
                 label="العنوان"
                 value={item.address}
-                fieldName="address"
-                editedFields={editedFields}
-                isEditing={isEditing}
-                item={item}
-                originalItem={originalItem}
-                setEditedFields={setEditedFields}
-                setItem={setItem}
                 className="font-bold"
               />
               <div className="grid grid-cols-2 gap-4">
-                <EditableField
+                <InfoField
                   label="المدينة"
                   value={item.city}
-                  fieldName="city"
-                  editedFields={editedFields}
-                  isEditing={isEditing}
-                  item={item}
-                  originalItem={originalItem}
-                  setEditedFields={setEditedFields}
-                  setItem={setItem}
                   className="font-bold"
                 />
-                <EditableField
+                <InfoField
                   label="المنطقة"
                   value={item.state}
-                  fieldName="state"
-                  editedFields={editedFields}
-                  isEditing={isEditing}
-                  item={item}
-                  originalItem={originalItem}
-                  setEditedFields={setEditedFields}
-                  setItem={setItem}
                   className="font-bold"
                 />
               </div>
@@ -327,7 +336,7 @@ export const ViewItemMiddleColumn = ({
                   originalItem={originalItem}
                   setEditedFields={setEditedFields}
                   setItem={setItem}
-                  className="font-bold underline tabular-nums"
+                  className="font-bold underline tabular-nums [direction:ltr] text-left"
                 />
               </div>
               {item.item_as !== "job" && (
@@ -342,7 +351,7 @@ export const ViewItemMiddleColumn = ({
                     originalItem={originalItem}
                     setEditedFields={setEditedFields}
                     setItem={setItem}
-                    className="font-bold underline tabular-nums"
+                    className="font-bold underline tabular-nums [direction:ltr] text-left"
                   />
                 </div>
               )}
@@ -621,15 +630,28 @@ export const ViewItemMiddleColumn = ({
             {/* User Info */}
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-muted-foreground">المستخدم</h4>
-              <div className="p-3 bg-background rounded-lg space-y-1 text-sm">
-                <p><span className="text-muted-foreground">ID:</span> {item.user_id}</p>
-                <p className="truncate" style={{ direction: "ltr" }}>
-                  <span className="text-muted-foreground" style={{ direction: "rtl" }}>UUID:</span> {item.client_details?.uuid || item.uuid_client}
-                </p>
-                <p><span className="text-muted-foreground">الاسم:</span> {(item.client_details?.first_name ?? "") + " " + (item.client_details?.last_name ?? "")}</p>
-                <p style={{ direction: "ltr" }}><span className="text-muted-foreground" style={{ direction: "rtl" }}>الهاتف:</span> {item.client_details?.phone_number}</p>
+              <div className="p-3 bg-background rounded-lg space-y-2.5 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">ID</span>
+                  <span className="font-black tabular-nums">{item.user_id}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">UUID</span>
+                  <ShortUUID uuid={item.client_details?.uuid || item.uuid_client || ""} />
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">الاسم</span>
+                  <span className="font-bold text-left">{(item.client_details?.first_name ?? "") + " " + (item.client_details?.last_name ?? "")}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">الهاتف</span>
+                  <span className="font-black tabular-nums" style={{ direction: "ltr" }}>{item.client_details?.phone_number}</span>
+                </div>
                 {item.client_details?.account_type === "business" && item.client_details?.business_name && (
-                  <p><span className="text-muted-foreground">النشاط التجاري:</span> {item.client_details.business_name}</p>
+                  <div className="flex justify-between items-center pt-1 border-t border-border/40">
+                    <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest">النشاط التجاري</span>
+                    <span className="font-bold text-primary text-xs">{item.client_details.business_name}</span>
+                  </div>
                 )}
               </div>
             </div>
@@ -637,14 +659,24 @@ export const ViewItemMiddleColumn = ({
             {/* Item Info */}
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-muted-foreground">المنشور</h4>
-              <div className="p-3 bg-background rounded-lg space-y-1 text-sm">
-                <p><span className="text-muted-foreground">ID:</span> {item.id}</p>
-                <p><span className="text-muted-foreground">Main ID:</span> {item.main_items_id}</p>
-                <p className="truncate" style={{ direction: "ltr" }}>
-                  <span className="text-muted-foreground" style={{ direction: "rtl" }}>UUID:</span> {item.uuid}
-                </p>
+              <div className="p-3 bg-background rounded-lg space-y-2.5 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">ID</span>
+                  <span className="font-black tabular-nums">{item.id}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Main ID</span>
+                  <span className="font-black tabular-nums">{item.main_items_id}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">UUID</span>
+                  <ShortUUID uuid={item.uuid} />
+                </div>
                 {item.position !== undefined && (
-                  <p><span className="text-muted-foreground">الموضع:</span> {item.position}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">الموضع</span>
+                    <span className="font-bold">{item.position}</span>
+                  </div>
                 )}
               </div>
             </div>

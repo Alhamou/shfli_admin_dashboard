@@ -151,7 +151,12 @@ export const ViewItemActions = ({
           </div>
 
           {/* View in App */}
-          <Button variant="ghost" size="sm" className="w-full text-muted-foreground hover:text-primary">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-muted-foreground hover:bg-primary hover:text-white transition-all"
+            onClick={() => window.open(`https://www.shfli.com/items/details?uuid=${item.uuid}`, '_blank')}
+          >
             <ExternalLink className="h-4 w-4 ml-2" />
             عرض في التطبيق
           </Button>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CustomBadge } from "@/components/ui/custom-badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import {
     Table,
     TableBody,
@@ -284,14 +285,14 @@ export default function Commercial() {
                   <Table>
                     <TableHeader className="bg-muted/50">
                       <TableRow className="hover:bg-transparent border-border/40 h-16">
-                        <TableHead className="w-[80px] text-center font-black uppercase tracking-widest text-[10px] text-muted-foreground">تميز</TableHead>
-                        <TableHead className="min-w-[350px] font-black uppercase tracking-widest text-[10px] text-muted-foreground mr-1">{activeTab === 'jobs' ? 'الوظيفة' : 'العنصر'}</TableHead>
-                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-center">التصنيف</TableHead>
-                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-center">السعر</TableHead>
-                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-center">الموقع</TableHead>
-                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-center">الناشر</TableHead>
-                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-center">الحالة</TableHead>
-                        <TableHead className="w-[60px]"></TableHead>
+                        <TableHead className="w-[80px] text-right font-black uppercase tracking-widest text-[10px] text-muted-foreground">تميز</TableHead>
+                        <TableHead className="w-[280px] font-black uppercase tracking-widest text-[10px] text-muted-foreground mr-1 text-right">{activeTab === 'jobs' ? 'الوظيفة' : 'العنصر'}</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">التصنيف</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">السعر</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">الموقع</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">الناشر</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">الحالة</TableHead>
+                        <TableHead className="w-[60px] text-right"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -303,15 +304,10 @@ export default function Commercial() {
                         >
                           <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
                              <div className="flex justify-center">
-                                <label className="relative inline-flex items-center cursor-pointer group/toggle">
-                                    <input
-                                        type="checkbox"
-                                        checked={item.position === 1}
-                                        onChange={() => handlePositionToggle(item)}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-muted-foreground/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary transition-colors"></div>
-                                </label>
+                                <Switch
+                                    checked={item.position === 1}
+                                    onCheckedChange={() => handlePositionToggle(item)}
+                                />
                              </div>
                           </TableCell>
                           <TableCell className="p-4">
@@ -334,10 +330,10 @@ export default function Commercial() {
                               </div>
                               <div className="space-y-1.5 flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <h4 className="font-black text-base truncate tracking-tight">{item.title}</h4>
+                                    <h4 className="font-black text-base truncate tracking-tight max-w-[250px]">{item.title}</h4>
                                     <span className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded text-muted-foreground">ID: {item.id}</span>
                                 </div>
-                                <p className="text-xs text-muted-foreground font-medium line-clamp-2 leading-relaxed h-8">
+                                <p className="text-xs text-muted-foreground font-medium line-clamp-2 leading-relaxed h-8 max-w-[200px]">
                                   {item.description}
                                 </p>
                                 <div className="flex items-center gap-3">
