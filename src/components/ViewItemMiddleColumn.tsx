@@ -1,30 +1,31 @@
 import { ICreatMainItem } from "@/interfaces";
 import { formatPrice, getPriceDiscount } from "@/lib/helpFunctions";
 import {
-    Briefcase,
-    Building2,
-    Calendar,
-    Check as CheckIcon,
-    Clock,
-    Copy,
-    CreditCard,
-    DollarSign,
-    Eye,
-    Globe,
-    Heart,
-    Mail,
-    MapPin,
-    Package,
-    Percent,
-    Phone,
-    Tag,
-    Truck,
-    User
+  Briefcase,
+  Building2,
+  Calendar,
+  Check as CheckIcon,
+  Clock,
+  Copy,
+  CreditCard,
+  DollarSign,
+  Eye,
+  Globe,
+  Heart,
+  Mail,
+  MapPin,
+  Package,
+  Percent,
+  Phone,
+  Tag,
+  Truck,
+  User
 } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
 import { EditableField } from "./EditableField";
+import { UserDetailDialog } from "./UserDetailDialog";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
@@ -647,17 +648,31 @@ export const ViewItemMiddleColumn = ({
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-muted-foreground">المستخدم</h4>
               <div className="p-3 bg-background rounded-lg space-y-2.5 text-sm">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center group/userid">
                   <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">ID</span>
-                  <span className="font-black tabular-nums">{item.user_id}</span>
+                  <UserDetailDialog
+                    userId={item.user_id}
+                    trigger={
+                      <button className="font-black tabular-nums text-primary hover:underline transition-all">
+                        {item.user_id}
+                      </button>
+                    }
+                  />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">UUID</span>
                   <ShortUUID uuid={item.client_details?.uuid || item.uuid_client || ""} />
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center group/username">
                   <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">الاسم</span>
-                  <span className="font-bold text-left">{(item.client_details?.first_name ?? "") + " " + (item.client_details?.last_name ?? "")}</span>
+                  <UserDetailDialog
+                    userId={item.user_id}
+                    trigger={
+                      <button className="font-bold text-left text-primary hover:underline transition-all">
+                        {(item.client_details?.first_name ?? "") + " " + (item.client_details?.last_name ?? "")}
+                      </button>
+                    }
+                  />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">الهاتف</span>
