@@ -90,7 +90,7 @@ export const UserInfo = () => {
 
   const formatDate = (date: Date | null | number) => {
     if (!date) return "غير متوفر";
-    return new Date(date).toLocaleDateString('ar-EG', {
+    return new Date(date).toLocaleDateString('en-GB', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
@@ -122,7 +122,7 @@ export const UserInfo = () => {
       </div>
 
       {/* Search Interface */}
-      <Card className="border-border/40 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm overflow-hidden rounded-3xl">
+      <Card className="border-border/40 shadow-xl shadow-black/10 bg-card/50 backdrop-blur-md overflow-hidden rounded-3xl">
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1 group">
@@ -167,7 +167,7 @@ export const UserInfo = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="flex items-center gap-6">
                     <div className="relative">
-                        <Avatar className="h-24 w-24 border-4 border-white shadow-2xl rounded-3xl">
+                        <Avatar className="h-24 w-24 border-4 border-background shadow-2xl rounded-3xl">
                         {userData.image ? (
                             <AvatarImage src={userData.image} alt="User" />
                         ) : null}
@@ -175,7 +175,7 @@ export const UserInfo = () => {
                             {getUserInitials()}
                         </AvatarFallback>
                         </Avatar>
-                        <div className={`absolute -bottom-2 -right-2 h-8 w-8 rounded-xl border-4 border-white flex items-center justify-center shadow-lg ${userData.blocked ? 'bg-destructive' : 'bg-emerald-500'}`}>
+                        <div className={`absolute -bottom-2 -right-2 h-8 w-8 rounded-xl border-4 border-background flex items-center justify-center shadow-lg ${userData.blocked ? 'bg-destructive' : 'bg-emerald-500'}`}>
                             {userData.blocked ? <Shield className="h-4 w-4 text-white" /> : <div className="h-2 w-2 rounded-full bg-white animate-pulse" />}
                         </div>
                     </div>
@@ -214,7 +214,7 @@ export const UserInfo = () => {
                   <div className="flex items-center gap-3">
                     {!isEditing ? (
                       <>
-                        <Button variant="outline" size="lg" onClick={() => setIsEditing(true)} className="rounded-2xl border-border/60 hover:border-primary hover:text-primary transition-all font-bold gap-2 h-12">
+                        <Button variant="outline" size="lg" onClick={() => setIsEditing(true)} className="rounded-2xl border-border/60 bg-background/50 backdrop-blur-sm hover:border-primary hover:text-primary transition-all font-bold gap-2 h-12">
                           <Edit className="h-5 w-5" /> تعديل البيانات
                         </Button>
                         <SendNotificationPopup
@@ -315,7 +315,7 @@ export const UserInfo = () => {
                     ].map((status) => (
                         <div key={status.id} className="flex items-center justify-between p-4 bg-muted/20 rounded-2xl border border-border/30 hover:bg-muted/30 transition-colors">
                             <div className="flex items-center gap-4">
-                                <div className={`h-10 w-10 rounded-xl bg-white shadow-sm flex items-center justify-center ${status.color}`}>
+                                <div className={`h-10 w-10 rounded-xl bg-background border border-border/40 shadow-sm flex items-center justify-center ${status.color}`}>
                                     <status.icon className="h-5 w-5" />
                                 </div>
                                 <span className="font-bold">{status.label}</span>
@@ -364,7 +364,7 @@ export const UserInfo = () => {
                         </div>
                         <div className="flex flex-wrap gap-2">
                              {userData.roles.map((role) => (
-                                <Badge key={role} variant="secondary" className="px-3 py-2 rounded-xl text-sm font-bold bg-primary/5 text-primary border-primary/10">
+                                <Badge key={role} variant="secondary" className="px-3 py-2 rounded-xl text-sm font-bold bg-primary/10 text-primary border-primary/10 hover:bg-primary/20 transition-colors">
                                     {role}
                                 </Badge>
                              ))}
@@ -453,7 +453,7 @@ export const UserInfo = () => {
 
           <div className="space-y-8">
             {/* Quick Stats/Metadata Card */}
-            <Card className="border-border/40 shadow-xl shadow-black/5 rounded-3xl overflow-hidden sticky top-8">
+            <Card className="border-border/40 shadow-xl shadow-black/10 rounded-3xl overflow-hidden sticky top-8 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="p-6 bg-muted/30 border-b border-border/30">
                     <CardTitle className="text-lg font-black">بيانات النظام</CardTitle>
                 </CardHeader>
@@ -484,7 +484,7 @@ export const UserInfo = () => {
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <span className="text-xs font-bold">تاريخ آخر تحديث</span>
-                                <span className="text-xs tabular-nums">{new Date().toLocaleDateString('ar-EG')}</span>
+                                <span className="text-xs tabular-nums">{new Date().toLocaleDateString('en-GB')}</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-xs font-bold">عدد الأدوار</span>

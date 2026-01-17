@@ -5,24 +5,24 @@ import { CustomBadge } from "@/components/ui/custom-badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { ItemDetailView } from "@/components/ViewItem";
 import { connectSocket, socket } from "@/controllers/requestController";
 import storageController from "@/controllers/storageController";
 import { ICreatMainItem } from "@/interfaces";
 import {
-  formatPrice,
-  getPriceDiscount,
-  isUUIDv4,
-  playAudioWithWebAudio,
-  toQueryString,
-  updateItemInArray,
+    formatPrice,
+    getPriceDiscount,
+    isUUIDv4,
+    playAudioWithWebAudio,
+    toQueryString,
+    updateItemInArray,
 } from "@/lib/helpFunctions";
 import { getAllItems, updateItem } from "@/services/restApiServices";
 import { Briefcase, Clock, Eye, Hash, LayoutGrid, MapPin, MoreHorizontal, Search, Tag, Users, Wifi, WifiOff, X } from "lucide-react";
@@ -128,23 +128,7 @@ export default function DashboardHome() {
   }, [hasMore, loading, pagination.page, pagination.limit, searchTerm, uuidSearchTerm, fetchItems]);
 
   useEffect(() => {
-    moment.updateLocale("ar", {
-        relativeTime: {
-          future: "في %s",
-          past: "منذ %s",
-          s: "ثوان",
-          m: "دقيقة",
-          mm: "%d دقائق",
-          h: "ساعة",
-          hh: "%d ساعات",
-          d: "يوم",
-          dd: "%d أيام",
-          M: "شهر",
-          MM: "%d أشهر",
-          y: "سنة",
-          yy: "%d سنوات",
-        },
-      });
+    // Use default English locale for moment
     connectSocket();
     const onConnect = () => setIsSocketConnected(true);
     const onDisconnect = () => setIsSocketConnected(false);
@@ -304,7 +288,7 @@ export default function DashboardHome() {
                     </div>
                     <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium">
                         <Clock className="h-3.5 w-3.5" />
-                        <span>{moment(item.activated_at).locale("ar").fromNow()}</span>
+                        <span>{moment(item.activated_at).locale("en").fromNow()}</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium">
                         <Eye className="h-3.5 w-3.5" />
@@ -410,7 +394,7 @@ export default function DashboardHome() {
                                 <div className="h-6 w-6 rounded-md bg-amber-500/10 flex items-center justify-center">
                                     <Clock className="h-3.5 w-3.5 text-amber-600" />
                                 </div>
-                                <span>{moment(item.activated_at).locale("ar").fromNow(true)}</span>
+                                <span>{moment(item.activated_at).locale("en").fromNow(true)}</span>
                            </div>
                         </div>
                         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/60 font-mono">

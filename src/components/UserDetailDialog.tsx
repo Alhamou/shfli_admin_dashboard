@@ -62,7 +62,7 @@ export const UserDetailDialog = ({ userId, trigger }: UserDetailDialogProps) => 
 
   const formatDate = (date: Date | null | number | string) => {
     if (!date) return "غير متوفر";
-    return new Date(date).toLocaleDateString("ar-EG", {
+    return new Date(date).toLocaleDateString("en-GB", {
       year: "numeric",
       month: "long",
       day: "numeric",

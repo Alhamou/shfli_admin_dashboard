@@ -1,25 +1,25 @@
 import { ICreatMainItem } from "@/interfaces";
 import { formatPrice, getPriceDiscount } from "@/lib/helpFunctions";
 import {
-  Briefcase,
-  Building2,
-  Calendar,
-  Check as CheckIcon,
-  Clock,
-  Copy,
-  CreditCard,
-  DollarSign,
-  Eye,
-  Globe,
-  Heart,
-  Mail,
-  MapPin,
-  Package,
-  Percent,
-  Phone,
-  Tag,
-  Truck,
-  User
+    Briefcase,
+    Building2,
+    Calendar,
+    Check as CheckIcon,
+    Clock,
+    Copy,
+    CreditCard,
+    DollarSign,
+    Eye,
+    Globe,
+    Heart,
+    Mail,
+    MapPin,
+    Package,
+    Percent,
+    Phone,
+    Tag,
+    Truck,
+    User
 } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction } from "react";
@@ -80,8 +80,8 @@ export const ViewItemMiddleColumn = ({
   setItem: Dispatch<SetStateAction<ICreatMainItem | null>>;
   onPositionToggle?: () => void;
 }) => {
-  const activated_at = moment(item?.activated_at).locale("ar").fromNow();
-  const updated_at = item.updated_at ? moment(item.updated_at).locale("ar").fromNow() : null;
+  const activated_at = moment(item?.activated_at).locale("en").fromNow();
+  const updated_at = item.updated_at ? moment(item.updated_at).locale("en").fromNow() : null;
 
   const getStatusVariant = (status: string) => {
     switch (status) {
@@ -405,14 +405,14 @@ export const ViewItemMiddleColumn = ({
               <InfoField
                 icon={<Clock className="h-4 w-4 text-destructive" />}
                 label="تاريخ الحذف"
-                value={moment(item.deleted_at).locale("ar").fromNow()}
+                value={moment(item.deleted_at).locale("en").fromNow()}
               />
             )}
             {item.date_end_discount && (
               <InfoField
                 icon={<Clock className="h-4 w-4 text-amber-500" />}
                 label="انتهاء الخصم"
-                value={new Date(item.date_end_discount).toLocaleDateString("ar")}
+                value={new Date(item.date_end_discount).toLocaleDateString("en-GB")}
               />
             )}
           </div>
@@ -555,7 +555,7 @@ export const ViewItemMiddleColumn = ({
               {item.application_deadline && (
                 <InfoField
                   label="آخر موعد للتقديم"
-                  value={new Date(item.application_deadline).toLocaleDateString("ar")}
+                  value={new Date(item.application_deadline).toLocaleDateString("en-GB")}
                 />
               )}
             </div>

@@ -137,7 +137,7 @@ export default function StatisticsPage() {
       const statsData: StatData = {};
       response.forEach((item) => {
         const date = new Date(item.label);
-        const dayName = date.toLocaleDateString("ar", { weekday: "short" }) as DaysOfTheWeek;
+        const dayName = date.toLocaleDateString("en-GB", { weekday: "short" }) as DaysOfTheWeek;
         statsData[item.label] = item.count;
         statsData[dayName] = item.count;
       });
@@ -175,7 +175,7 @@ export default function StatisticsPage() {
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "أبداً";
-    return new Date(dateString).toLocaleString("ar", {
+    return new Date(dateString).toLocaleString("en-GB", {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
@@ -190,7 +190,7 @@ export default function StatisticsPage() {
         .filter(key => key.match(/^\d{4}-\d{2}-\d{2}$/))
         .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
         .map(date => ({
-          date: new Date(date).toLocaleDateString("ar", { day: 'numeric', month: 'short' }),
+          date: new Date(date).toLocaleDateString("en-GB", { day: 'numeric', month: 'short' }),
           count: stats[date]
         }));
     };
@@ -205,7 +205,7 @@ export default function StatisticsPage() {
   }, [usersStats, adsStats, jobsStats, soldStats, messagesStats]);
 
   const currentDateKey = new Date().toISOString().split("T")[0];
-  const currentDayName = new Date().toLocaleDateString("ar", { weekday: "short" }) as DaysOfTheWeek;
+  const currentDayName = new Date().toLocaleDateString("en-GB", { weekday: "short" }) as DaysOfTheWeek;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500" style={{ direction: 'rtl' }}>
