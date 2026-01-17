@@ -289,6 +289,13 @@ export default function Commercial() {
                                 <p className="text-xs text-muted-foreground font-medium line-clamp-2 leading-relaxed h-8 max-w-[200px]">
                                   {item.description}
                                 </p>
+                                {item.status_note && (
+                                  <div className="mt-1 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg max-w-[250px]">
+                                    <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold line-clamp-2 leading-tight">
+                                      <span className="opacity-70">ملاحظة:</span> {item.status_note}
+                                    </p>
+                                  </div>
+                                )}
                                 <div className="flex items-center gap-3">
                                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
                                       <Clock className="h-3 w-3" />

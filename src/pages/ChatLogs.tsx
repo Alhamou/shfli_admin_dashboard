@@ -41,7 +41,7 @@ export const ChatLogs = () => {
   };
 
   const formatTimestamp = (isoString: Date) => {
-    return new Date(isoString).toLocaleTimeString("ar", {
+    return new Date(isoString).toLocaleTimeString("en-GB", {
         hour: '2-digit',
         minute: '2-digit',
         hour12: true
@@ -151,7 +151,7 @@ export const ChatLogs = () => {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-             <div className="h-[500px] overflow-y-auto p-8 space-y-8 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
+             <div className="h-[500px] overflow-y-auto p-8 space-y-8 bg-dot-pattern">
                 {chatData.content?.map((message, index) => {
                   const isBuyer = message.sender_id === chatData.buyer_id;
                   return (

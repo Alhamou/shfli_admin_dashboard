@@ -341,6 +341,13 @@ export default function DashboardHome() {
                         <div className="min-w-0 space-y-1">
                           <p className="font-black text-foreground group-hover:text-indigo-600 group-hover:underline underline-offset-4 decoration-2 decoration-indigo-600/30 transition-all duration-300 truncate max-w-[250px]">{item.title}</p>
                           <p className="text-xs text-muted-foreground/80 line-clamp-1 font-medium max-w-[200px]">{item.description}</p>
+                          {item.status_note && (
+                            <div className="mt-1 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg max-w-[250px]">
+                              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold line-clamp-2 leading-tight">
+                                <span className="opacity-70">ملاحظة:</span> {item.status_note}
+                              </p>
+                            </div>
+                          )}
                           <div className="flex items-center gap-2 pt-1">
                             {item.item_as === 'job' && <CustomBadge className="h-5 px-2 text-[10px] bg-blue-500/10 text-blue-500 border-none font-black">{item.need ? "باحث" : "موظِف"}</CustomBadge>}
                             {item.account_type === 'business' && <CustomBadge className="h-5 px-2 text-[10px] bg-primary/10 text-primary border-none font-black">عمل تجاري</CustomBadge>}
