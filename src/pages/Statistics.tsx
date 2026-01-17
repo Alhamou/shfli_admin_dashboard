@@ -105,27 +105,6 @@ export default function StatisticsPage() {
     verified: false,
   });
 
-  useEffect(() => {
-    const loadInitialData = async () => {
-      const savedUsers = storageController.get<StatData>(STATS_KEYS.USERS);
-      const savedAds = storageController.get<StatData>(STATS_KEYS.ADS);
-      const savedJobs = storageController.get<StatData>(STATS_KEYS.JOBS);
-      const savedSold = storageController.get<StatData>(STATS_KEYS.SOLD);
-      const savedMessages = storageController.get<StatData>(STATS_KEYS.MESSAGES);
-      const savedEligible = storageController.get<number>(STATS_KEYS.ELIGIBLE);
-      const savedVerified = storageController.get<number>(STATS_KEYS.VERIFIED);
-
-      if (!savedUsers) await fetchUsersStats(); else setUsersStats(savedUsers);
-      if (!savedAds) await fetchAdsStats(); else setAdsStats(savedAds);
-      if (!savedJobs) await fetchJobsStats(); else setJobsStats(savedJobs);
-      if (!savedSold) await fetchSoldStats(); else setSoldStats(savedSold);
-      if (!savedMessages) await fetchMessagesStats(); else setMessagesStats(savedMessages);
-      if (savedEligible === null) await fetchEligibleStats(); else setEligibleCount(savedEligible);
-      if (savedVerified === null) await fetchVerifiedStats(); else setVerifiedCount(savedVerified);
-    };
-    loadInitialData();
-  }, []);
-
   const fetchStats = async (
     apiCall: () => Promise<Stat[]>,
     key: string,
@@ -149,12 +128,6 @@ export default function StatisticsPage() {
     }
   };
 
-  const fetchUsersStats = () => fetchStats(getUserStats, "users", setUsersStats);
-  const fetchAdsStats = () => fetchStats(getAdStats, "ads", setAdsStats);
-  const fetchJobsStats = () => fetchStats(getJobStats, "jobs", setJobsStats);
-  const fetchSoldStats = () => fetchStats(getSoldStats, "sold", setSoldStats);
-  const fetchMessagesStats = () => fetchStats(getMessageStats, "messages", setMessagesStats);
-
   const fetchSingleStat = async (
     apiCall: () => Promise<number>,
     key: string,
@@ -170,8 +143,36 @@ export default function StatisticsPage() {
     }
   };
 
+  const fetchUsersStats = () => fetchStats(getUserStats, "users", setUsersStats);
+  const fetchAdsStats = () => fetchStats(getAdStats, "ads", setAdsStats);
+  const fetchJobsStats = () => fetchStats(getJobStats, "jobs", setJobsStats);
+  const fetchSoldStats = () => fetchStats(getSoldStats, "sold", setSoldStats);
+  const fetchMessagesStats = () => fetchStats(getMessageStats, "messages", setMessagesStats);
   const fetchEligibleStats = () => fetchSingleStat(getEligibleUsersCount, "eligible", setEligibleCount);
   const fetchVerifiedStats = () => fetchSingleStat(getVerifiedUsersCount, "verified", setVerifiedCount);
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      // Show cached data immediately if available
+      setUsersStats(storageController.get<StatData>(STATS_KEYS.USERS));
+      setAdsStats(storageController.get<StatData>(STATS_KEYS.ADS));
+      setJobsStats(storageController.get<StatData>(STATS_KEYS.JOBS));
+      setSoldStats(storageController.get<StatData>(STATS_KEYS.SOLD));
+      setMessagesStats(storageController.get<StatData>(STATS_KEYS.MESSAGES));
+      setEligibleCount(storageController.get<number>(STATS_KEYS.ELIGIBLE));
+      setVerifiedCount(storageController.get<number>(STATS_KEYS.VERIFIED));
+
+      // Always refresh from server on open
+      fetchUsersStats();
+      fetchAdsStats();
+      fetchJobsStats();
+      fetchSoldStats();
+      fetchMessagesStats();
+      fetchEligibleStats();
+      fetchVerifiedStats();
+    };
+    loadInitialData();
+  }, []);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "أبداً";
