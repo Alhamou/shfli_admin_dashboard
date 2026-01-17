@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import storageController from "@/controllers/storageController";
 import { Stat } from "@/interfaces";
 import {
     getAdStats,
@@ -24,15 +23,7 @@ type StatData = {
   lastUpdated?: string;
 };
 
-const STATS_KEYS = {
-  USERS: "stats_users",
-  ADS: "stats_ads",
-  JOBS: "stats_jobs",
-  SOLD: "stats_sold",
-  MESSAGES: "stats_messages",
-  ELIGIBLE: "stats_eligible",
-  VERIFIED: "stats_verified",
-};
+
 
 const statColors = {
   users: {
@@ -108,7 +99,7 @@ export default function StatisticsPage() {
   const fetchStats = async (
     apiCall: () => Promise<Stat[]>,
     key: string,
-    setter: (data: StatData) => void
+    setter: (data: StatData | null) => void
   ) => {
     try {
       setLoading((prev) => ({ ...prev, [key]: true }));
@@ -121,8 +112,8 @@ export default function StatisticsPage() {
         statsData[dayName] = item.count;
       });
       statsData.lastUpdated = new Date().toISOString();
-      storageController.set(STATS_KEYS[key.toUpperCase() as keyof typeof STATS_KEYS], statsData);
       setter(statsData);
+      return statsData;
     } finally {
       setLoading((prev) => ({ ...prev, [key]: false }));
     }
@@ -131,13 +122,13 @@ export default function StatisticsPage() {
   const fetchSingleStat = async (
     apiCall: () => Promise<number>,
     key: string,
-    setter: (data: number) => void
+    setter: (data: number | null) => void
   ) => {
     try {
       setLoading((prev) => ({ ...prev, [key]: true }));
       const response = await apiCall();
-      storageController.set(STATS_KEYS[key.toUpperCase() as keyof typeof STATS_KEYS], response);
       setter(response);
+      return response;
     } finally {
       setLoading((prev) => ({ ...prev, [key]: false }));
     }
@@ -151,25 +142,26 @@ export default function StatisticsPage() {
   const fetchEligibleStats = () => fetchSingleStat(getEligibleUsersCount, "eligible", setEligibleCount);
   const fetchVerifiedStats = () => fetchSingleStat(getVerifiedUsersCount, "verified", setVerifiedCount);
 
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
   useEffect(() => {
     const loadInitialData = async () => {
-      // Show cached data immediately if available
-      setUsersStats(storageController.get<StatData>(STATS_KEYS.USERS));
-      setAdsStats(storageController.get<StatData>(STATS_KEYS.ADS));
-      setJobsStats(storageController.get<StatData>(STATS_KEYS.JOBS));
-      setSoldStats(storageController.get<StatData>(STATS_KEYS.SOLD));
-      setMessagesStats(storageController.get<StatData>(STATS_KEYS.MESSAGES));
-      setEligibleCount(storageController.get<number>(STATS_KEYS.ELIGIBLE));
-      setVerifiedCount(storageController.get<number>(STATS_KEYS.VERIFIED));
-
-      // Always refresh from server on open
-      fetchUsersStats();
-      fetchAdsStats();
-      fetchJobsStats();
-      fetchSoldStats();
-      fetchMessagesStats();
-      fetchEligibleStats();
-      fetchVerifiedStats();
+      setIsInitialLoading(true);
+      try {
+        await Promise.all([
+          fetchUsersStats(),
+          fetchAdsStats(),
+          fetchJobsStats(),
+          fetchSoldStats(),
+          fetchMessagesStats(),
+          fetchEligibleStats(),
+          fetchVerifiedStats(),
+        ]);
+      } catch (error) {
+        console.error("Error loading stats:", error);
+      } finally {
+        setIsInitialLoading(false);
+      }
     };
     loadInitialData();
   }, []);
@@ -207,6 +199,15 @@ export default function StatisticsPage() {
 
   const currentDateKey = new Date().toISOString().split("T")[0];
   const currentDayName = new Date().toLocaleDateString("en-GB", { weekday: "short" }) as DaysOfTheWeek;
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4" style={{ direction: 'rtl' }}>
+        <RefreshCw className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-lg font-bold text-muted-foreground">جاري تحميل إحصائيات المنصة...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500" style={{ direction: 'rtl' }}>
