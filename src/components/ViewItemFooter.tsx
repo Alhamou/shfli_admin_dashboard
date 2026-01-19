@@ -434,48 +434,52 @@ export const ViewItemFooter = ({
           )}
 
           {/* Common status buttons for all items */}
-          {item?.is_active === "pending" ? (
-            <Button
-              onClick={handleApprove}
-              disabled={updatingStatus}
-              size="sm"
-              className="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white"
-            >
-              {updatingStatus ? (
-                <Loader2 className="h-4 w-4 animate-spin ml-2" />
+          {item?.item_for !== "bid" && (
+            <>
+              {item?.is_active === "pending" ? (
+                <Button
+                  onClick={handleApprove}
+                  disabled={updatingStatus}
+                  size="sm"
+                  className="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white"
+                >
+                  {updatingStatus ? (
+                    <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                  ) : (
+                    <Check className="h-4 w-4 ml-1" />
+                  )}
+                  موافقة
+                </Button>
               ) : (
-                <Check className="h-4 w-4 ml-1" />
+                <Button
+                  onClick={handlePendingAction}
+                  variant="outline"
+                  disabled={updatingStatus}
+                  size="sm"
+                  className="flex-1 sm:flex-none bg-amber-500 hover:bg-amber-600 text-white border-amber-500"
+                >
+                  <Clock className="h-4 w-4 ml-1" />
+                  تحديد كمعلق
+                </Button>
               )}
-              موافقة
-            </Button>
-          ) : (
-            <Button
-              onClick={handlePendingAction}
-              variant="outline"
-              disabled={updatingStatus}
-              size="sm"
-              className="flex-1 sm:flex-none bg-amber-500 hover:bg-amber-600 text-white border-amber-500"
-            >
-              <Clock className="h-4 w-4 ml-1" />
-              تحديد كمعلق
-            </Button>
+              <Button
+                onClick={handleBlockAction}
+                variant={item?.is_active === "active" ? "destructive" : "default"}
+                disabled={updatingStatus}
+                size="sm"
+                className="flex-1 sm:flex-none"
+              >
+                {updatingStatus ? (
+                  <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                ) : item?.is_active === "active" ? (
+                  <Ban className="h-4 w-4 ml-1" />
+                ) : (
+                  <Check className="h-4 w-4 ml-1" />
+                )}
+                {item?.is_active === "active" ? "حظر" : "إلغاء الحظر"}
+              </Button>
+            </>
           )}
-          <Button
-            onClick={handleBlockAction}
-            variant={item?.is_active === "active" ? "destructive" : "default"}
-            disabled={updatingStatus}
-            size="sm"
-            className="flex-1 sm:flex-none"
-          >
-            {updatingStatus ? (
-              <Loader2 className="h-4 w-4 animate-spin ml-2" />
-            ) : item?.is_active === "active" ? (
-              <Ban className="h-4 w-4 ml-1" />
-            ) : (
-              <Check className="h-4 w-4 ml-1" />
-            )}
-            {item?.is_active === "active" ? "حظر" : "إلغاء الحظر"}
-          </Button>
         </div>
       </div>
     </div>
