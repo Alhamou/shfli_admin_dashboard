@@ -5,14 +5,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { SendNotificationPopup } from "./SendNotificationPopup";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
@@ -45,14 +45,10 @@ export const ViewItemActions = ({
   const handlePostToFacebook = async () => {
     setPostingToFacebook(true);
     try {
-      const response = await postToFacebook(item.uuid);
-      if (response.success) {
-        toast.success("تم النشر على فيسبوك بنجاح");
-      } else {
-        toast.error(response.message || "فشل النشر على فيسبوك");
-      }
+      await postToFacebook(item.uuid);
+      toast.success("تم النشر على فيسبوك بنجاح");
     } catch (error: any) {
-      toast.error(error?.response?.data?.error || "حدث خطأ أثناء النشر على فيسبوك");
+      toast.error(error?.response?.data?.error || error?.message || "حدث خطأ أثناء النشر على فيسبوك");
     } finally {
       setPostingToFacebook(false);
     }
