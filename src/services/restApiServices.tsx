@@ -101,3 +101,10 @@ export function verifyEligibleUsers() {
 export function sendFirebase(body: { title: string; description: string }) {
   return post<void>(`/admin/send_firebase_all`, body);
 }
+
+export function postToFacebook(uuid: string) {
+  return post<{ success: boolean; data: null; message: string | null }>(
+    `/team/post_to_facebook`,
+    { uuid }
+  );
+}

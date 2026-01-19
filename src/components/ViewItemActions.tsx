@@ -1,6 +1,6 @@
 import { ICreatMainItem } from "@/interfaces";
-import { sendNotTeam, updateItem } from "@/services/restApiServices";
-import { Edit, ExternalLink, Flag, Loader2, MessageCircle, RefreshCw, Save, Share2, X } from "lucide-react";
+import { postToFacebook, sendNotTeam, updateItem } from "@/services/restApiServices";
+import { Edit, ExternalLink, Facebook, Flag, Loader2, MessageCircle, RefreshCw, Save, Share2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { SendNotificationPopup } from "./SendNotificationPopup";
@@ -40,6 +40,23 @@ export const ViewItemActions = ({
   const [loading, setIsloading] = useState(false);
   const [convertingToSale, setConvertingToSale] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [postingToFacebook, setPostingToFacebook] = useState(false);
+
+  const handlePostToFacebook = async () => {
+    setPostingToFacebook(true);
+    try {
+      const response = await postToFacebook(item.uuid);
+      if (response.success) {
+        toast.success("تم النشر على فيسبوك بنجاح");
+      } else {
+        toast.error(response.message || "فشل النشر على فيسبوك");
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || "حدث خطأ أثناء النشر على فيسبوك");
+    } finally {
+      setPostingToFacebook(false);
+    }
+  };
 
   const handleConvertToSale = async () => {
     setShowConfirmDialog(false);
@@ -159,6 +176,22 @@ export const ViewItemActions = ({
           >
             <ExternalLink className="h-4 w-4 ml-2" />
             عرض في التطبيق
+          </Button>
+
+          {/* Post to Facebook */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-blue-600 hover:bg-blue-600 hover:text-white transition-all dark:text-blue-400 dark:hover:text-white"
+            onClick={handlePostToFacebook}
+            disabled={postingToFacebook}
+          >
+            {postingToFacebook ? (
+              <Loader2 className="h-4 w-4 animate-spin ml-2" />
+            ) : (
+              <Facebook className="h-4 w-4 ml-2" />
+            )}
+            نشر على فيسبوك
           </Button>
 
           {/* Bid Conversion */}
