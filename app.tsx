@@ -20,6 +20,7 @@ const Commercial = lazy(() => import("./src/pages/Commercial").then(m => ({ defa
 const PendingAds = lazy(() => import("./src/pages/PendingAds").then(m => ({ default: m.default })));
 const StatisticsPage = lazy(() => import("./src/pages/Statistics").then(m => ({ default: m.default })));
 const ChatLogs = lazy(() => import("./src/pages/ChatLogs").then(m => ({ default: m.ChatLogs })));
+const TodayMessages = lazy(() => import("./src/pages/TodayMessages").then(m => ({ default: m.default })));
 const DashboardHome = lazy(() => import("./src/pages/DashboardHome").then(m => ({ default: m.default })));
 const LoginPage = lazy(() => import("./src/pages/LoginPage").then(m => ({ default: m.LoginPage })));
 const SettingsPage = lazy(() => import("./src/pages/SettingsPage").then(m => ({ default: m.default })));
@@ -79,94 +80,94 @@ export default function App() {
         <Router>
           <Suspense fallback={<div className="h-screen w-screen flex items-center justify-center">جاري التحميل...</div>}>
             <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
+              <Route path="/login" element={<LoginPage />} />
               <Route
-                index
+                path="/"
                 element={
                   <ProtectedRoute>
-                    <DashboardHome />
+                    <DashboardLayout />
                   </ProtectedRoute>
                 }
-              />
-              <Route
-                path="users"
-                element={
-                  <ProtectedRoute>
-                    <UserInfo />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="bids"
-                element={
-                  <ProtectedRoute>
-                    <BidsScreen />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="pending"
-                element={
-                  <ProtectedRoute>
-                    <PendingAds />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="statistics"
-                element={
-                  <ProtectedRoute>
-                    <StatisticsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="chats"
-                element={
-                  <ProtectedRoute>
-                    <ChatLogs />
-                  </ProtectedRoute>
-                }
-              />
+              >
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute>
+                      <DashboardHome />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="users"
+                  element={
+                    <ProtectedRoute>
+                      <UserInfo />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="bids"
+                  element={
+                    <ProtectedRoute>
+                      <BidsScreen />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="pending"
+                  element={
+                    <ProtectedRoute>
+                      <PendingAds />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="statistics"
+                  element={
+                    <ProtectedRoute>
+                      <StatisticsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="chats"
+                  element={
+                    <ProtectedRoute>
+                      <TodayMessages />
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route
-                path="admin"
-                element={
-                  <ProtectedRouteAdmin>
-                    <Admin />
-                  </ProtectedRouteAdmin>
-                }
-              />
-              <Route
-                path="settings"
-                element={
-                  <ProtectedRoute>
-                    <SettingsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="commercialAds"
-                element={
-                  <ProtectedRoute>
-                    <Commercial />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
-          </Routes>
-        </Suspense>
-      </Router>
-      <Toaster position="top-right" richColors closeButton />
-    </Provider>
-  </AuthProvider>
+                <Route
+                  path="admin"
+                  element={
+                    <ProtectedRouteAdmin>
+                      <Admin />
+                    </ProtectedRouteAdmin>
+                  }
+                />
+                <Route
+                  path="settings"
+                  element={
+                    <ProtectedRoute>
+                      <SettingsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="commercialAds"
+                  element={
+                    <ProtectedRoute>
+                      <Commercial />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
+            </Routes>
+          </Suspense>
+        </Router>
+        <Toaster position="top-right" richColors closeButton />
+      </Provider>
+    </AuthProvider>
   );
 }

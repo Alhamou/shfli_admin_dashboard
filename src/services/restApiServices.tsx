@@ -1,11 +1,12 @@
 import {
-    CountriesInfo,
-    ICreatMainItem,
-    IMessageThread,
-    IResultAndPagination,
-    IUser,
-    NotificationBody,
-    Stat,
+  CountriesInfo,
+  ICreatMainItem,
+  IMessageThread,
+  IResultAndPagination,
+  IResultAndPaginationMessages,
+  IUser,
+  NotificationBody,
+  Stat,
 } from "@/interfaces";
 import { get, post, put } from "../controllers/requestController";
 
@@ -40,10 +41,6 @@ export function updateItem(
 
 export function getReasons() {
   return get<{ items: string[]; jobs: string[] }>(`/team/get_reasons`);
-}
-
-export function getChatLogs(uuid: string) {
-  return get<IMessageThread>(`/team/messages?uuid=${uuid}`);
 }
 
 export function getUserInfo(uuid: string) {
@@ -108,3 +105,12 @@ export function postToFacebook(uuid: string) {
     { uuid }
   );
 }
+
+export function getAllMessages(page: number = 1, limit: number = 20) {
+  return get<IResultAndPaginationMessages>(`/team/messages?page=${page}&limit=${limit}`);
+}
+
+export function getMessageContent(uuid: string) {
+  return get<IMessageThread>(`/team/message_content?uuid=${uuid}`);
+}
+
