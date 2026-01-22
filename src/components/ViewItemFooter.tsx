@@ -172,6 +172,7 @@ export const ViewItemFooter = ({
   const [showBidStatusForm, setShowBidStatusForm] = useState(false);
   const [showBanUserForm, setShowBanUserForm] = useState(false);
   const [banningUser, setBanningUser] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
   const [pendingReason, setPendingReason] = useState(
     `بعد ان تقوم بتعديل هذا المنشور وحفظه، سيتم مراجعته من قبل فريقنا، وبمجعد الانتهاء من المراجعة، ستتلقى اشعارأ بشأن منشورك:\n\n`
   );
@@ -206,6 +207,22 @@ export const ViewItemFooter = ({
       setShowBidStatusForm(false);
     } catch (error) {
       toast.error("فشل في تحديث حالة المزاد");
+    }
+  };
+
+  const handleStopAd = async () => {
+    setIsArchiving(true);
+    try {
+      await updateItem(item.uuid, { archived: true });
+      toast.success("تم إيقاف الإعلان بنجاح");
+      const updatedItem = await fetchItem(item.uuid);
+      if (updatedItem) {
+        onItemUpdate(updatedItem);
+      }
+    } catch (error) {
+      toast.error("فشل في إيقاف الإعلان");
+    } finally {
+      setIsArchiving(false);
     }
   };
 
@@ -478,6 +495,23 @@ export const ViewItemFooter = ({
                 )}
                 {item?.is_active === "active" ? "حظر" : "إلغاء الحظر"}
               </Button>
+
+              {item?.item_as !== "job" && (
+                <Button
+                  onClick={handleStopAd}
+                  disabled={isArchiving || updatingStatus}
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 sm:flex-none border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600"
+                >
+                  {isArchiving ? (
+                    <Loader2 className="h-4 w-4 animate-spin ml-1" />
+                  ) : (
+                    <X className="h-4 w-4 ml-1" />
+                  )}
+                  إيقاف الإعلان
+                </Button>
+              )}
             </>
           )}
         </div>
