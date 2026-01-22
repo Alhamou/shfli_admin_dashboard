@@ -23,6 +23,7 @@ import {
     Search,
     Trash2,
     User,
+    X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -44,6 +45,9 @@ export const TodayMessages = () => {
     const [searchUuid, setSearchUuid] = useState("");
     const [searchLoading, setSearchLoading] = useState(false);
     const [searchError, setSearchError] = useState<string | null>(null);
+
+    // Fullscreen image state
+    const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
     // Fetch today's messages
     const fetchMessages = useCallback(async (pageNum: number = 1, append: boolean = false) => {
@@ -148,11 +152,25 @@ export const TodayMessages = () => {
         }
     };
 
-    // Format timestamp
+    // Format timestamp - show time if today, date if older
     const formatTime = (dateString: Date | string) => {
         if (!dateString) return "";
         const date = new Date(dateString);
-        return date.toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit", hour12: true });
+        const now = new Date();
+        const diffMs = now.getTime() - date.getTime();
+        const diffHours = diffMs / (1000 * 60 * 60);
+
+        // If more than 24 hours, show the date
+        if (diffHours > 24) {
+            return date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            }).replace(/\//g, ".");
+        }
+
+        // Otherwise show the time
+        return date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: true });
     };
 
     // Get preview text
@@ -417,7 +435,8 @@ export const TodayMessages = () => {
                                                             <img
                                                                 src={msg.image}
                                                                 alt="صورة"
-                                                                className="max-w-[200px] rounded-lg"
+                                                                className="max-w-[200px] rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                                                                onClick={() => setFullscreenImage(msg.image || null)}
                                                             />
                                                         ) : (
                                                             <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.chat}</p>
@@ -463,6 +482,28 @@ export const TodayMessages = () => {
                     )}
                 </Card>
             </div>
+
+            {/* Fullscreen Image Modal */}
+            {fullscreenImage && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 animate-in fade-in duration-300"
+                    onClick={() => setFullscreenImage(null)}
+                >
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-4 right-4 text-white hover:bg-white/10 rounded-full"
+                        onClick={() => setFullscreenImage(null)}
+                    >
+                        <X className="h-6 w-6" />
+                    </Button>
+                    <img
+                        src={fullscreenImage}
+                        alt="Full screen"
+                        className="max-w-[90%] max-h-[90%] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300"
+                    />
+                </div>
+            )}
         </div>
     );
 };
