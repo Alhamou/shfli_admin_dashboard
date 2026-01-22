@@ -48,7 +48,7 @@ export async function doRequestFormData(
   customHeaders?: CustomHeaders,
 ): Promise<any> {
 
-  try{
+  try {
 
     const res = await fetch(`${apiUrl}${endpoint}`, {
       method,
@@ -58,7 +58,7 @@ export async function doRequestFormData(
 
     console.log(endpoint, res.status);
     await handleError(endpoint, res);
-    const {data} = await res.json();
+    const { data } = await res.json();
     return data;
 
   } catch (error) {
@@ -72,7 +72,7 @@ export async function doRequest<T>(
   body?: object,
   customHeaders?: CustomHeaders,
 ): Promise<T> {
-  try{
+  try {
     const res = await fetch(`${apiUrl}${endpoint}`, {
       method,
       headers: await buildHeaders(customHeaders),
@@ -81,11 +81,11 @@ export async function doRequest<T>(
 
     console.log(endpoint, res.status);
 
-    if (res.status === 204) {return {} as T;}
+    if (res.status === 204) { return {} as T; }
 
     await handleError(endpoint, res);
 
-    const {data} = await res.json();
+    const { data } = await res.json();
     return data as T;
   } catch (error) {
     throw error;
@@ -98,7 +98,7 @@ export async function buildHeaders(
 ): Promise<Record<string, string>> {
   const defaultHeaders: Record<string, string> = {
     Authorization: 'Bearer ' + storageController.get('token'),
-    ...(isFormData ? {} : {'Content-Type': 'application/json'}),
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...(doSignature()),
   };
   return {
@@ -132,14 +132,11 @@ export async function handleError(
 
 const token = storageController.get("token");
 
-export const socket: Socket = io("wss://team.shfli.com", {
-  transports: ["polling"],
+export const socket: Socket = io("https://team.shfli.com", {
+  transports: ["websocket", "polling"],
   autoConnect: false,
   reconnectionAttempts: 5,
-  extraHeaders: {
-    Authorization: `Bearer ${token}`,
-  },
-  reconnection: false,
+  reconnection: true, // Re-enable reconnection for better stability
 });
 
 // Utility function to connect with auth if needed
