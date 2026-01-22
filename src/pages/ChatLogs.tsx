@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { IMessageThread } from "@/interfaces";
-import { getChatLogs } from "@/services/restApiServices";
+import { getMessageContent } from "@/services/restApiServices";
 import { AlertCircle, ArrowLeft, Clock, Hash, MessageCircle, Search, Trash2, User } from "lucide-react";
 import { useState } from "react";
 
@@ -30,7 +30,7 @@ export const ChatLogs = () => {
     setError(null);
 
     try {
-      const data = await getChatLogs(uuid);
+      const data = await getMessageContent(uuid);
       setChatData(data);
     } catch (error) {
       setError("لم يتم العثور على محادثة بهذا المعرف (UUID) أو أن البيانات غير متوفرة حالياً");
