@@ -11,14 +11,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { IMessageThread } from "@/interfaces";
 import { getMessageContent } from "@/services/restApiServices";
-import { AlertCircle, ArrowLeft, Clock, Hash, MessageCircle, Search, Trash2, User } from "lucide-react";
+import { AlertCircle, ArrowLeft, Clock, ExternalLink, Hash, MessageCircle, Search, Trash2, User } from "lucide-react";
 import { useState } from "react";
+import { UserDetailDialog } from "@/components/UserDetailDialog";
+import { ItemDetailView } from "@/components/ViewItem";
 
 export const ChatLogs = () => {
   const [uuid, setUuid] = useState("");
   const [chatData, setChatData] = useState<IMessageThread | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
 
   const handleFetchMessages = async () => {
     if (!uuid.trim()) {
@@ -135,13 +139,38 @@ export const ChatLogs = () => {
                     <div>
                         <CardTitle className="text-xl font-black">تفاصيل المحادثة</CardTitle>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 font-bold text-xs text-muted-foreground">
-                            <div className="flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-blue-500" /> المشتري: {chatData.buyer_id}</div>
-                            <div className="flex items-center gap-1.5"><User className="h-3.5 w-3.5 text-emerald-500" /> البائع: {chatData.seller_id}</div>
+                            <div className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+                                <User className="h-3.5 w-3.5 text-blue-500" />
+                                <UserDetailDialog 
+                                    userId={chatData.buyer_id} 
+                                    trigger={<span>المشتري: <span className="underline">{chatData.buyer_id}</span></span>} 
+                                />
+                            </div>
+                            <div className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer">
+                                <User className="h-3.5 w-3.5 text-emerald-500" />
+                                <UserDetailDialog 
+                                    userId={chatData.seller_id} 
+                                    trigger={<span>البائع: <span className="underline">{chatData.seller_id}</span></span>} 
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div className="flex flex-col items-end gap-1.5">
-                    <div className="px-3 py-1 rounded-full bg-primary/10 text-primary font-black text-[10px] flex items-center gap-1.5 border border-primary/20">
+                    <Button
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => {
+                            if (chatData.main_items_uuid) {
+                                setSelectedItemUuid(chatData.main_items_uuid);
+                                setIsItemModalOpen(true);
+                            }
+                        }}
+                        className="h-8 px-3 rounded-xl bg-primary/10 text-primary font-black text-[10px] flex items-center gap-1.5 border border-primary/20 hover:bg-primary/20 transition-all"
+                    >
+                        <ExternalLink className="h-3.5 w-3.5" /> فتح الإعلان
+                    </Button>
+                    <div className="px-3 py-1 rounded-full bg-muted text-muted-foreground font-black text-[10px] flex items-center gap-1.5 border border-border/40">
                         <Hash className="h-3 w-3" /> عنصر: {chatData.main_items_id}
                     </div>
                     <div className="text-[10px] font-bold text-muted-foreground italic flex items-center gap-1.5">
@@ -161,9 +190,14 @@ export const ChatLogs = () => {
                         style={{ animationDelay: `${index * 50}ms` }}
                     >
                         <div className={`flex items-center gap-2 mb-1 px-2 ${isBuyer ? "" : "flex-row-reverse"}`}>
-                            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
-                                {isBuyer ? "المشتري" : "البائع"}
-                            </span>
+                            <UserDetailDialog 
+                                userId={isBuyer ? chatData.buyer_id : chatData.seller_id}
+                                trigger={
+                                    <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground hover:text-primary cursor-pointer transition-colors">
+                                        {isBuyer ? "المشتري" : "البائع"}
+                                    </span>
+                                }
+                            />
                             <div className={`h-1.5 w-1.5 rounded-full ${isBuyer ? "bg-blue-500" : "bg-emerald-500"}`} />
                         </div>
 
@@ -231,6 +265,15 @@ export const ChatLogs = () => {
             </p>
          </div>
       </div>
+      {/* Item Details Modal */}
+      {selectedItemUuid && (
+          <ItemDetailView
+              uuid={selectedItemUuid}
+              open={isItemModalOpen}
+              onClose={() => setIsItemModalOpen(false)}
+              onItemUpdate={() => handleFetchMessages()}
+          />
+      )}
     </div>
   );
 };

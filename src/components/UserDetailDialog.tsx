@@ -142,7 +142,12 @@ export const UserDetailDialog = ({ userId, trigger }: UserDetailDialogProps) => 
                     </div>
                     <div className="p-3 bg-muted/30 rounded-2xl border border-border/40 space-y-1 text-right">
                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ">رقم الهاتف</p>
-                      <p className="text-sm font-bold tabular-nums [direction:ltr] text-right">{userData.phone_number || "غير متوفر"}</p>
+                      <a 
+                        href={`tel:${userData.phone_number}`}
+                        className="text-sm font-bold tabular-nums [direction:ltr] text-right block hover:text-primary transition-colors underline decoration-dotted decoration-primary/30"
+                      >
+                        {userData.phone_number || "غير متوفر"}
+                      </a>
                     </div>
                   </div>
                 </div>
