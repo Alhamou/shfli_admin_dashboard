@@ -22,6 +22,7 @@ import {
     User as UserIcon
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
 
@@ -31,6 +32,7 @@ interface UserDetailDialogProps {
 }
 
 export const UserDetailDialog = ({ userId, trigger }: UserDetailDialogProps) => {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -217,7 +219,7 @@ export const UserDetailDialog = ({ userId, trigger }: UserDetailDialogProps) => 
 
               {/* Footer Actions */}
               <div className="flex justify-end pt-4 gap-3">
-                <Button variant="outline" className="rounded-2xl font-bold gap-2" onClick={() => window.open(`/users?id=${userData.id}`, '_blank')}>
+                <Button variant="outline" className="rounded-2xl font-bold gap-2" onClick={() => navigate(`/users?id=${userData.id}`)}>
                    عرض في إدارة الحسابات
                    <ExternalLink className="h-4 w-4" />
                 </Button>

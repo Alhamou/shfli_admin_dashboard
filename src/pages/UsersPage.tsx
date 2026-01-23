@@ -18,7 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { IUser } from "@/interfaces";
 import { getUserInfo, putUserInfo, sendNotTeam } from "@/services/restApiServices";
 import { AlertCircle, Briefcase, Calendar, Edit, Globe, Info, Mail, MapPin, MessageCircle, Phone, Save, Search, Shield, Tag, Trash2, User, Users, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 export const UserInfo = () => {
@@ -30,8 +31,10 @@ export const UserInfo = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loadingNotification, setLoadingNotification] = useState(false);
 
-  const handleFetchUser = async () => {
-    if (!userId.trim()) {
+  const [searchParams] = useSearchParams();
+
+  const handleFetchUser = useCallback(async (id: string) => {
+    if (!id.trim()) {
       setError("الرجاء إدخال ID المستخدم");
       return;
     }
@@ -42,7 +45,7 @@ export const UserInfo = () => {
     setEditData({});
 
     try {
-      const data = await getUserInfo(userId);
+      const data = await getUserInfo(id);
       setUserData(data);
     } catch (error) {
       setError("ID غير صالح. يُرجى المحاولة مرة أخرى.");
@@ -50,7 +53,16 @@ export const UserInfo = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  const idFromUrl = searchParams.get("id");
+
+  useEffect(() => {
+    if (idFromUrl) {
+      setUserId(idFromUrl);
+      handleFetchUser(idFromUrl);
+    }
+  }, [idFromUrl, handleFetchUser]);
 
   const handleInputChange = (field: keyof IUser, value: any) => {
     setEditData((prev) => ({
@@ -76,7 +88,7 @@ export const UserInfo = () => {
       };
 
       await putUserInfo(dataToSend);
-      handleFetchUser();
+      handleFetchUser(userData.id.toString());
       setEditData({});
       setIsEditing(false);
       toast.success("تم تحديث المستخدم بنجاح");
@@ -135,7 +147,7 @@ export const UserInfo = () => {
                   setUserId(e.target.value);
                   setError(null);
                 }}
-                onKeyDown={(e) => e.key === 'Enter' && handleFetchUser()}
+                onKeyDown={(e) => e.key === 'Enter' && handleFetchUser(userId)}
                 className="h-14 pr-12 bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all font-medium"
                 style={{ direction: "rtl" }}
               />
@@ -145,7 +157,7 @@ export const UserInfo = () => {
                 </Button>
               )}
             </div>
-            <Button onClick={handleFetchUser} disabled={isLoading} className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all active:scale-95 font-bold text-lg whitespace-nowrap">
+            <Button onClick={() => handleFetchUser(userId)} disabled={isLoading} className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all active:scale-95 font-bold text-lg whitespace-nowrap">
               {isLoading ? "جاري البحث..." : "بحث عن المستخدم"}
             </Button>
           </div>
