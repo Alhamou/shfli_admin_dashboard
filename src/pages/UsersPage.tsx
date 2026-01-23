@@ -226,8 +226,8 @@ export const UserInfo = () => {
                   <div className="flex items-center gap-3">
                     {!isEditing ? (
                       <>
-                        <Button variant="outline" size="lg" onClick={() => setIsEditing(true)} className="rounded-2xl border-border/60 bg-background/50 backdrop-blur-sm hover:border-primary hover:text-primary transition-all font-bold gap-2 h-12">
-                          <Edit className="h-5 w-5" /> تعديل البيانات
+                        <Button variant="outline" size="lg" onClick={() => setIsEditing(true)} className="rounded-2xl border-border/60 bg-background/50 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-bold gap-2 h-12 text-foreground group">
+                          <Edit className="h-5 w-5 text-primary group-hover:text-primary-foreground transition-colors" /> تعديل البيانات
                         </Button>
                         <SendNotificationPopup
                           is_public={false}
@@ -245,14 +245,14 @@ export const UserInfo = () => {
                             }
                           }}
                         >
-                          <Button size="lg" className="rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 font-bold gap-2 h-12">
+                          <Button size="lg" className="rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 font-bold gap-2 h-12">
                             <MessageCircle className="h-5 w-5" /> إرسال إشعار
                           </Button>
                         </SendNotificationPopup>
                       </>
                     ) : (
                       <>
-                        <Button variant="ghost" size="lg" onClick={() => setIsEditing(false)} className="rounded-2xl font-bold text-muted-foreground gap-2 h-12">
+                        <Button variant="ghost" size="lg" onClick={() => setIsEditing(false)} className="rounded-2xl font-bold text-foreground hover:bg-destructive/10 hover:text-destructive gap-2 h-12 transition-colors">
                           <X className="h-5 w-5" /> إلغاء
                         </Button>
                         <Button size="lg" onClick={handleSaveChanges} disabled={isLoading} className="rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 font-bold gap-2 h-12">
@@ -467,7 +467,7 @@ export const UserInfo = () => {
             {/* Quick Stats/Metadata Card */}
             <Card className="border-border/40 shadow-xl shadow-black/10 rounded-3xl overflow-hidden sticky top-8 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="p-6 bg-muted/30 border-b border-border/30">
-                    <CardTitle className="text-lg font-black">بيانات النظام</CardTitle>
+                    <CardTitle className="text-lg font-black">بيانات المستخدم</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
                     <div className="space-y-4">
@@ -479,6 +479,13 @@ export const UserInfo = () => {
                             <span className="text-xs font-black text-muted-foreground uppercase tracking-widest block">المعرف الفريد (UUID)</span>
                             <code className="text-[10px] font-mono bg-muted p-2 rounded-xl block break-all text-center" style={{ direction: 'ltr' }}>{userData.uuid}</code>
                         </div>
+                        <Button 
+                          variant="outline" 
+                          className="w-full mt-4 rounded-xl border-primary/50 text-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-bold gap-2 group"
+                          onClick={() => window.open(`https://www.shfli.com/client/${userData.uuid}`, '_blank')}
+                        >
+                          <Globe className="h-4 w-4 text-primary group-hover:text-primary-foreground transition-colors" /> فتح صفحة المستخدم
+                        </Button>
                         <div className="flex justify-between items-center pt-2 border-t border-border/30">
                             <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">تاريخ الانضمام</span>
                             <span className="text-sm font-bold">{formatDate(userData.created_at)}</span>
