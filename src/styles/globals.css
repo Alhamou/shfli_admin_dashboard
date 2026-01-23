@@ -78,6 +78,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
+    letter-spacing: -0.01em;
   }
 }
 
