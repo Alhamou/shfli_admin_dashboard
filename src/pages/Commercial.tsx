@@ -11,7 +11,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { ItemDetailView } from "@/components/ViewItem";
 import { ICreatMainItem } from "@/interfaces";
 import {
@@ -36,7 +36,6 @@ export default function Commercial() {
   const [pagination, setPagination] = useState(initialQuery);
   const [hasMore, setHasMore] = useState(true);
   const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"items" | "jobs">("items");
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   const fetchItems = useCallback(
@@ -53,7 +52,6 @@ export default function Commercial() {
         const query = toQueryString({
           page,
           limit,
-          item_as: activeTab === "jobs" ? "job" : "item",
           ...(search !== ""
             ? isUUIDv4(search)
               ? { uuid: search }
@@ -81,13 +79,13 @@ export default function Commercial() {
         setLoading(false);
       }
     },
-    [loading, activeTab]
+    [loading]
   );
 
   // Initial fetch
   useEffect(() => {
     fetchItems(pagination.page, pagination.limit);
-  }, [activeTab]);
+  }, []);
 
   const handleItemUpdate = useCallback(
     (updatedItem: ICreatMainItem) => {
@@ -131,10 +129,7 @@ export default function Commercial() {
     );
   };
 
-  const filteredItems = items.filter((item) => {
-    if (activeTab === "jobs") return item.item_as === "job";
-    return item.item_as !== "job";
-  });
+
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -173,23 +168,7 @@ export default function Commercial() {
         </div>
       </div>
 
-      {/* Tabs Section */}
-      <div className="flex justify-start">
-        <Tabs
-            value={activeTab}
-            onValueChange={(value) => setActiveTab(value as "items" | "jobs")}
-            className="w-full md:w-auto"
-        >
-            <TabsList className="h-12 bg-muted/50 p-1 rounded-xl border border-border/40 min-w-[300px]">
-              <TabsTrigger value="items" className="flex-1 rounded-lg font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all flex items-center gap-2">
-                <ShoppingBag className="h-4 w-4" /> العناصر
-              </TabsTrigger>
-              <TabsTrigger value="jobs" className="flex-1 rounded-lg font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all flex items-center gap-2">
-                <Briefcase className="h-4 w-4" /> الوظائف
-              </TabsTrigger>
-            </TabsList>
-        </Tabs>
-      </div>
+
 
       {/* Main Content Area */}
       <div
@@ -198,7 +177,7 @@ export default function Commercial() {
         <div className="space-y-6 pb-20">
             {/* Mobile View: Cards */}
             <div className="grid grid-cols-1 md:hidden gap-4">
-              {filteredItems.map((item) => (
+              {items.map((item) => (
                 <Card
                     key={item.uuid}
                     className="overflow-hidden border-border/40 shadow-lg shadow-black/5 hover:shadow-xl transition-all rounded-3xl group cursor-pointer"
@@ -247,7 +226,7 @@ export default function Commercial() {
                   <Table>
                     <TableHeader className="bg-muted/50">
                       <TableRow className="hover:bg-transparent border-border/40 h-16">
-                        <TableHead className="w-[280px] font-black uppercase tracking-widest text-[10px] text-muted-foreground mr-1 text-right">{activeTab === 'jobs' ? 'الوظيفة' : 'العنصر'}</TableHead>
+                        <TableHead className="w-[280px] font-black uppercase tracking-widest text-[10px] text-muted-foreground mr-1 text-right">الإعلان</TableHead>
                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">التصنيف</TableHead>
                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">السعر</TableHead>
                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">الموقع</TableHead>
@@ -257,7 +236,7 @@ export default function Commercial() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredItems.map((item) => (
+                      {items.map((item) => (
                         <TableRow
                             key={item.uuid}
                             className="group hover:bg-primary/5 transition-all duration-300 border-border/30 h-28 cursor-pointer"
@@ -278,7 +257,7 @@ export default function Commercial() {
                                   />
                                 )}
                                 <div className="absolute top-1 right-1 h-6 w-6 bg-blue-500 rounded-lg flex items-center justify-center text-white shadow-lg border-2 border-background z-10">
-                                    {activeTab === 'jobs' ? <Briefcase className="h-3 w-3" /> : <ShoppingBag className="h-3 w-3" />}
+                                    {item.item_as === 'job' ? <Briefcase className="h-3 w-3" /> : <ShoppingBag className="h-3 w-3" />}
                                 </div>
                               </div>
                               <div className="space-y-1.5 flex-1 min-w-0">
@@ -363,7 +342,7 @@ export default function Commercial() {
                   </Table>
                 </div>
               ) : (
-                filteredItems.map((item) => (
+                items.map((item) => (
                   <Card
                     key={item.uuid}
                     className="overflow-hidden border-border/40 shadow-xl shadow-black/5 hover:shadow-2xl transition-all rounded-[2rem] group cursor-pointer border-t-0"
@@ -387,7 +366,7 @@ export default function Commercial() {
 
                         <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
                             {getStatusBadge(item.is_active)}
-                            <CustomBadge variant="unknown" className="bg-black/40 backdrop-blur-md text-white border-white/10">{activeTab === 'jobs' ? 'وظيفة تجارية' : 'إعلان تجاري'}</CustomBadge>
+                            <CustomBadge variant="unknown" className="bg-black/40 backdrop-blur-md text-white border-white/10">{item.item_as === 'job' ? 'وظيفة تجارية' : 'إعلان تجاري'}</CustomBadge>
                         </div>
 
                         <div className="absolute bottom-4 right-4 left-4 flex justify-between items-end">
@@ -449,7 +428,7 @@ export default function Commercial() {
               </div>
             )}
 
-            {!hasMore && filteredItems.length > 0 && (
+            {!hasMore && items.length > 0 && (
               <div className="py-12 text-center animate-in fade-in duration-1000">
                 <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-muted/30 border border-border/40">
                     <div className="h-2 w-2 rounded-full bg-muted-foreground/30"></div>
@@ -459,7 +438,7 @@ export default function Commercial() {
               </div>
             )}
 
-            {!loading && filteredItems.length === 0 && (
+            {!loading && items.length === 0 && (
               <div className="py-32 text-center flex flex-col items-center animate-in zoom-in-95 duration-500">
                 <div className="h-24 w-24 rounded-full bg-blue-500/10 flex items-center justify-center mb-6 shadow-shadow text-blue-600">
                    <ShoppingBag className="h-10 w-10 animate-bounce" />
@@ -473,7 +452,7 @@ export default function Commercial() {
 
             {/* Observer Target */}
             <div ref={observerTarget} className="h-10 w-full flex items-center justify-center mb-6">
-              {loading && filteredItems.length > 0 && (
+              {loading && items.length > 0 && (
                 <div className="flex items-center gap-2 text-primary font-bold animate-pulse">
                   <span className="h-2 w-2 rounded-full bg-primary" />
                   <span>جاري تحميل المزيد...</span>
