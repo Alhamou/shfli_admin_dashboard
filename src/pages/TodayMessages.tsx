@@ -413,7 +413,7 @@ export const TodayMessages = () => {
                             <CardContent className="flex-1 p-0 overflow-hidden">
                                 <div
                                     ref={chatContainerRef}
-                                    className="h-[400px] overflow-y-auto p-4 space-y-4 bg-dot-pattern"
+                                    className="h-[505px] overflow-y-auto p-4 space-y-4 bg-dot-pattern"
                                     style={{ backgroundColor: "rgba(0,0,0,0.02)" }}
                                 >
                                     {isChatLoading ? (
