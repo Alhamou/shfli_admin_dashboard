@@ -9,9 +9,9 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Search, ChevronRight, ChevronDown, ImageIcon, Globe } from "lucide-react";
 import * as api from "@/services/restApiServices";
-import { ICategory, ISubcategory, ICategoryModel, ICarMaker, IMobileMaker, ICarType, IFuelType, IJobCategory, IJobSubcategory, IPagination, ILocalizedString } from "@/interfaces/allDataInterfaces";
+import { ICategory, ISubcategory, ICategoryModel, ICarMaker, IMobileMaker, ICarType, IFuelType, IJobCategory, IJobSubcategory, IPagination, ILocalizedString } from "@/interfaces/allResourcesInterfaces";
 
-export default function AllDataPage() {
+export default function AllResourcesPage() {
     const [activeTab, setActiveTab] = useState("categories");
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -62,14 +62,14 @@ export default function AllDataPage() {
         setLoading(true);
         try {
             if (activeTab === "categories") {
-                const res = await api.getAllDataCategories(pages.categories);
+                const res = await api.getAllResourcesCategories(pages.categories);
                 setCategories(res.result);
                 setPagination(prev => ({ ...prev, categories: res.pagination }));
             } else if (activeTab === "cars") {
                 const [makersRes, typesRes, fuelsRes] = await Promise.all([
-                    api.getAllDataCarMakers(pages.car_makers),
-                    api.getAllDataCarTypes(pages.car_types),
-                    api.getAllDataFuelTypes(pages.fuel_types)
+                    api.getAllResourcesCarMakers(pages.car_makers),
+                    api.getAllResourcesCarTypes(pages.car_types),
+                    api.getAllResourcesFuelTypes(pages.fuel_types)
                 ]);
                 setCarMakers(makersRes.result);
                 setCarTypes(typesRes.result);
@@ -81,11 +81,11 @@ export default function AllDataPage() {
                     fuel_types: fuelsRes.pagination
                 }));
             } else if (activeTab === "mobiles") {
-                const res = await api.getAllDataMobileMakers(pages.mobile_makers);
+                const res = await api.getAllResourcesMobileMakers(pages.mobile_makers);
                 setMobileMakers(res.result);
                 setPagination(prev => ({ ...prev, mobile_makers: res.pagination }));
             } else if (activeTab === "jobs") {
-                const res = await api.getAllDataJobCategories(pages.job_categories);
+                const res = await api.getAllResourcesJobCategories(pages.job_categories);
                 setJobCategories(res.result);
                 setPagination(prev => ({ ...prev, job_categories: res.pagination }));
             }
@@ -98,7 +98,7 @@ export default function AllDataPage() {
 
     const fetchSubcategories = async (categoryId: number, page: number = 1) => {
         try {
-            const res = await api.getAllDataSubcategories(categoryId, page);
+            const res = await api.getAllResourcesSubcategories(categoryId, page);
             setSubcategories(res.result);
             setPagination(prev => ({ ...prev, subcategories: res.pagination }));
             setSelectedCategory(categoryId);
@@ -111,7 +111,7 @@ export default function AllDataPage() {
 
     const fetchModels = async (subcategoryId: number, page: number = 1) => {
         try {
-            const res = await api.getAllDataCategoryModels(subcategoryId, page);
+            const res = await api.getAllResourcesCategoryModels(subcategoryId, page);
             setCategoryModels(res.result);
             setPagination(prev => ({ ...prev, models: res.pagination }));
             setSelectedSubcategory(subcategoryId);
@@ -122,7 +122,7 @@ export default function AllDataPage() {
 
     const fetchJobSubcategories = async (categoryId: number, page: number = 1) => {
         try {
-            const res = await api.getAllDataJobSubcategories(categoryId, page);
+            const res = await api.getAllResourcesJobSubcategories(categoryId, page);
             setJobSubcategories(res.result);
             setPagination(prev => ({ ...prev, job_subcategories: res.pagination }));
             setSelectedJobCategory(categoryId);
@@ -154,10 +154,10 @@ export default function AllDataPage() {
 
             <Tabs defaultValue="categories" className="w-full" onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-4 h-14 bg-muted p-1.5 rounded-2xl border border-border shadow-inner">
-                    <TabsTrigger value="categories" className="rounded-xl font-bold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">التصنيفات</TabsTrigger>
                     <TabsTrigger value="cars" className="rounded-xl font-bold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">السيارات</TabsTrigger>
                     <TabsTrigger value="mobiles" className="rounded-xl font-bold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">الموبايلات</TabsTrigger>
                     <TabsTrigger value="jobs" className="rounded-xl font-bold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">الوظائف</TabsTrigger>
+                    <TabsTrigger value="categories" className="rounded-xl font-bold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">التصنيفات</TabsTrigger>
                 </TabsList>
 
                 <div className="mt-8">
@@ -273,179 +273,6 @@ export default function AllDataPage() {
                         </div>
                     </TabsContent>
 
-                    <TabsContent value="cars" className="m-0 focus-visible:outline-none">
-                        <div className="space-y-8">
-                            <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
-                                <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
-                                    <div>
-                                        <CardTitle className="text-xl font-black text-foreground">ماركات السيارات</CardTitle>
-                                        <CardDescription className="text-start text-muted-foreground/70">إدارة مصنعي السيارات والسلاسل التابعة لهم</CardDescription>
-                                    </div>
-                                    <AddDialog type="car_maker" onRefresh={fetchMainData} />
-                                </CardHeader>
-                                <CardContent className="p-0">
-                                    <Table>
-                                        <TableHeader className="bg-muted/20">
-                                            <TableRow className="hover:bg-transparent border-border/50">
-                                                <TableHead className="font-black text-muted-foreground w-[250px] text-start uppercase text-xs tracking-wider">الماركة</TableHead>
-                                                <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الدولة</TableHead>
-                                                <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">السلاسل</TableHead>
-                                                <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">العمليات</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {carMakers.map((maker) => (
-                                                <TableRow key={maker.id} className="hover:bg-muted/30 transition-colors border-border/10">
-                                                    <TableCell>
-                                                        <div className="flex items-center gap-3">
-                                                            {maker.logo_url && <img src={maker.logo_url} className="w-10 h-10 rounded-xl bg-card border border-border object-contain shadow-sm p-1" />}
-                                                            <div className="flex-1 overflow-hidden">
-                                                                {renderBilingualName(maker.name)}
-                                                            </div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="flex items-center gap-2">
-                                                            {maker.flag_url && <img src={maker.flag_url} className="w-6 h-4 rounded shadow-sm border border-border/30" />}
-                                                            <span className="text-sm font-bold text-muted-foreground">{maker.country}</span>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <ViewSeriesDialog series={maker.series} makerName={maker.name} />
-                                                    </TableCell>
-                                                    <TableCell className="text-start">
-                                                        <div className="flex gap-2 justify-end">
-                                                            <EditDialog type="car_maker" data={maker} onRefresh={fetchMainData} />
-                                                            <DeleteDialog type="car_maker" id={maker.id} onRefresh={fetchMainData} />
-                                                        </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                    <PaginationControls
-                                        pagination={pagination.car_makers}
-                                        onPageChange={(p) => setPages({ ...pages, car_makers: p })}
-                                    />
-                                </CardContent>
-                            </Card>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
-                                    <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
-                                        <CardTitle className="text-lg font-black text-foreground">أنواع المركبات</CardTitle>
-                                        <AddDialog type="car_type" onRefresh={fetchMainData} />
-                                    </CardHeader>
-                                    <CardContent className="p-0">
-                                        <Table>
-                                            <TableBody>
-                                                {carTypes.map((type) => (
-                                                    <TableRow key={type.id} className="border-border/10">
-                                                        <TableCell className="overflow-hidden">
-                                                            {renderBilingualName(type.name)}
-                                                        </TableCell>
-                                                        <TableCell className="text-start">
-                                                            <div className="flex gap-2 justify-end">
-                                                                 <EditDialog type="car_type" data={type} onRefresh={fetchMainData} />
-                                                                 <DeleteDialog type="car_type" id={type.id} onRefresh={fetchMainData} />
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                        <PaginationControls
-                                            pagination={pagination.car_types}
-                                            onPageChange={(p) => setPages({ ...pages, car_types: p })}
-                                        />
-                                    </CardContent>
-                                </Card>
-
-                                <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
-                                    <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
-                                        <CardTitle className="text-lg font-black text-foreground">أنواع الوقود</CardTitle>
-                                        <AddDialog type="fuel_type" onRefresh={fetchMainData} />
-                                    </CardHeader>
-                                    <CardContent className="p-0">
-                                        <Table>
-                                            <TableBody>
-                                                {fuelTypes.map((type) => (
-                                                    <TableRow key={type.id} className="border-border/10">
-                                                        <TableCell className="overflow-hidden">
-                                                            {renderBilingualName(type.name)}
-                                                        </TableCell>
-                                                        <TableCell className="text-start">
-                                                            <div className="flex gap-2 justify-end">
-                                                                 <EditDialog type="fuel_type" data={type} onRefresh={fetchMainData} />
-                                                                 <DeleteDialog type="fuel_type" id={type.id} onRefresh={fetchMainData} />
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                        <PaginationControls
-                                            pagination={pagination.fuel_types}
-                                            onPageChange={(p) => setPages({ ...pages, fuel_types: p })}
-                                        />
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        </div>
-                    </TabsContent>
-
-                    <TabsContent value="mobiles" className="m-0 focus-visible:outline-none">
-                        <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
-                            <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-xl font-black text-foreground">إدارة الأجهزة المحمولة</CardTitle>
-                                    <CardDescription className="text-start text-muted-foreground/70">قائمة بجميع الماركات والموديلات المتاحة</CardDescription>
-                                </div>
-                                <AddDialog type="mobile_maker" onRefresh={fetchMainData} />
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <Table>
-                                    <TableHeader className="bg-muted/20">
-                                        <TableRow className="border-border/50">
-                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الموديل</TableHead>
-                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الماركة</TableHead>
-                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">النوع</TableHead>
-                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">السنة</TableHead>
-                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">العمليات</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {mobileMakers.map((mm) => (
-                                            <TableRow key={mm.id} className="border-border/10">
-                                                <TableCell>
-                                                    <div className="flex items-center gap-3">
-                                                        {mm.image && <img src={mm.image} className="w-10 h-10 rounded-xl bg-card border border-border object-contain shadow-sm p-1" />}
-                                                        <span className="font-bold text-foreground/90">{mm.model}</span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="font-black text-primary">{mm.brand}</TableCell>
-                                                <TableCell>
-                                                    <span className="bg-muted text-muted-foreground text-[10px] px-2 py-1 rounded-full font-black uppercase tracking-tighter transition-colors hover:bg-muted/80">{mm.type}</span>
-                                                </TableCell>
-                                                <TableCell className="text-muted-foreground font-medium">{mm.year || "N/A"}</TableCell>
-                                                <TableCell className="text-start">
-                                                    <div className="flex gap-2 justify-end">
-                                                        <EditDialog type="mobile_maker" data={mm} onRefresh={fetchMainData} />
-                                                        <DeleteDialog type="mobile_maker" id={mm.id} onRefresh={fetchMainData} />
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                                <PaginationControls
-                                    pagination={pagination.mobile_makers}
-                                    onPageChange={(p) => setPages({ ...pages, mobile_makers: p })}
-                                />
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-
                     <TabsContent value="jobs" className="m-0 focus-visible:outline-none">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {/* Job Subcategories - Visual Left */}
@@ -513,6 +340,179 @@ export default function AllDataPage() {
                             </Card>
                         </div>
                     </TabsContent>
+
+                    <TabsContent value="mobiles" className="m-0 focus-visible:outline-none">
+                        <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                            <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-xl font-black text-foreground">إدارة الأجهزة المحمولة</CardTitle>
+                                    <CardDescription className="text-start text-muted-foreground/70">قائمة بجميع الماركات والموديلات المتاحة</CardDescription>
+                                </div>
+                                <AddDialog type="mobile_maker" onRefresh={fetchMainData} />
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <Table>
+                                    <TableHeader className="bg-muted/20">
+                                        <TableRow className="border-border/50">
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الموديل</TableHead>
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الماركة</TableHead>
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">النوع</TableHead>
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">السنة</TableHead>
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">العمليات</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {mobileMakers.map((mm) => (
+                                            <TableRow key={mm.id} className="border-border/10">
+                                                <TableCell>
+                                                    <div className="flex items-center gap-3">
+                                                        {mm.image && <img src={mm.image} className="w-10 h-10 rounded-xl bg-card border border-border object-contain shadow-sm p-1" />}
+                                                        <span className="font-bold text-foreground/90">{mm.model}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="font-black text-primary">{mm.brand}</TableCell>
+                                                <TableCell>
+                                                    <span className="bg-muted text-muted-foreground text-[10px] px-2 py-1 rounded-full font-black uppercase tracking-tighter transition-colors hover:bg-muted/80">{mm.type}</span>
+                                                </TableCell>
+                                                <TableCell className="text-muted-foreground font-medium">{mm.year || "N/A"}</TableCell>
+                                                <TableCell className="text-start">
+                                                    <div className="flex gap-2 justify-end">
+                                                        <EditDialog type="mobile_maker" data={mm} onRefresh={fetchMainData} />
+                                                        <DeleteDialog type="mobile_maker" id={mm.id} onRefresh={fetchMainData} />
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                <PaginationControls
+                                    pagination={pagination.mobile_makers}
+                                    onPageChange={(p) => setPages({ ...pages, mobile_makers: p })}
+                                />
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="cars" className="m-0 focus-visible:outline-none">
+                        <div className="space-y-8">
+                            <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                                <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
+                                    <div>
+                                        <CardTitle className="text-xl font-black text-foreground">ماركات السيارات</CardTitle>
+                                        <CardDescription className="text-start text-muted-foreground/70">إدارة مصنعي السيارات والسلاسل التابعة لهم</CardDescription>
+                                    </div>
+                                    <AddDialog type="car_maker" onRefresh={fetchMainData} />
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    <Table>
+                                        <TableHeader className="bg-muted/20">
+                                            <TableRow className="hover:bg-transparent border-border/50">
+                                                <TableHead className="font-black text-muted-foreground w-[250px] text-start uppercase text-xs tracking-wider">الماركة</TableHead>
+                                                <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الدولة</TableHead>
+                                                <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">السلاسل</TableHead>
+                                                <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">العمليات</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {carMakers.map((maker) => (
+                                                <TableRow key={maker.id} className="hover:bg-muted/30 transition-colors border-border/10">
+                                                    <TableCell>
+                                                        <div className="flex items-center gap-3">
+                                                            {maker.logo_url && <img src={maker.logo_url} className="w-10 h-10 rounded-xl bg-card border border-border object-contain shadow-sm p-1" />}
+                                                            <div className="flex-1 overflow-hidden">
+                                                                {renderBilingualName(maker.name)}
+                                                            </div>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex items-center gap-2">
+                                                            {maker.flag_url && <img src={maker.flag_url} className="w-6 h-4 rounded shadow-sm border border-border/30" />}
+                                                            <span className="text-sm font-bold text-muted-foreground">{maker.country}</span>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <ViewSeriesDialog series={maker.series} makerName={maker.name} makerId={maker.id} onRefresh={fetchMainData} />
+                                                    </TableCell>
+                                                    <TableCell className="text-start">
+                                                        <div className="flex gap-2 justify-end">
+                                                            <EditDialog type="car_maker" data={maker} onRefresh={fetchMainData} />
+                                                            <DeleteDialog type="car_maker" id={maker.id} onRefresh={fetchMainData} />
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                    <PaginationControls
+                                        pagination={pagination.car_makers}
+                                        onPageChange={(p) => setPages({ ...pages, car_makers: p })}
+                                    />
+                                </CardContent>
+                            </Card>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                                    <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
+                                        <CardTitle className="text-lg font-black text-foreground">أنواع المركبات</CardTitle>
+                                        <AddDialog type="car_type" onRefresh={fetchMainData} />
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        <Table>
+                                            <TableBody>
+                                                {carTypes.map((type) => (
+                                                    <TableRow key={type.id} className="border-border/10">
+                                                        <TableCell className="overflow-hidden">
+                                                            {renderBilingualName(type.name)}
+                                                        </TableCell>
+                                                        <TableCell className="text-start">
+                                                            <div className="flex gap-2 justify-end">
+                                                                <EditDialog type="car_type" data={type} onRefresh={fetchMainData} />
+                                                                <DeleteDialog type="car_type" id={type.id} onRefresh={fetchMainData} />
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                        <PaginationControls
+                                            pagination={pagination.car_types}
+                                            onPageChange={(p) => setPages({ ...pages, car_types: p })}
+                                        />
+                                    </CardContent>
+                                </Card>
+
+                                <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                                    <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
+                                        <CardTitle className="text-lg font-black text-foreground">أنواع الوقود</CardTitle>
+                                        <AddDialog type="fuel_type" onRefresh={fetchMainData} />
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        <Table>
+                                            <TableBody>
+                                                {fuelTypes.map((type) => (
+                                                    <TableRow key={type.id} className="border-border/10">
+                                                        <TableCell className="overflow-hidden">
+                                                            {renderBilingualName(type.name)}
+                                                        </TableCell>
+                                                        <TableCell className="text-start">
+                                                            <div className="flex gap-2 justify-end">
+                                                                <EditDialog type="fuel_type" data={type} onRefresh={fetchMainData} />
+                                                                <DeleteDialog type="fuel_type" id={type.id} onRefresh={fetchMainData} />
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                        <PaginationControls
+                                            pagination={pagination.fuel_types}
+                                            onPageChange={(p) => setPages({ ...pages, fuel_types: p })}
+                                        />
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </div>
+                    </TabsContent>
                 </div>
             </Tabs>
 
@@ -559,7 +559,7 @@ function PaginationControls({ pagination, onPageChange }: { pagination: IPaginat
                 >
                     السابق
                 </Button>
-                
+
                 <div className="flex items-center gap-1">
                     {getPages().map((page, i) => (
                         <Fragment key={i}>
@@ -607,15 +607,15 @@ function AddDialog({ type, parentId, onRefresh }: { type: string, parentId?: num
 
     const handleSubmit = async () => {
         try {
-            if (type === "category") await api.createAllDataCategory(formData.name);
-            else if (type === "subcategory") await api.createAllDataSubcategory(formData.name, parentId!);
-            else if (type === "model") await api.createAllDataCategoryModel({ ...formData, subcategory_id: parentId! });
-            else if (type === "car_maker") await api.createAllDataCarMaker(formData);
-            else if (type === "mobile_maker") await api.createAllDataMobileMaker(formData);
-            else if (type === "car_type") await api.createAllDataCarType(formData.name);
-            else if (type === "fuel_type") await api.createAllDataFuelType(formData.name);
-            else if (type === "job_category") await api.createAllDataJobCategory(formData.name);
-            else if (type === "job_subcategory") await api.createAllDataJobSubcategory(formData.name, parentId!);
+            if (type === "category") await api.createAllResourcesCategory(formData.name);
+            else if (type === "subcategory") await api.createAllResourcesSubcategory(formData.name, parentId!);
+            else if (type === "model") await api.createAllResourcesCategoryModel({ ...formData, subcategory_id: parentId! });
+            else if (type === "car_maker") await api.createAllResourcesCarMaker(formData);
+            else if (type === "mobile_maker") await api.createAllResourcesMobileMaker(formData);
+            else if (type === "car_type") await api.createAllResourcesCarType(formData.name);
+            else if (type === "fuel_type") await api.createAllResourcesFuelType(formData.name);
+            else if (type === "job_category") await api.createAllResourcesJobCategory(formData.name);
+            else if (type === "job_subcategory") await api.createAllResourcesJobSubcategory(formData.name, parentId!);
 
             toast.success("تمت الإضافة بنجاح");
             setOpen(false);
@@ -729,15 +729,15 @@ function EditDialog({ type, data, onRefresh }: { type: string, data: any, onRefr
 
     const handleSubmit = async () => {
         try {
-            if (type === "category") await api.updateAllDataCategory(data.id, formData.name);
-            else if (type === "subcategory") await api.updateAllDataSubcategory(data.id, formData.name, formData.category_id);
-            else if (type === "model") await api.updateAllDataCategoryModel(data.id, formData);
-            else if (type === "car_maker") await api.updateAllDataCarMaker(data.id, formData);
-            else if (type === "mobile_maker") await api.updateAllDataMobileMaker(data.id, formData);
-            else if (type === "car_type") await api.updateAllDataCarType(data.id, formData.name);
-            else if (type === "fuel_type") await api.updateAllDataFuelType(data.id, formData.name);
-            else if (type === "job_category") await api.updateAllDataJobCategory(data.id, formData.name);
-            else if (type === "job_subcategory") await api.updateAllDataJobSubcategory(data.id, formData.name, formData.category_jobs_id);
+            if (type === "category") await api.updateAllResourcesCategory(data.id, formData.name);
+            else if (type === "subcategory") await api.updateAllResourcesSubcategory(data.id, formData.name, formData.category_id);
+            else if (type === "model") await api.updateAllResourcesCategoryModel(data.id, formData);
+            else if (type === "car_maker") await api.updateAllResourcesCarMaker(data.id, formData);
+            else if (type === "mobile_maker") await api.updateAllResourcesMobileMaker(data.id, formData);
+            else if (type === "car_type") await api.updateAllResourcesCarType(data.id, formData.name);
+            else if (type === "fuel_type") await api.updateAllResourcesFuelType(data.id, formData.name);
+            else if (type === "job_category") await api.updateAllResourcesJobCategory(data.id, formData.name);
+            else if (type === "job_subcategory") await api.updateAllResourcesJobSubcategory(data.id, formData.name, formData.category_jobs_id);
 
             toast.success("تم التعديل بنجاح");
             setOpen(false);
@@ -839,15 +839,15 @@ function DeleteDialog({ type, id, onRefresh }: { type: string, id: number, onRef
 
     const handleDelete = async () => {
         try {
-            if (type === "category") await api.deleteAllDataCategory(id);
-            else if (type === "subcategory") await api.deleteAllDataSubcategory(id);
-            else if (type === "model") await api.deleteAllDataCategoryModel(id);
-            else if (type === "car_maker") await api.deleteAllDataCarMaker(id);
-            else if (type === "mobile_maker") await api.deleteAllDataMobileMaker(id);
-            else if (type === "car_type") await api.deleteAllDataCarType(id);
-            else if (type === "fuel_type") await api.deleteAllDataFuelType(id);
-            else if (type === "job_category") await api.deleteAllDataJobCategory(id);
-            else if (type === "job_subcategory") await api.deleteAllDataJobSubcategory(id);
+            if (type === "category") await api.deleteAllResourcesCategory(id);
+            else if (type === "subcategory") await api.deleteAllResourcesSubcategory(id);
+            else if (type === "model") await api.deleteAllResourcesCategoryModel(id);
+            else if (type === "car_maker") await api.deleteAllResourcesCarMaker(id);
+            else if (type === "mobile_maker") await api.deleteAllResourcesMobileMaker(id);
+            else if (type === "car_type") await api.deleteAllResourcesCarType(id);
+            else if (type === "fuel_type") await api.deleteAllResourcesFuelType(id);
+            else if (type === "job_category") await api.deleteAllResourcesJobCategory(id);
+            else if (type === "job_subcategory") await api.deleteAllResourcesJobSubcategory(id);
 
             toast.success("تم الحذف بنجاح");
             setOpen(false);
@@ -878,29 +878,49 @@ function DeleteDialog({ type, id, onRefresh }: { type: string, id: number, onRef
     );
 }
 
-function ViewSeriesDialog({ series, makerName }: { series: any[], makerName: ILocalizedString }) {
+function ViewSeriesDialog({ series, makerName, makerId, onRefresh }: { series: any[], makerName: ILocalizedString, makerId: number, onRefresh: () => void }) {
+    const [isAddOpen, setIsAddOpen] = useState(false);
+    const [newSeries, setNewSeries] = useState({ series: "", year: "", model: "" });
+
+    const handleDeleteSeries = async (idx: number) => {
+        try {
+            const updatedSeries = series.filter((_, i) => i !== idx);
+            await api.updateCarMakerSeries(makerId, updatedSeries);
+            toast.success("تم حذف السلسلة بنجاح");
+            onRefresh();
+        } catch (error) {
+            toast.error("فشل حذف السلسلة");
+        }
+    };
+
+    const handleAddSeries = async () => {
+        try {
+            const updatedSeries = [...(series || []), newSeries];
+            await api.updateCarMakerSeries(makerId, updatedSeries);
+            toast.success("تم إضافة السلسلة بنجاح");
+            setIsAddOpen(false);
+            setNewSeries({ series: "", year: "", model: "" });
+            onRefresh();
+        } catch (error) {
+            toast.error("فشل إضافة السلسلة");
+        }
+    };
+
     const renderSeriesName = (item: any) => {
         if (!item) return "---";
         if (typeof item === 'string') return item;
-        
-        // Prioritize car-specific fields like 'series' or 'model'
         const identity = item.series || item.model || item.model_name || (item.name && (item.name.ar || item.name.en || item.name));
-        
         if (identity) {
             if (typeof identity === 'string') return identity;
             if (typeof identity === 'object') return identity.ar || identity.en || "موديل غير معروف";
         }
-        
         return "موديل غير معروف";
     };
 
     const renderSecondaryName = (item: any) => {
         if (!item || typeof item !== 'object') return null;
-        
-        // Show year or English name as secondary info
         const year = item.year || item.model_year;
         const enName = item.name?.en !== item.name?.ar ? item.name?.en : null;
-        
         if (year && enName) return `${enName} (${year})`;
         return year || enName || null;
     };
@@ -914,18 +934,52 @@ function ViewSeriesDialog({ series, makerName }: { series: any[], makerName: ILo
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px] rounded-3xl border-border shadow-2xl overflow-hidden p-0" dir="rtl">
                 <DialogHeader className="p-6 bg-muted/30 border-b border-border">
-                    <DialogTitle className="text-2xl font-black text-foreground text-start flex items-center gap-3">
-                        سلاسل موديلات <span className="text-primary">{makerName.ar}</span>
-                    </DialogTitle>
-                    <DialogDescription className="text-start font-medium text-muted-foreground">
-                        قائمة بجميع الموديلات والسلاسل التابعة لهذه الماركة.
-                    </DialogDescription>
+                    <div className="flex justify-between items-center w-full">
+                        <div className="flex flex-col gap-1">
+                            <DialogTitle className="text-2xl font-black text-foreground text-start flex items-center gap-3">
+                                سلاسل موديلات <span className="text-primary">{makerName.ar}</span>
+                            </DialogTitle>
+                            <DialogDescription className="text-start font-medium text-muted-foreground">
+                                قائمة بجميع الموديلات والسلاسل التابعة لهذه الماركة.
+                            </DialogDescription>
+                        </div>
+                        <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+                            <DialogTrigger asChild>
+                                <Button size="icon" className="h-10 w-10 rounded-full bg-primary hover:bg-primary/90 shadow-md">
+                                    <Plus className="w-5 h-5" />
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="rounded-2xl border-border shadow-xl" dir="rtl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl font-black text-start">إضافة سلسلة جديدة</DialogTitle>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <div className="space-y-2">
+                                        <Label className="font-bold text-start">اسم السلسلة</Label>
+                                        <Input value={newSeries.series} onChange={(e) => setNewSeries({ ...newSeries, series: e.target.value })} placeholder="مثال: Series 5" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="font-bold text-start">الموديل</Label>
+                                        <Input value={newSeries.model} onChange={(e) => setNewSeries({ ...newSeries, model: e.target.value })} placeholder="مثال: G30" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="font-bold text-start">السنة</Label>
+                                        <Input value={newSeries.year} onChange={(e) => setNewSeries({ ...newSeries, year: e.target.value })} placeholder="مثال: 2021" />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button variant="ghost" onClick={() => setIsAddOpen(false)}>إلغاء</Button>
+                                    <Button onClick={handleAddSeries} className="bg-primary hover:bg-primary/90">إضافة</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </DialogHeader>
                 <div className="max-h-[450px] overflow-y-auto p-4 custom-scrollbar bg-background">
                     {series && series.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3">
                             {series.map((item, idx) => (
-                                <div key={idx} className="p-4 rounded-2xl bg-muted/20 border border-border/50 hover:border-primary/30 hover:bg-muted/30 transition-all group/series">
+                                <div key={idx} className="p-4 rounded-2xl bg-muted/20 border border-border/50 hover:border-primary/30 hover:bg-muted/30 transition-all group/series flex justify-between items-center">
                                     <div className="flex flex-col gap-0.5">
                                         <span className="font-bold text-foreground text-sm group-hover/series:text-primary transition-colors">
                                             {renderSeriesName(item)}
@@ -936,6 +990,14 @@ function ViewSeriesDialog({ series, makerName }: { series: any[], makerName: ILo
                                             </span>
                                         )}
                                     </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleDeleteSeries(idx)}
+                                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg opacity-0 group-hover/series:opacity-100 transition-opacity"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
                                 </div>
                             ))}
                         </div>

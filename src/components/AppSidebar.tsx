@@ -87,7 +87,7 @@ export function AppSidebar() {
     },
     {
       title: "إدارة البيانات",
-      url: "/all_data",
+      url: "/all_resources",
       icon: Zap,
     },
   ];

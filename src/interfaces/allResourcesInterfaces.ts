@@ -82,7 +82,7 @@ export interface IPagination {
     has_more: boolean;
 }
 
-export interface IAllDataResult<T> {
+export interface IAllResourcesResult<T> {
     result: T;
     pagination: IPagination;
 }

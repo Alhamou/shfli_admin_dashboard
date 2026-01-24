@@ -114,62 +114,63 @@ export function getMessageContent(uuid: string) {
   return get<IMessageThread>(`/team/message_content?uuid=${uuid}`);
 }
 
-// All Data Management
+// All Resources Management
 import {
-  ICategory, ISubcategory, ICategoryModel, ICarMaker, IMobileMaker, ICarType, IFuelType, IJobCategory, IJobSubcategory, IAllDataResult
-} from "../interfaces/allDataInterfaces";
+  ICategory, ISubcategory, ICategoryModel, ICarMaker, IMobileMaker, ICarType, IFuelType, IJobCategory, IJobSubcategory, IAllResourcesResult
+} from "../interfaces/allResourcesInterfaces";
 
 // Categories
-export const getAllDataCategories = (page: number = 1, limit: number = 20) => get<IAllDataResult<ICategory[]>>(`/all_data/categories?page=${page}&limit=${limit}`);
-export const createAllDataCategory = (name: object) => post<ICategory>("/all_data/categories", { name });
-export const updateAllDataCategory = (id: number, name: object) => put<ICategory>(`/all_data/categories/${id}`, { name });
-export const deleteAllDataCategory = (id: number) => del<void>(`/all_data/categories/${id}`);
+export const getAllResourcesCategories = (page: number = 1, limit: number = 20) => get<IAllResourcesResult<ICategory[]>>(`/all_resources/categories?page=${page}&limit=${limit}`);
+export const createAllResourcesCategory = (name: object) => post<ICategory>("/all_resources/categories", { name });
+export const updateAllResourcesCategory = (id: number, name: object) => put<ICategory>(`/all_resources/categories/${id}`, { name });
+export const deleteAllResourcesCategory = (id: number) => del<void>(`/all_resources/categories/${id}`);
 
 // Subcategories
-export const getAllDataSubcategories = (categoryId: number, page: number = 1, limit: number = 20) => get<IAllDataResult<ISubcategory[]>>(`/all_data/subcategories?category_id=${categoryId}&page=${page}&limit=${limit}`);
-export const createAllDataSubcategory = (name: object, category_id: number) => post<ISubcategory>("/all_data/subcategories", { name, category_id });
-export const updateAllDataSubcategory = (id: number, name: object, category_id: number) => put<ISubcategory>(`/all_data/subcategories/${id}`, { name, category_id });
-export const deleteAllDataSubcategory = (id: number) => del<void>(`/all_data/subcategories/${id}`);
+export const getAllResourcesSubcategories = (categoryId: number, page: number = 1, limit: number = 20) => get<IAllResourcesResult<ISubcategory[]>>(`/all_resources/subcategories?category_id=${categoryId}&page=${page}&limit=${limit}`);
+export const createAllResourcesSubcategory = (name: object, category_id: number) => post<ISubcategory>("/all_resources/subcategories", { name, category_id });
+export const updateAllResourcesSubcategory = (id: number, name: object, category_id: number) => put<ISubcategory>(`/all_resources/subcategories/${id}`, { name, category_id });
+export const deleteAllResourcesSubcategory = (id: number) => del<void>(`/all_resources/subcategories/${id}`);
 
 // Category Models
-export const getAllDataCategoryModels = (subcategoryId: number, page: number = 1, limit: number = 20) => get<IAllDataResult<ICategoryModel[]>>(`/all_data/category_models?subcategory_id=${subcategoryId}&page=${page}&limit=${limit}`);
-export const createAllDataCategoryModel = (payload: Partial<ICategoryModel>) => post<ICategoryModel>("/all_data/category_models", payload);
-export const updateAllDataCategoryModel = (id: number, payload: Partial<ICategoryModel>) => put<ICategoryModel>(`/all_data/category_models/${id}`, payload);
-export const deleteAllDataCategoryModel = (id: number) => del<void>(`/all_data/category_models/${id}`);
+export const getAllResourcesCategoryModels = (subcategoryId: number, page: number = 1, limit: number = 20) => get<IAllResourcesResult<ICategoryModel[]>>(`/all_resources/category_models?subcategory_id=${subcategoryId}&page=${page}&limit=${limit}`);
+export const createAllResourcesCategoryModel = (payload: Partial<ICategoryModel>) => post<ICategoryModel>("/all_resources/category_models", payload);
+export const updateAllResourcesCategoryModel = (id: number, payload: Partial<ICategoryModel>) => put<ICategoryModel>(`/all_resources/category_models/${id}`, payload);
+export const deleteAllResourcesCategoryModel = (id: number) => del<void>(`/all_resources/category_models/${id}`);
 
 // Car Makers
-export const getAllDataCarMakers = (page: number = 1, limit: number = 20) => get<IAllDataResult<ICarMaker[]>>(`/all_data/car_makers?page=${page}&limit=${limit}`);
-export const createAllDataCarMaker = (payload: Partial<ICarMaker>) => post<ICarMaker>("/all_data/car_makers", payload);
-export const updateAllDataCarMaker = (id: number, payload: Partial<ICarMaker>) => put<ICarMaker>(`/all_data/car_makers/${id}`, payload);
-export const deleteAllDataCarMaker = (id: number) => del<void>(`/all_data/car_makers/${id}`);
+export const getAllResourcesCarMakers = (page: number = 1, limit: number = 20) => get<IAllResourcesResult<ICarMaker[]>>(`/all_resources/car_makers?page=${page}&limit=${limit}`);
+export const createAllResourcesCarMaker = (payload: Partial<ICarMaker>) => post<ICarMaker>("/all_resources/car_makers", payload);
+export const updateAllResourcesCarMaker = (id: number, payload: Partial<ICarMaker>) => put<ICarMaker>(`/all_resources/car_makers/${id}`, payload);
+export const deleteAllResourcesCarMaker = (id: number) => del<void>(`/all_resources/car_makers/${id}`);
+export const updateCarMakerSeries = (id: number, series: any[]) => put<ICarMaker>(`/all_resources/car_makers/${id}/series`, { series });
 
 // Mobile Makers
-export const getAllDataMobileMakers = (page: number = 1, limit: number = 20) => get<IAllDataResult<IMobileMaker[]>>(`/all_data/mobile_makers?page=${page}&limit=${limit}`);
-export const createAllDataMobileMaker = (payload: Partial<IMobileMaker>) => post<IMobileMaker>("/all_data/mobile_makers", payload);
-export const updateAllDataMobileMaker = (id: number, payload: Partial<IMobileMaker>) => put<IMobileMaker>(`/all_data/mobile_makers/${id}`, payload);
-export const deleteAllDataMobileMaker = (id: number) => del<void>(`/all_data/mobile_makers/${id}`);
+export const getAllResourcesMobileMakers = (page: number = 1, limit: number = 20) => get<IAllResourcesResult<IMobileMaker[]>>(`/all_resources/mobile_makers?page=${page}&limit=${limit}`);
+export const createAllResourcesMobileMaker = (payload: Partial<IMobileMaker>) => post<IMobileMaker>("/all_resources/mobile_makers", payload);
+export const updateAllResourcesMobileMaker = (id: number, payload: Partial<IMobileMaker>) => put<IMobileMaker>(`/all_resources/mobile_makers/${id}`, payload);
+export const deleteAllResourcesMobileMaker = (id: number) => del<void>(`/all_resources/mobile_makers/${id}`);
 
 // Car Types
-export const getAllDataCarTypes = (page: number = 1, limit: number = 20) => get<IAllDataResult<ICarType[]>>(`/all_data/car_types?page=${page}&limit=${limit}`);
-export const createAllDataCarType = (name: object) => post<ICarType>("/all_data/car_types", { name });
-export const updateAllDataCarType = (id: number, name: object) => put<ICarType>(`/all_data/car_types/${id}`, { name });
-export const deleteAllDataCarType = (id: number) => del<void>(`/all_data/car_types/${id}`);
+export const getAllResourcesCarTypes = (page: number = 1, limit: number = 20) => get<IAllResourcesResult<ICarType[]>>(`/all_resources/car_types?page=${page}&limit=${limit}`);
+export const createAllResourcesCarType = (name: object) => post<ICarType>("/all_resources/car_types", { name });
+export const updateAllResourcesCarType = (id: number, name: object) => put<ICarType>(`/all_resources/car_types/${id}`, { name });
+export const deleteAllResourcesCarType = (id: number) => del<void>(`/all_resources/car_types/${id}`);
 
 // Fuel Types
-export const getAllDataFuelTypes = (page: number = 1, limit: number = 20) => get<IAllDataResult<IFuelType[]>>(`/all_data/fuel_types?page=${page}&limit=${limit}`);
-export const createAllDataFuelType = (name: object) => post<IFuelType>("/all_data/fuel_types", { name });
-export const updateAllDataFuelType = (id: number, name: object) => put<IFuelType>(`/all_data/fuel_types/${id}`, { name });
-export const deleteAllDataFuelType = (id: number) => del<void>(`/all_data/fuel_types/${id}`);
+export const getAllResourcesFuelTypes = (page: number = 1, limit: number = 20) => get<IAllResourcesResult<IFuelType[]>>(`/all_resources/fuel_types?page=${page}&limit=${limit}`);
+export const createAllResourcesFuelType = (name: object) => post<IFuelType>("/all_resources/fuel_types", { name });
+export const updateAllResourcesFuelType = (id: number, name: object) => put<IFuelType>(`/all_resources/fuel_types/${id}`, { name });
+export const deleteAllResourcesFuelType = (id: number) => del<void>(`/all_resources/fuel_types/${id}`);
 
 // Job Categories
-export const getAllDataJobCategories = (page: number = 1, limit: number = 20) => get<IAllDataResult<IJobCategory[]>>(`/all_data/job_categories?page=${page}&limit=${limit}`);
-export const createAllDataJobCategory = (name: object) => post<IJobCategory>("/all_data/job_categories", { name });
-export const updateAllDataJobCategory = (id: number, name: object) => put<IJobCategory>(`/all_data/job_categories/${id}`, { name });
-export const deleteAllDataJobCategory = (id: number) => del<void>(`/all_data/job_categories/${id}`);
+export const getAllResourcesJobCategories = (page: number = 1, limit: number = 20) => get<IAllResourcesResult<IJobCategory[]>>(`/all_resources/job_categories?page=${page}&limit=${limit}`);
+export const createAllResourcesJobCategory = (name: object) => post<IJobCategory>("/all_resources/job_categories", { name });
+export const updateAllResourcesJobCategory = (id: number, name: object) => put<IJobCategory>(`/all_resources/job_categories/${id}`, { name });
+export const deleteAllResourcesJobCategory = (id: number) => del<void>(`/all_resources/job_categories/${id}`);
 
 // Job Subcategories
-export const getAllDataJobSubcategories = (categoryId: number, page: number = 1, limit: number = 20) => get<IAllDataResult<IJobSubcategory[]>>(`/all_data/job_subcategories?category_id=${categoryId}&page=${page}&limit=${limit}`);
-export const createAllDataJobSubcategory = (name: object, category_id: number) => post<IJobSubcategory>("/all_data/job_subcategories", { name, category_id });
-export const updateAllDataJobSubcategory = (id: number, name: object, category_id: number) => put<IJobSubcategory>(`/all_data/job_subcategories/${id}`, { name, category_id });
-export const deleteAllDataJobSubcategory = (id: number) => del<void>(`/all_data/job_subcategories/${id}`);
+export const getAllResourcesJobSubcategories = (categoryId: number, page: number = 1, limit: number = 20) => get<IAllResourcesResult<IJobSubcategory[]>>(`/all_resources/job_subcategories?category_id=${categoryId}&page=${page}&limit=${limit}`);
+export const createAllResourcesJobSubcategory = (name: object, category_id: number) => post<IJobSubcategory>("/all_resources/job_subcategories", { name, category_id });
+export const updateAllResourcesJobSubcategory = (id: number, name: object, category_id: number) => put<IJobSubcategory>(`/all_resources/job_subcategories/${id}`, { name, category_id });
+export const deleteAllResourcesJobSubcategory = (id: number) => del<void>(`/all_resources/job_subcategories/${id}`);
 
