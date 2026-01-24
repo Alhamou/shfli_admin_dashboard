@@ -2,7 +2,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CustomBadge } from "@/components/ui/custom-badge";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
     Table,
@@ -23,7 +22,7 @@ import {
     updateItemInArray,
 } from "@/lib/helpFunctions";
 import { getAllItems, updateItem } from "@/services/restApiServices";
-import { Briefcase, Clock, Eye, Gavel, Hash, LayoutGrid, List, MapPin, MoreHorizontal, Search, Tag, Users, X } from "lucide-react";
+import { Briefcase, Clock, Eye, Gavel, Hash, LayoutGrid, List, MapPin, MoreHorizontal, Tag, X } from "lucide-react";
 import "moment";
 import moment from "moment";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -37,8 +36,6 @@ export default function BidsScreen() {
   const [pagination, setPagination] = useState(initialQuery);
   const [hasMore, setHasMore] = useState(true);
   const [selectedItemUuid, setSelectedItemUuid] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [uuidSearchTerm, setUuidSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("pending");
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
@@ -94,20 +91,10 @@ export default function BidsScreen() {
   };
 
   useEffect(() => {
-    fetchItems(1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
+    fetchItems(1, pagination.limit);
   }, [activeTab]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
 
-  const handleUuidSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUuidSearchTerm(e.target.value);
-  };
-
-  const handleFetchClick = () => {
-    fetchItems(1, pagination.limit, searchTerm.trim(), uuidSearchTerm.trim());
-  };
 
 
   const handleItemUpdate = useCallback(
@@ -126,9 +113,7 @@ export default function BidsScreen() {
         if (entries[0].isIntersecting && hasMore && !loading) {
           fetchItems(
             pagination.page + 1,
-            pagination.limit,
-            searchTerm.trim(),
-            uuidSearchTerm.trim()
+            pagination.limit
           );
         }
       },
@@ -140,7 +125,7 @@ export default function BidsScreen() {
     }
 
     return () => observer.disconnect();
-  }, [hasMore, loading, pagination.page, pagination.limit, searchTerm, uuidSearchTerm, fetchItems]);
+  }, [hasMore, loading, pagination.page, pagination.limit, fetchItems]);
 
   useEffect(() => {
     // Use default English locale for moment
@@ -203,47 +188,15 @@ export default function BidsScreen() {
       </div>
 
       {/* Filter & Tabs Section */}
-      <Card className="border-border/40 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm overflow-hidden rounded-[2.5rem]">
-        <CardContent className="p-6 space-y-6">
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="h-14 w-full bg-muted/50 p-1 rounded-2xl border border-border/40">
-              <TabsTrigger value="pending" className="flex-1 rounded-xl font-bold data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all">قيد الانتظار</TabsTrigger>
-              <TabsTrigger value="active" className="flex-1 rounded-xl font-bold data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all">نشط</TabsTrigger>
-              <TabsTrigger value="ended" className="flex-1 rounded-xl font-bold data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all">منتهي</TabsTrigger>
-              <TabsTrigger value="ask_edit" className="flex-1 rounded-xl font-bold data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all">طلب تعديل</TabsTrigger>
-              <TabsTrigger value="blocked" className="flex-1 rounded-xl font-bold data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all">محظور</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4">
-             <div className="relative group">
-               <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-               <Input
-                 placeholder="ابحث بالاسم أو الرقم التعريفي..."
-                 value={searchTerm}
-                 onChange={handleSearchChange}
-                 className="h-14 pr-12 bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all font-medium"
-                 style={{ direction: "rtl" }}
-                 onKeyDown={(e) => e.key === 'Enter' && handleFetchClick()}
-               />
-             </div>
-             <div className="relative group">
-               <Users className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-               <Input
-                 placeholder="ابحث بمعرف المستخدم أو الرقم..."
-                 value={uuidSearchTerm}
-                 onChange={handleUuidSearchChange}
-                 className="h-14 pr-12 bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all font-medium"
-                 style={{ direction: "rtl" }}
-                 onKeyDown={(e) => e.key === 'Enter' && handleFetchClick()}
-               />
-             </div>
-             <Button onClick={handleFetchClick} className="h-14 px-8 rounded-2xl bg-primary hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 transition-all active:scale-95">
-                تحديث النتائج
-             </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <TabsList className="h-14 w-full bg-muted/50 p-1 rounded-2xl border border-border/40">
+          <TabsTrigger value="pending" className="flex-1 rounded-xl font-bold data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all">قيد الانتظار</TabsTrigger>
+          <TabsTrigger value="active" className="flex-1 rounded-xl font-bold data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all">نشط</TabsTrigger>
+          <TabsTrigger value="ended" className="flex-1 rounded-xl font-bold data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all">منتهي</TabsTrigger>
+          <TabsTrigger value="ask_edit" className="flex-1 rounded-xl font-bold data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all">طلب تعديل</TabsTrigger>
+          <TabsTrigger value="blocked" className="flex-1 rounded-xl font-bold data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all">محظور</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       {/* Main Content Area */}
       <div
