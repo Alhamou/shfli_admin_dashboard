@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Search, ChevronRight, ChevronDown, ImageIcon, Globe } from "lucide-react";
 import * as api from "@/services/restApiServices";
-import { ICategory, ISubcategory, ICategoryModel, ICarMaker, IMobileMaker, ICarType, IFuelType, IJobCategory, IJobSubcategory, IPagination } from "@/interfaces/allDataInterfaces";
+import { ICategory, ISubcategory, ICategoryModel, ICarMaker, IMobileMaker, ICarType, IFuelType, IJobCategory, IJobSubcategory, IPagination, ILocalizedString } from "@/interfaces/allDataInterfaces";
 
 export default function AllDataPage() {
     const [activeTab, setActiveTab] = useState("categories");
@@ -137,10 +137,10 @@ export default function AllDataPage() {
         return (
             <div className="flex flex-1 items-center justify-between min-w-0 gap-4" dir="rtl">
                 <div className="flex flex-col items-start text-start">
-                    <span className="font-bold text-slate-700 leading-tight">{name.ar}</span>
-                    {country && <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">{country}</span>}
+                    <span className="font-bold text-foreground leading-tight">{name.ar}</span>
+                    {country && <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-0.5">{country}</span>}
                 </div>
-                <span className="text-xs font-medium text-slate-400 font-sans whitespace-nowrap" dir="ltr">{name.en}</span>
+                <span className="text-xs font-medium text-muted-foreground/60 font-sans whitespace-nowrap" dir="ltr">{name.en}</span>
             </div>
         );
     };
@@ -148,73 +148,76 @@ export default function AllDataPage() {
     return (
         <div className="container mx-auto py-8 px-4 space-y-8 animate-in fade-in duration-500" dir="rtl">
             <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-black text-indigo-900 tracking-tight">إدارة البيانات</h1>
-                <p className="text-slate-500 font-medium">إدارة التصنيفات، الموديلات، الشركات المصنعة، والبيانات العامة للنظام.</p>
+                <h1 className="text-4xl font-black text-primary tracking-tight">إدارة البيانات</h1>
+                <p className="text-muted-foreground font-medium">إدارة التصنيفات، الموديلات، الشركات المصنعة، والبيانات العامة للنظام.</p>
             </div>
 
             <Tabs defaultValue="categories" className="w-full" onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-4 h-14 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 shadow-inner">
-                    <TabsTrigger value="categories" className="rounded-xl font-bold text-slate-600 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-md transition-all">التصنيفات</TabsTrigger>
-                    <TabsTrigger value="cars" className="rounded-xl font-bold text-slate-600 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-md transition-all">السيارات</TabsTrigger>
-                    <TabsTrigger value="mobiles" className="rounded-xl font-bold text-slate-600 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-md transition-all">الموبايلات</TabsTrigger>
-                    <TabsTrigger value="jobs" className="rounded-xl font-bold text-slate-600 data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-md transition-all">الوظائف</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-4 h-14 bg-muted p-1.5 rounded-2xl border border-border shadow-inner">
+                    <TabsTrigger value="categories" className="rounded-xl font-bold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">التصنيفات</TabsTrigger>
+                    <TabsTrigger value="cars" className="rounded-xl font-bold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">السيارات</TabsTrigger>
+                    <TabsTrigger value="mobiles" className="rounded-xl font-bold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">الموبايلات</TabsTrigger>
+                    <TabsTrigger value="jobs" className="rounded-xl font-bold text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">الوظائف</TabsTrigger>
                 </TabsList>
 
                 <div className="mt-8">
                     <TabsContent value="categories" className="m-0 focus-visible:outline-none">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* Main Categories */}
-                            <Card className="rounded-3xl border-slate-200 shadow-xl overflow-hidden group" dir="rtl">
-                                <CardHeader className="bg-slate-50 border-b border-slate-100">
+                            {/* Models - Visual Left */}
+                            <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                                <CardHeader className="bg-muted/30 border-b border-border">
                                     <div className="flex justify-between items-center">
-                                        <CardTitle className="text-lg font-black text-slate-800">التصنيفات الرئيسية</CardTitle>
-                                        <AddDialog type="category" onRefresh={fetchMainData} />
+                                        <CardTitle className="text-lg font-black text-foreground">الموديلات</CardTitle>
+                                        {selectedSubcategory && <AddDialog type="model" parentId={selectedSubcategory} onRefresh={() => fetchModels(selectedSubcategory)} />}
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-0">
-                                    <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto custom-scrollbar">
-                                        {categories.map((cat) => (
-                                            <div
-                                                key={cat.id}
-                                                onClick={() => fetchSubcategories(cat.id)}
-                                                className={`p-4 flex justify-between items-center cursor-pointer transition-all hover:bg-slate-50 ${selectedCategory === cat.id ? "bg-indigo-50/50 border-r-4 border-indigo-600" : ""}`}
-                                            >
-                                                <div className="flex-1 me-4 overflow-hidden">
-                                                    {renderBilingualName(cat.name)}
-                                                </div>
-                                                <div className="flex gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <EditDialog type="category" data={cat} onRefresh={fetchMainData} />
-                                                    <DeleteDialog type="category" id={cat.id} onRefresh={fetchMainData} />
-                                                </div>
+                                    {!selectedSubcategory ? (
+                                        <div className="p-8 text-center text-muted-foreground italic tracking-wide">اختر فئة فرعية لرؤية الموديلات</div>
+                                    ) : (
+                                        <>
+                                            <div className="divide-y divide-border/30 max-h-[600px] overflow-y-auto">
+                                                {categoryModels.map((model) => (
+                                                    <div key={model.id} className="p-4 flex justify-between items-center transition-all hover:bg-muted/50 group/item">
+                                                        <div className="flex flex-1 items-center gap-3 me-4 overflow-hidden">
+                                                            {model.logo && <img src={model.logo} className="w-8 h-8 rounded-lg object-contain bg-card border border-border shadow-sm transition-transform group-hover/item:scale-110" />}
+                                                            {renderBilingualName(model.name, model.country)}
+                                                        </div>
+                                                        <div className="flex gap-1">
+                                                            <EditDialog type="model" data={model} onRefresh={() => fetchModels(selectedSubcategory)} />
+                                                            <DeleteDialog type="model" id={model.id} onRefresh={() => fetchModels(selectedSubcategory)} />
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-                                    <PaginationControls
-                                        pagination={pagination.categories}
-                                        onPageChange={(p) => setPages({ ...pages, categories: p })}
-                                    />
+                                            <PaginationControls
+                                                pagination={pagination.models}
+                                                onPageChange={(p) => fetchModels(selectedSubcategory, p)}
+                                            />
+                                        </>
+                                    )}
                                 </CardContent>
                             </Card>
 
-                            {/* Subcategories */}
-                            <Card className="rounded-3xl border-slate-200 shadow-xl overflow-hidden" dir="rtl">
-                                <CardHeader className="bg-slate-50 border-b border-slate-100">
+                            {/* Subcategories - Visual Center */}
+                            <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                                <CardHeader className="bg-muted/30 border-b border-border">
                                     <div className="flex justify-between items-center">
-                                        <CardTitle className="text-lg font-black text-slate-800">التصنيفات الفرعية</CardTitle>
+                                        <CardTitle className="text-lg font-black text-foreground">التصنيفات الفرعية</CardTitle>
                                         {selectedCategory && <AddDialog type="subcategory" parentId={selectedCategory} onRefresh={() => fetchSubcategories(selectedCategory)} />}
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-0">
                                     {!selectedCategory ? (
-                                        <div className="p-8 text-center text-slate-400 italic">اختر تصنيفاً لرؤية الفئات الفرعية</div>
+                                        <div className="p-8 text-center text-muted-foreground italic tracking-wide">اختر تصنيفاً لرؤية الفئات الفرعية</div>
                                     ) : (
                                         <>
-                                            <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto">
+                                            <div className="divide-y divide-border/30 max-h-[600px] overflow-y-auto">
                                                 {subcategories.map((sub) => (
                                                     <div
                                                         key={sub.id}
                                                         onClick={() => fetchModels(sub.id)}
-                                                        className={`p-4 flex justify-between items-center cursor-pointer transition-all hover:bg-slate-50 ${selectedSubcategory === sub.id ? "bg-indigo-50/50 border-r-4 border-indigo-600" : ""}`}
+                                                        className={`p-4 flex justify-between items-center cursor-pointer transition-all hover:bg-muted/50 ${selectedSubcategory === sub.id ? "bg-primary/10 border-r-4 border-primary" : ""}`}
                                                     >
                                                         <div className="flex-1 me-4 overflow-hidden">
                                                             {renderBilingualName(sub.name)}
@@ -235,39 +238,36 @@ export default function AllDataPage() {
                                 </CardContent>
                             </Card>
 
-                            {/* Models */}
-                            <Card className="rounded-3xl border-slate-200 shadow-xl overflow-hidden" dir="rtl">
-                                <CardHeader className="bg-slate-50 border-b border-slate-100">
+                            {/* Main Categories - Visual Right */}
+                            <Card className="rounded-3xl border-border shadow-xl overflow-hidden group" dir="rtl">
+                                <CardHeader className="bg-muted/30 border-b border-border">
                                     <div className="flex justify-between items-center">
-                                        <CardTitle className="text-lg font-black text-slate-800">الموديلات</CardTitle>
-                                        {selectedSubcategory && <AddDialog type="model" parentId={selectedSubcategory} onRefresh={() => fetchModels(selectedSubcategory)} />}
+                                        <CardTitle className="text-lg font-black text-foreground">التصنيفات الرئيسية</CardTitle>
+                                        <AddDialog type="category" onRefresh={fetchMainData} />
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-0">
-                                    {!selectedSubcategory ? (
-                                        <div className="p-8 text-center text-slate-400 italic">اختر فئة فرعية لرؤية الموديلات</div>
-                                    ) : (
-                                        <>
-                                            <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto">
-                                                {categoryModels.map((model) => (
-                                                    <div key={model.id} className="p-4 flex justify-between items-center transition-all hover:bg-slate-50">
-                                                        <div className="flex flex-1 items-center gap-3 me-4 overflow-hidden">
-                                                            {model.logo && <img src={model.logo} className="w-8 h-8 rounded-lg object-contain bg-white border border-slate-100 shadow-sm" />}
-                                                            {renderBilingualName(model.name, model.country)}
-                                                        </div>
-                                                        <div className="flex gap-1">
-                                                            <EditDialog type="model" data={model} onRefresh={() => fetchModels(selectedSubcategory)} />
-                                                            <DeleteDialog type="model" id={model.id} onRefresh={() => fetchModels(selectedSubcategory)} />
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                    <div className="divide-y divide-border/30 max-h-[600px] overflow-y-auto custom-scrollbar">
+                                        {categories.map((cat) => (
+                                            <div
+                                                key={cat.id}
+                                                onClick={() => fetchSubcategories(cat.id)}
+                                                className={`p-4 flex justify-between items-center cursor-pointer transition-all hover:bg-muted/50 ${selectedCategory === cat.id ? "bg-primary/10 border-r-4 border-primary" : ""}`}
+                                            >
+                                                <div className="flex-1 me-4 overflow-hidden">
+                                                    {renderBilingualName(cat.name)}
+                                                </div>
+                                                <div className="flex gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <EditDialog type="category" data={cat} onRefresh={fetchMainData} />
+                                                    <DeleteDialog type="category" id={cat.id} onRefresh={fetchMainData} />
+                                                </div>
                                             </div>
-                                            <PaginationControls
-                                                pagination={pagination.models}
-                                                onPageChange={(p) => fetchModels(selectedSubcategory, p)}
-                                            />
-                                        </>
-                                    )}
+                                        ))}
+                                    </div>
+                                    <PaginationControls
+                                        pagination={pagination.categories}
+                                        onPageChange={(p) => setPages({ ...pages, categories: p })}
+                                    />
                                 </CardContent>
                             </Card>
                         </div>
@@ -275,30 +275,30 @@ export default function AllDataPage() {
 
                     <TabsContent value="cars" className="m-0 focus-visible:outline-none">
                         <div className="space-y-8">
-                            <Card className="rounded-3xl border-slate-200 shadow-xl overflow-hidden" dir="rtl">
-                                <CardHeader className="bg-slate-50 border-b border-slate-100 flex flex-row items-center justify-between">
+                            <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                                <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
                                     <div>
-                                        <CardTitle className="text-xl font-black text-slate-800">ماركات السيارات</CardTitle>
-                                        <CardDescription className="text-start">إدارة مصنعي السيارات والسلاسل التابعة لهم</CardDescription>
+                                        <CardTitle className="text-xl font-black text-foreground">ماركات السيارات</CardTitle>
+                                        <CardDescription className="text-start text-muted-foreground/70">إدارة مصنعي السيارات والسلاسل التابعة لهم</CardDescription>
                                     </div>
                                     <AddDialog type="car_maker" onRefresh={fetchMainData} />
                                 </CardHeader>
                                 <CardContent className="p-0">
                                     <Table>
-                                        <TableHeader className="bg-slate-50/50">
-                                            <TableRow>
-                                                <TableHead className="font-black text-slate-500 w-[250px] text-start">الماركة</TableHead>
-                                                <TableHead className="font-black text-slate-500 text-start">الدولة</TableHead>
-                                                <TableHead className="font-black text-slate-500 text-start">السلاسل</TableHead>
-                                                <TableHead className="font-black text-slate-500 text-start">العمليات</TableHead>
+                                        <TableHeader className="bg-muted/20">
+                                            <TableRow className="hover:bg-transparent border-border/50">
+                                                <TableHead className="font-black text-muted-foreground w-[250px] text-start uppercase text-xs tracking-wider">الماركة</TableHead>
+                                                <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الدولة</TableHead>
+                                                <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">السلاسل</TableHead>
+                                                <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">العمليات</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {carMakers.map((maker) => (
-                                                <TableRow key={maker.id} className="hover:bg-slate-50/50 transition-colors">
+                                                <TableRow key={maker.id} className="hover:bg-muted/30 transition-colors border-border/10">
                                                     <TableCell>
                                                         <div className="flex items-center gap-3">
-                                                            {maker.logo_url && <img src={maker.logo_url} className="w-10 h-10 rounded-xl bg-white border border-slate-100 object-contain shadow-sm" />}
+                                                            {maker.logo_url && <img src={maker.logo_url} className="w-10 h-10 rounded-xl bg-card border border-border object-contain shadow-sm p-1" />}
                                                             <div className="flex-1 overflow-hidden">
                                                                 {renderBilingualName(maker.name)}
                                                             </div>
@@ -306,14 +306,12 @@ export default function AllDataPage() {
                                                     </TableCell>
                                                     <TableCell>
                                                         <div className="flex items-center gap-2">
-                                                            {maker.flag_url && <img src={maker.flag_url} className="w-6 h-4 rounded shadow-sm" />}
-                                                            <span className="text-sm font-medium text-slate-600">{maker.country}</span>
+                                                            {maker.flag_url && <img src={maker.flag_url} className="w-6 h-4 rounded shadow-sm border border-border/30" />}
+                                                            <span className="text-sm font-bold text-muted-foreground">{maker.country}</span>
                                                         </div>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <span className="text-xs bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-bold">
-                                                            {maker.series?.length || 0} موديل
-                                                        </span>
+                                                        <ViewSeriesDialog series={maker.series} makerName={maker.name} />
                                                     </TableCell>
                                                     <TableCell className="text-start">
                                                         <div className="flex gap-2 justify-end">
@@ -333,23 +331,23 @@ export default function AllDataPage() {
                             </Card>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <Card className="rounded-3xl border-slate-200 shadow-xl overflow-hidden" dir="rtl">
-                                    <CardHeader className="bg-slate-50 border-b border-slate-100 flex flex-row items-center justify-between">
-                                        <CardTitle className="text-lg font-black text-slate-800">أنواع المركبات</CardTitle>
+                                <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                                    <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
+                                        <CardTitle className="text-lg font-black text-foreground">أنواع المركبات</CardTitle>
                                         <AddDialog type="car_type" onRefresh={fetchMainData} />
                                     </CardHeader>
                                     <CardContent className="p-0">
                                         <Table>
                                             <TableBody>
                                                 {carTypes.map((type) => (
-                                                    <TableRow key={type.id}>
+                                                    <TableRow key={type.id} className="border-border/10">
                                                         <TableCell className="overflow-hidden">
                                                             {renderBilingualName(type.name)}
                                                         </TableCell>
                                                         <TableCell className="text-start">
                                                             <div className="flex gap-2 justify-end">
-                                                                <EditDialog type="car_type" data={type} onRefresh={fetchMainData} />
-                                                                <DeleteDialog type="car_type" id={type.id} onRefresh={fetchMainData} />
+                                                                 <EditDialog type="car_type" data={type} onRefresh={fetchMainData} />
+                                                                 <DeleteDialog type="car_type" id={type.id} onRefresh={fetchMainData} />
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
@@ -363,23 +361,23 @@ export default function AllDataPage() {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="rounded-3xl border-slate-200 shadow-xl overflow-hidden" dir="rtl">
-                                    <CardHeader className="bg-slate-50 border-b border-slate-100 flex flex-row items-center justify-between">
-                                        <CardTitle className="text-lg font-black text-slate-800">أنواع الوقود</CardTitle>
+                                <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                                    <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
+                                        <CardTitle className="text-lg font-black text-foreground">أنواع الوقود</CardTitle>
                                         <AddDialog type="fuel_type" onRefresh={fetchMainData} />
                                     </CardHeader>
                                     <CardContent className="p-0">
                                         <Table>
                                             <TableBody>
                                                 {fuelTypes.map((type) => (
-                                                    <TableRow key={type.id}>
+                                                    <TableRow key={type.id} className="border-border/10">
                                                         <TableCell className="overflow-hidden">
                                                             {renderBilingualName(type.name)}
                                                         </TableCell>
                                                         <TableCell className="text-start">
                                                             <div className="flex gap-2 justify-end">
-                                                                <EditDialog type="fuel_type" data={type} onRefresh={fetchMainData} />
-                                                                <DeleteDialog type="fuel_type" id={type.id} onRefresh={fetchMainData} />
+                                                                 <EditDialog type="fuel_type" data={type} onRefresh={fetchMainData} />
+                                                                 <DeleteDialog type="fuel_type" id={type.id} onRefresh={fetchMainData} />
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
@@ -397,39 +395,39 @@ export default function AllDataPage() {
                     </TabsContent>
 
                     <TabsContent value="mobiles" className="m-0 focus-visible:outline-none">
-                        <Card className="rounded-3xl border-slate-200 shadow-xl overflow-hidden" dir="rtl">
-                            <CardHeader className="bg-slate-50 border-b border-slate-100 flex flex-row items-center justify-between">
+                        <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                            <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-xl font-black text-slate-800">إدارة الأجهزة المحمولة</CardTitle>
-                                    <CardDescription className="text-start">قائمة بجميع الماركات والموديلات المتاحة</CardDescription>
+                                    <CardTitle className="text-xl font-black text-foreground">إدارة الأجهزة المحمولة</CardTitle>
+                                    <CardDescription className="text-start text-muted-foreground/70">قائمة بجميع الماركات والموديلات المتاحة</CardDescription>
                                 </div>
                                 <AddDialog type="mobile_maker" onRefresh={fetchMainData} />
                             </CardHeader>
                             <CardContent className="p-0">
                                 <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="font-black text-slate-500 text-start">الموديل</TableHead>
-                                            <TableHead className="font-black text-slate-500 text-start">الماركة</TableHead>
-                                            <TableHead className="font-black text-slate-500 text-start">النوع</TableHead>
-                                            <TableHead className="font-black text-slate-500 text-start">السنة</TableHead>
-                                            <TableHead className="font-black text-slate-500 text-start">العمليات</TableHead>
+                                    <TableHeader className="bg-muted/20">
+                                        <TableRow className="border-border/50">
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الموديل</TableHead>
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الماركة</TableHead>
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">النوع</TableHead>
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">السنة</TableHead>
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">العمليات</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {mobileMakers.map((mm) => (
-                                            <TableRow key={mm.id}>
+                                            <TableRow key={mm.id} className="border-border/10">
                                                 <TableCell>
                                                     <div className="flex items-center gap-3">
-                                                        {mm.image && <img src={mm.image} className="w-10 h-10 rounded-xl bg-white border border-slate-100 object-contain shadow-sm" />}
-                                                        <span className="font-bold text-slate-700">{mm.model}</span>
+                                                        {mm.image && <img src={mm.image} className="w-10 h-10 rounded-xl bg-card border border-border object-contain shadow-sm p-1" />}
+                                                        <span className="font-bold text-foreground/90">{mm.model}</span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="font-bold text-indigo-600">{mm.brand}</TableCell>
+                                                <TableCell className="font-black text-primary">{mm.brand}</TableCell>
                                                 <TableCell>
-                                                    <span className="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-full font-bold uppercase">{mm.type}</span>
+                                                    <span className="bg-muted text-muted-foreground text-[10px] px-2 py-1 rounded-full font-black uppercase tracking-tighter transition-colors hover:bg-muted/80">{mm.type}</span>
                                                 </TableCell>
-                                                <TableCell className="text-slate-500 font-medium">{mm.year || "N/A"}</TableCell>
+                                                <TableCell className="text-muted-foreground font-medium">{mm.year || "N/A"}</TableCell>
                                                 <TableCell className="text-start">
                                                     <div className="flex gap-2 justify-end">
                                                         <EditDialog type="mobile_maker" data={mm} onRefresh={fetchMainData} />
@@ -450,49 +448,20 @@ export default function AllDataPage() {
 
                     <TabsContent value="jobs" className="m-0 focus-visible:outline-none">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <Card className="rounded-3xl border-slate-200 shadow-xl overflow-hidden" dir="rtl">
-                                <CardHeader className="bg-slate-50 border-b border-slate-100 flex flex-row items-center justify-between">
-                                    <CardTitle className="text-xl font-black text-slate-800">تصنيفات الوظائف</CardTitle>
-                                    <AddDialog type="job_category" onRefresh={fetchMainData} />
-                                </CardHeader>
-                                <CardContent className="p-0">
-                                    <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto">
-                                        {jobCategories.map((cat) => (
-                                            <div
-                                                key={cat.id}
-                                                onClick={() => fetchJobSubcategories(cat.id)}
-                                                className={`p-4 flex justify-between items-center cursor-pointer transition-all hover:bg-slate-50 ${selectedJobCategory === cat.id ? "bg-indigo-50/50 border-r-4 border-indigo-600" : ""}`}
-                                            >
-                                                <div className="flex-1 me-4 overflow-hidden">
-                                                    {renderBilingualName(cat.name)}
-                                                </div>
-                                                <div className="flex gap-1">
-                                                    <EditDialog type="job_category" data={cat} onRefresh={fetchMainData} />
-                                                    <DeleteDialog type="job_category" id={cat.id} onRefresh={fetchMainData} />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <PaginationControls
-                                        pagination={pagination.job_categories}
-                                        onPageChange={(p) => setPages({ ...pages, job_categories: p })}
-                                    />
-                                </CardContent>
-                            </Card>
-
-                            <Card className="rounded-3xl border-slate-200 shadow-xl overflow-hidden" dir="rtl">
-                                <CardHeader className="bg-slate-50 border-b border-slate-100 flex flex-row items-center justify-between">
-                                    <CardTitle className="text-xl font-black text-slate-800">التصنيفات الفرعية للوظائف</CardTitle>
+                            {/* Job Subcategories - Visual Left */}
+                            <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                                <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
+                                    <CardTitle className="text-xl font-black text-foreground">التصنيفات الفرعية للوظائف</CardTitle>
                                     {selectedJobCategory && <AddDialog type="job_subcategory" parentId={selectedJobCategory} onRefresh={() => fetchJobSubcategories(selectedJobCategory)} />}
                                 </CardHeader>
                                 <CardContent className="p-0">
                                     {!selectedJobCategory ? (
-                                        <div className="p-8 text-center text-slate-400 italic">اختر تصنيف عمل لرؤية الفئات الفرعية</div>
+                                        <div className="p-8 text-center text-muted-foreground italic tracking-wide">اختر تصنيف عمل لرؤية الفئات الفرعية</div>
                                     ) : (
                                         <>
-                                            <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto">
+                                            <div className="divide-y divide-border/30 max-h-[600px] overflow-y-auto">
                                                 {jobSubcategories.map((sub) => (
-                                                    <div key={sub.id} className="p-4 flex justify-between items-center transition-all hover:bg-slate-50">
+                                                    <div key={sub.id} className="p-4 flex justify-between items-center transition-all hover:bg-muted/50">
                                                         <div className="flex-1 me-4 overflow-hidden">
                                                             {renderBilingualName(sub.name)}
                                                         </div>
@@ -511,6 +480,37 @@ export default function AllDataPage() {
                                     )}
                                 </CardContent>
                             </Card>
+
+                            {/* Job Categories - Visual Right */}
+                            <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
+                                <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
+                                    <CardTitle className="text-xl font-black text-foreground">تصنيفات الوظائف</CardTitle>
+                                    <AddDialog type="job_category" onRefresh={fetchMainData} />
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    <div className="divide-y divide-border/30 max-h-[600px] overflow-y-auto">
+                                        {jobCategories.map((cat) => (
+                                            <div
+                                                key={cat.id}
+                                                onClick={() => fetchJobSubcategories(cat.id)}
+                                                className={`p-4 flex justify-between items-center cursor-pointer transition-all hover:bg-muted/50 ${selectedJobCategory === cat.id ? "bg-primary/10 border-r-4 border-primary" : ""}`}
+                                            >
+                                                <div className="flex-1 me-4 overflow-hidden">
+                                                    {renderBilingualName(cat.name)}
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <EditDialog type="job_category" data={cat} onRefresh={fetchMainData} />
+                                                    <DeleteDialog type="job_category" id={cat.id} onRefresh={fetchMainData} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <PaginationControls
+                                        pagination={pagination.job_categories}
+                                        onPageChange={(p) => setPages({ ...pages, job_categories: p })}
+                                    />
+                                </CardContent>
+                            </Card>
                         </div>
                     </TabsContent>
                 </div>
@@ -520,8 +520,8 @@ export default function AllDataPage() {
                 __html: `
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.4); }
       `}} />
         </div>
     );
@@ -548,14 +548,14 @@ function PaginationControls({ pagination, onPageChange }: { pagination: IPaginat
     };
 
     return (
-        <div className="flex items-center justify-between p-4 border-t border-slate-100 bg-slate-50/30" dir="rtl">
+        <div className="flex items-center justify-between p-4 border-t border-border bg-muted/10" dir="rtl">
             <div className="flex items-center gap-2">
                 <Button
                     variant="ghost"
                     size="sm"
                     disabled={current <= 1}
                     onClick={() => onPageChange(current - 1)}
-                    className="rounded-lg font-bold text-slate-600 h-8 hover:bg-white hover:shadow-sm"
+                    className="rounded-lg font-bold text-muted-foreground h-8 hover:bg-card hover:text-foreground hover:shadow-sm"
                 >
                     السابق
                 </Button>
@@ -564,14 +564,14 @@ function PaginationControls({ pagination, onPageChange }: { pagination: IPaginat
                     {getPages().map((page, i) => (
                         <Fragment key={i}>
                             {page === "..." ? (
-                                <span className="px-2 text-slate-400 font-bold">...</span>
+                                <span className="px-2 text-muted-foreground/50 font-bold">...</span>
                             ) : (
                                 <Button
                                     variant={current === page ? "default" : "ghost"}
                                     size="icon"
                                     className={`h-8 w-8 rounded-lg font-bold text-xs transition-all ${current === page
-                                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
-                                        : "text-slate-400 hover:bg-white hover:text-indigo-600"
+                                        ? "bg-primary text-white shadow-md shadow-primary/20"
+                                        : "text-muted-foreground/70 hover:bg-card hover:text-primary"
                                         }`}
                                     onClick={() => onPageChange(page as number)}
                                 >
@@ -587,12 +587,12 @@ function PaginationControls({ pagination, onPageChange }: { pagination: IPaginat
                     size="sm"
                     disabled={!pagination.has_more}
                     onClick={() => onPageChange(current + 1)}
-                    className="rounded-lg font-bold text-slate-600 h-8 hover:bg-white hover:shadow-sm"
+                    className="rounded-lg font-bold text-muted-foreground h-8 hover:bg-card hover:text-foreground hover:shadow-sm"
                 >
                     التالي
                 </Button>
             </div>
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
+            <span className="text-xs font-black text-muted-foreground/50 uppercase tracking-widest">
                 إجمالي: {pagination.total}
             </span>
         </div>
@@ -628,91 +628,91 @@ function AddDialog({ type, parentId, onRefresh }: { type: string, parentId?: num
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="icon" className="h-8 w-8 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 active:scale-90 transition-all">
+                <Button size="icon" className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 active:scale-90 transition-all">
                     <Plus className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] rounded-3xl border-slate-100 shadow-2xl" dir="rtl">
+            <DialogContent className="sm:max-w-[425px] rounded-3xl border-border shadow-2xl" dir="rtl">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl font-black text-slate-800 text-start">إضافة عنصر جديد</DialogTitle>
-                    <DialogDescription className="font-medium text-slate-400 text-start">أدخل المعلومات المطلوبة أدناه.</DialogDescription>
+                    <DialogTitle className="text-2xl font-black text-foreground text-start">إضافة عنصر جديد</DialogTitle>
+                    <DialogDescription className="font-medium text-muted-foreground text-start">أدخل المعلومات المطلوبة أدناه.</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-6 py-4">
                     {(["category", "subcategory", "car_type", "fuel_type", "job_category", "job_subcategory", "model"].includes(type)) && (
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">الاسم (بالعربية)</Label>
-                                <Input className="rounded-xl border-slate-200" onChange={(e) => setFormData({ ...formData, name: { ...formData.name, ar: e.target.value } })} />
+                                <Label className="font-bold text-foreground/90 text-start">الاسم (بالعربية)</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" onChange={(e) => setFormData({ ...formData, name: { ...formData.name, ar: e.target.value } })} />
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">الاسم (بالإنكليزية)</Label>
-                                <Input className="rounded-xl border-slate-200" onChange={(e) => setFormData({ ...formData, name: { ...formData.name, en: e.target.value } })} />
+                                <Label className="font-bold text-foreground/90 text-start">الاسم (بالإنكليزية)</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" onChange={(e) => setFormData({ ...formData, name: { ...formData.name, en: e.target.value } })} />
                             </div>
                         </div>
                     )}
                     {type === "model" && (
                         <>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">الدولة</Label>
-                                <Input className="rounded-xl border-slate-200" onChange={(e) => setFormData({ ...formData, country: e.target.value })} />
+                                <Label className="font-bold text-foreground/90 text-start">الدولة</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" onChange={(e) => setFormData({ ...formData, country: e.target.value })} />
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">رابط الشعار</Label>
-                                <Input className="rounded-xl border-slate-200" placeholder="https://..." onChange={(e) => setFormData({ ...formData, logo: e.target.value })} />
+                                <Label className="font-bold text-foreground/90 text-start">رابط الشعار</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" placeholder="https://..." onChange={(e) => setFormData({ ...formData, logo: e.target.value })} />
                             </div>
                         </>
                     )}
                     {type === "car_maker" && (
                         <div className="grid grid-cols-2 gap-4">
                             <div className="col-span-2 space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">الاسم (عربي / إنكليزي)</Label>
+                                <Label className="font-bold text-foreground/90 text-start">الاسم (عربي / إنكليزي)</Label>
                                 <div className="flex gap-2">
-                                    <Input className="rounded-xl border-slate-200" placeholder="عربي" onChange={(e) => setFormData({ ...formData, name: { ...formData.name, ar: e.target.value } })} />
-                                    <Input className="rounded-xl border-slate-200" placeholder="EN" onChange={(e) => setFormData({ ...formData, name: { ...formData.name, en: e.target.value } })} />
+                                    <Input className="rounded-xl border-border bg-card/50 focus:bg-card" placeholder="عربي" onChange={(e) => setFormData({ ...formData, name: { ...formData.name, ar: e.target.value } })} />
+                                    <Input className="rounded-xl border-border bg-card/50 focus:bg-card" placeholder="EN" onChange={(e) => setFormData({ ...formData, name: { ...formData.name, en: e.target.value } })} />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">الدولة</Label>
-                                <Input className="rounded-xl border-slate-200" onChange={(e) => setFormData({ ...formData, country: e.target.value })} />
+                                <Label className="font-bold text-foreground/90 text-start">الدولة</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" onChange={(e) => setFormData({ ...formData, country: e.target.value })} />
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">السنة</Label>
-                                <Input className="rounded-xl border-slate-200" type="text" onChange={(e) => setFormData({ ...formData, year: e.target.value })} />
+                                <Label className="font-bold text-foreground/90 text-start">السنة</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" type="text" onChange={(e) => setFormData({ ...formData, year: e.target.value })} />
                             </div>
                             <div className="col-span-2 space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">رابط الشعار</Label>
-                                <Input className="rounded-xl border-slate-200" onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })} />
+                                <Label className="font-bold text-foreground/90 text-start">رابط الشعار</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })} />
                             </div>
                         </div>
                     )}
                     {type === "mobile_maker" && (
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">الموديل</Label>
-                                <Input className="rounded-xl border-slate-200" onChange={(e) => setFormData({ ...formData, model: e.target.value })} />
+                                <Label className="font-bold text-foreground/90 text-start">الموديل</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" onChange={(e) => setFormData({ ...formData, model: e.target.value })} />
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">الماركة</Label>
-                                <Input className="rounded-xl border-slate-200" onChange={(e) => setFormData({ ...formData, brand: e.target.value })} />
+                                <Label className="font-bold text-foreground/90 text-start">الماركة</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" onChange={(e) => setFormData({ ...formData, brand: e.target.value })} />
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">النوع</Label>
-                                <Input className="rounded-xl border-slate-200" placeholder="phone/tablet" onChange={(e) => setFormData({ ...formData, type: e.target.value })} />
+                                <Label className="font-bold text-foreground/90 text-start">النوع</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" placeholder="phone/tablet" onChange={(e) => setFormData({ ...formData, type: e.target.value })} />
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">السنة</Label>
-                                <Input className="rounded-xl border-slate-200" type="number" onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })} />
+                                <Label className="font-bold text-foreground/90 text-start">السنة</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" type="number" onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })} />
                             </div>
                             <div className="col-span-2 space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">رابط الصورة</Label>
-                                <Input className="rounded-xl border-slate-200" onChange={(e) => setFormData({ ...formData, image: e.target.value })} />
+                                <Label className="font-bold text-foreground/90 text-start">رابط الصورة</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" onChange={(e) => setFormData({ ...formData, image: e.target.value })} />
                             </div>
                         </div>
                     )}
                 </div>
                 <DialogFooter>
-                    <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-xl font-bold">إلغاء</Button>
-                    <Button onClick={handleSubmit} className="rounded-xl bg-indigo-600 hover:bg-indigo-700 font-bold px-8">حفظ</Button>
+                    <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-xl font-bold text-muted-foreground hover:bg-muted/50">إلغاء</Button>
+                    <Button onClick={handleSubmit} className="rounded-xl bg-primary hover:bg-primary/90 font-bold px-8 shadow-md shadow-primary/20">حفظ</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -750,25 +750,25 @@ function EditDialog({ type, data, onRefresh }: { type: string, data: any, onRefr
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all">
+                <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
                     <Edit className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] rounded-3xl border-slate-100 shadow-2xl" dir="rtl">
+            <DialogContent className="sm:max-w-[425px] rounded-3xl border-border shadow-2xl" dir="rtl">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl font-black text-slate-800 text-start">تعديل العنصر</DialogTitle>
-                    <DialogDescription className="font-medium text-slate-400 text-start">قم بإجراء التغييرات اللازمة واضغط حفظ.</DialogDescription>
+                    <DialogTitle className="text-2xl font-black text-foreground text-start">تعديل العنصر</DialogTitle>
+                    <DialogDescription className="font-medium text-muted-foreground text-start">قم بإجراء التغييرات اللازمة واضغط حفظ.</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-6 py-4">
                     {formData.name && (
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">الاسم (بالعربية)</Label>
-                                <Input className="rounded-xl border-slate-200" value={formData.name.ar} onChange={(e) => setFormData({ ...formData, name: { ...formData.name, ar: e.target.value } })} />
+                                <Label className="font-bold text-foreground/90 text-start">الاسم (بالعربية)</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" value={formData.name.ar} onChange={(e) => setFormData({ ...formData, name: { ...formData.name, ar: e.target.value } })} />
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 text-start">الاسم (بالإنكليزية)</Label>
-                                <Input className="rounded-xl border-slate-200" value={formData.name.en} onChange={(e) => setFormData({ ...formData, name: { ...formData.name, en: e.target.value } })} />
+                                <Label className="font-bold text-foreground/90 text-start">الاسم (بالإنكليزية)</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" value={formData.name.en} onChange={(e) => setFormData({ ...formData, name: { ...formData.name, en: e.target.value } })} />
                             </div>
                         </div>
                     )}
@@ -826,8 +826,8 @@ function EditDialog({ type, data, onRefresh }: { type: string, data: any, onRefr
                     )}
                 </div>
                 <DialogFooter>
-                    <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-xl font-bold">إلغاء</Button>
-                    <Button onClick={handleSubmit} className="rounded-xl bg-indigo-600 hover:bg-indigo-700 font-bold px-8">حفظ</Button>
+                    <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-xl font-bold text-muted-foreground hover:bg-muted/50">إلغاء</Button>
+                    <Button onClick={handleSubmit} className="rounded-xl bg-primary hover:bg-primary/90 font-bold px-8 shadow-md shadow-primary/20">حفظ</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -860,19 +860,97 @@ function DeleteDialog({ type, id, onRefresh }: { type: string, id: number, onRef
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all">
+                <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all">
                     <Trash2 className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="rounded-3xl border-slate-100" dir="rtl">
+            <DialogContent className="rounded-3xl border-border shadow-2xl" dir="rtl">
                 <DialogHeader>
-                    <DialogTitle className="text-xl font-black text-slate-800 text-start">تأكيد الحذف</DialogTitle>
-                    <DialogDescription className="font-medium text-slate-500 text-start">هل أنت متأكد من رغبتك في حذف هذا العنصر؟ سيتم تنفيذ حذف ناعم (Soft Delete).</DialogDescription>
+                    <DialogTitle className="text-xl font-black text-foreground text-start">تأكيد الحذف</DialogTitle>
+                    <DialogDescription className="font-medium text-muted-foreground/80 text-start">هل أنت متأكد من رغبتك في حذف هذا العنصر؟ سيتم تنفيذ حذف ناعم (Soft Delete).</DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="gap-2 sm:gap-0">
-                    <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-xl font-bold flex-1">إلغاء</Button>
-                    <Button variant="destructive" onClick={handleDelete} className="rounded-xl bg-red-600 hover:bg-red-700 font-bold flex-1">حذف نهائي</Button>
+                    <Button variant="ghost" onClick={() => setOpen(false)} className="rounded-xl font-bold flex-1 text-muted-foreground hover:bg-muted/50">إلغاء</Button>
+                    <Button variant="destructive" onClick={handleDelete} className="rounded-xl bg-destructive hover:bg-destructive/90 font-bold flex-1 shadow-md shadow-destructive/20">حذف نهائي</Button>
                 </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function ViewSeriesDialog({ series, makerName }: { series: any[], makerName: ILocalizedString }) {
+    const renderSeriesName = (item: any) => {
+        if (!item) return "---";
+        if (typeof item === 'string') return item;
+        
+        // Prioritize car-specific fields like 'series' or 'model'
+        const identity = item.series || item.model || item.model_name || (item.name && (item.name.ar || item.name.en || item.name));
+        
+        if (identity) {
+            if (typeof identity === 'string') return identity;
+            if (typeof identity === 'object') return identity.ar || identity.en || "موديل غير معروف";
+        }
+        
+        return "موديل غير معروف";
+    };
+
+    const renderSecondaryName = (item: any) => {
+        if (!item || typeof item !== 'object') return null;
+        
+        // Show year or English name as secondary info
+        const year = item.year || item.model_year;
+        const enName = item.name?.en !== item.name?.ar ? item.name?.en : null;
+        
+        if (year && enName) return `${enName} (${year})`;
+        return year || enName || null;
+    };
+
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button variant="outline" className="h-8 px-4 rounded-full bg-primary/5 border-primary/20 hover:bg-primary/10 text-primary font-black text-xs transition-all active:scale-95 shadow-sm border">
+                    {series?.length || 0} موديل
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px] rounded-3xl border-border shadow-2xl overflow-hidden p-0" dir="rtl">
+                <DialogHeader className="p-6 bg-muted/30 border-b border-border">
+                    <DialogTitle className="text-2xl font-black text-foreground text-start flex items-center gap-3">
+                        سلاسل موديلات <span className="text-primary">{makerName.ar}</span>
+                    </DialogTitle>
+                    <DialogDescription className="text-start font-medium text-muted-foreground">
+                        قائمة بجميع الموديلات والسلاسل التابعة لهذه الماركة.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[450px] overflow-y-auto p-4 custom-scrollbar bg-background">
+                    {series && series.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-3">
+                            {series.map((item, idx) => (
+                                <div key={idx} className="p-4 rounded-2xl bg-muted/20 border border-border/50 hover:border-primary/30 hover:bg-muted/30 transition-all group/series">
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="font-bold text-foreground text-sm group-hover/series:text-primary transition-colors">
+                                            {renderSeriesName(item)}
+                                        </span>
+                                        {renderSecondaryName(item) && (
+                                            <span className="text-[10px] text-muted-foreground/60 font-black font-sans uppercase tracking-tight">
+                                                {renderSecondaryName(item)}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="p-12 text-center text-muted-foreground italic flex flex-col items-center gap-3">
+                            <span className="text-4xl">🚗</span>
+                            لا توجد موديلات مسجلة لهذه الماركة حالياً.
+                        </div>
+                    )}
+                </div>
+                <div className="p-6 bg-muted/10 border-t border-border flex justify-end">
+                    <DialogTrigger asChild>
+                        <Button className="rounded-xl px-10 font-bold bg-primary hover:bg-primary/90 shadow-md shadow-primary/20">إغلاق</Button>
+                    </DialogTrigger>
+                </div>
             </DialogContent>
         </Dialog>
     );
