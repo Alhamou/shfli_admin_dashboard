@@ -370,6 +370,7 @@ export default function AllResourcesPage() {
                                             <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الماركة</TableHead>
                                             <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">النوع</TableHead>
                                             <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">السنة</TableHead>
+                                            <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الترتيب</TableHead>
                                             <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">العمليات</TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -387,6 +388,9 @@ export default function AllResourcesPage() {
                                                     <span className="bg-muted text-muted-foreground text-[10px] px-2 py-1 rounded-full font-black uppercase tracking-tighter transition-colors hover:bg-muted/80">{mm.type}</span>
                                                 </TableCell>
                                                 <TableCell className="text-muted-foreground font-medium">{mm.year || "N/A"}</TableCell>
+                                                <TableCell>
+                                                    <span className="bg-primary/5 text-primary text-[10px] px-2 py-0.5 rounded-lg font-black">{mm.position ?? "-"}</span>
+                                                </TableCell>
                                                 <TableCell className="text-start">
                                                     <div className="flex gap-2 justify-end">
                                                         <EditDialog type="mobile_maker" data={mm} onRefresh={fetchMainData} />
@@ -422,6 +426,7 @@ export default function AllResourcesPage() {
                                                 <TableHead className="font-black text-muted-foreground w-[250px] text-start uppercase text-xs tracking-wider">الماركة</TableHead>
                                                 <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الدولة</TableHead>
                                                 <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">السلاسل</TableHead>
+                                                <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">الترتيب</TableHead>
                                                 <TableHead className="font-black text-muted-foreground text-start uppercase text-xs tracking-wider">العمليات</TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -444,6 +449,9 @@ export default function AllResourcesPage() {
                                                     </TableCell>
                                                     <TableCell>
                                                         <ViewSeriesDialog series={maker.series} makerName={maker.name} makerId={maker.id} onRefresh={fetchMainData} />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="bg-primary/5 text-primary text-[10px] px-2 py-0.5 rounded-lg font-black">{maker.position ?? "-"}</span>
                                                     </TableCell>
                                                     <TableCell className="text-start">
                                                         <div className="flex gap-2 justify-end">
@@ -691,6 +699,10 @@ function AddDialog({ type, parentId, onRefresh }: { type: string, parentId?: num
                                 <Label className="font-bold text-foreground/90 text-start">السنة</Label>
                                 <Input className="rounded-xl border-border bg-card/50 focus:bg-card" type="text" onChange={(e) => setFormData({ ...formData, year: e.target.value })} />
                             </div>
+                            <div className="space-y-2">
+                                <Label className="font-bold text-foreground/90 text-start">الترتيب (Position)</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" type="number" onChange={(e) => setFormData({ ...formData, position: parseInt(e.target.value) })} />
+                            </div>
                             <div className="col-span-2 space-y-2">
                                 <Label className="font-bold text-foreground/90 text-start">رابط الشعار</Label>
                                 <Input className="rounded-xl border-border bg-card/50 focus:bg-card" onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })} />
@@ -714,6 +726,10 @@ function AddDialog({ type, parentId, onRefresh }: { type: string, parentId?: num
                             <div className="space-y-2">
                                 <Label className="font-bold text-foreground/90 text-start">السنة</Label>
                                 <Input className="rounded-xl border-border bg-card/50 focus:bg-card" type="number" onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="font-bold text-foreground/90 text-start">الترتيب (Position)</Label>
+                                <Input className="rounded-xl border-border bg-card/50 focus:bg-card" type="number" onChange={(e) => setFormData({ ...formData, position: parseInt(e.target.value) })} />
                             </div>
                             <div className="col-span-2 space-y-2">
                                 <Label className="font-bold text-foreground/90 text-start">رابط الصورة</Label>
@@ -806,6 +822,10 @@ function EditDialog({ type, data, onRefresh }: { type: string, data: any, onRefr
                                 <Label className="font-bold text-slate-700 text-start">السنة</Label>
                                 <Input className="rounded-xl border-slate-200" value={formData.year} onChange={(e) => setFormData({ ...formData, year: e.target.value })} />
                             </div>
+                            <div className="space-y-2">
+                                <Label className="font-bold text-slate-700 text-start">الترتيب (Position)</Label>
+                                <Input className="rounded-xl border-slate-200" type="number" value={formData.position} onChange={(e) => setFormData({ ...formData, position: parseInt(e.target.value) })} />
+                            </div>
                             <div className="col-span-2 space-y-2">
                                 <Label className="font-bold text-slate-700 text-start">رابط الشعار</Label>
                                 <Input className="rounded-xl border-slate-200" value={formData.logo_url} onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })} />
@@ -829,6 +849,10 @@ function EditDialog({ type, data, onRefresh }: { type: string, data: any, onRefr
                             <div className="space-y-2">
                                 <Label className="font-bold text-slate-700 text-start">السنة</Label>
                                 <Input className="rounded-xl border-slate-200" type="number" value={formData.year} onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="font-bold text-slate-700 text-start">الترتيب (Position)</Label>
+                                <Input className="rounded-xl border-slate-200" type="number" value={formData.position} onChange={(e) => setFormData({ ...formData, position: parseInt(e.target.value) })} />
                             </div>
                             <div className="col-span-2 space-y-2">
                                 <Label className="font-bold text-slate-700 text-start">رابط الصورة</Label>
