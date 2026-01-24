@@ -145,7 +145,10 @@ export const deleteAllResourcesCarMaker = (id: number) => del<void>(`/all_resour
 export const updateCarMakerSeries = (id: number, series: any[]) => put<ICarMaker>(`/all_resources/car_makers/${id}/series`, { series });
 
 // Mobile Makers
-export const getAllResourcesMobileMakers = (page: number = 1, limit: number = 20) => get<IAllResourcesResult<IMobileMaker[]>>(`/all_resources/mobile_makers?page=${page}&limit=${limit}`);
+export const getAllResourcesMobileMakers = (page: number = 1, limit: number = 20, search?: string) => {
+  const searchQuery = search ? `&search=${search}` : "";
+  return get<IAllResourcesResult<IMobileMaker[]>>(`/all_resources/mobile_makers?page=${page}&limit=${limit}${searchQuery}`);
+};
 export const createAllResourcesMobileMaker = (payload: Partial<IMobileMaker>) => post<IMobileMaker>("/all_resources/mobile_makers", payload);
 export const updateAllResourcesMobileMaker = (id: number, payload: Partial<IMobileMaker>) => put<IMobileMaker>(`/all_resources/mobile_makers/${id}`, payload);
 export const deleteAllResourcesMobileMaker = (id: number) => del<void>(`/all_resources/mobile_makers/${id}`);

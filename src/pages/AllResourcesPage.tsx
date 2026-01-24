@@ -15,6 +15,7 @@ export default function AllResourcesPage() {
     const [activeTab, setActiveTab] = useState("categories");
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [mobileSearchTerm, setMobileSearchTerm] = useState("");
 
     // Data states
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -56,7 +57,7 @@ export default function AllResourcesPage() {
 
     useEffect(() => {
         fetchMainData();
-    }, [activeTab, pages]);
+    }, [activeTab, pages, mobileSearchTerm]);
 
     const fetchMainData = async () => {
         setLoading(true);
@@ -81,7 +82,7 @@ export default function AllResourcesPage() {
                     fuel_types: fuelsRes.pagination
                 }));
             } else if (activeTab === "mobiles") {
-                const res = await api.getAllResourcesMobileMakers(pages.mobile_makers);
+                const res = await api.getAllResourcesMobileMakers(pages.mobile_makers, 20, mobileSearchTerm);
                 setMobileMakers(res.result);
                 setPagination(prev => ({ ...prev, mobile_makers: res.pagination }));
             } else if (activeTab === "jobs") {
@@ -344,8 +345,19 @@ export default function AllResourcesPage() {
                     <TabsContent value="mobiles" className="m-0 focus-visible:outline-none">
                         <Card className="rounded-3xl border-border shadow-xl overflow-hidden" dir="rtl">
                             <CardHeader className="bg-muted/30 border-b border-border flex flex-row items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-xl font-black text-foreground">إدارة الأجهزة المحمولة</CardTitle>
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-4">
+                                        <CardTitle className="text-xl font-black text-foreground">إدارة الأجهزة المحمولة</CardTitle>
+                                        <div className="relative group/search">
+                                            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors group-focus-within/search:text-primary" />
+                                            <Input
+                                                placeholder="بحث (ماركة أو موديل)..."
+                                                className="w-[280px] h-9 pr-9 rounded-xl border-border bg-card/50 focus:bg-card focus:ring-2 focus:ring-primary/20 transition-all font-bold text-xs"
+                                                value={mobileSearchTerm}
+                                                onChange={(e) => setMobileSearchTerm(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
                                     <CardDescription className="text-start text-muted-foreground/70">قائمة بجميع الماركات والموديلات المتاحة</CardDescription>
                                 </div>
                                 <AddDialog type="mobile_maker" onRefresh={fetchMainData} />
