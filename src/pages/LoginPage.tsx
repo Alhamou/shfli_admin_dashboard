@@ -152,7 +152,7 @@ export const LoginPage = () => {
                                     onValueChange={handleCountryChange}
                                     disabled={isLoadingCountries}
                                 >
-                                    <SelectTrigger className="w-[100px] h-14 rounded-2xl bg-background/50 border-transparent focus:ring-4 focus:ring-primary/10 transition-all font-black text-sm">
+                                    <SelectTrigger dir="ltr" className="w-[130px] h-14 rounded-2xl bg-background/50 border-transparent focus:ring-4 focus:ring-primary/10 transition-all font-black text-sm [&>span]:line-clamp-none">
                                         {isLoadingCountries ? (
                                             <Loader2 className="h-4 w-4 animate-spin mx-auto text-primary" />
                                         ) : (
@@ -162,9 +162,9 @@ export const LoginPage = () => {
                                     <SelectContent className="rounded-2xl border-border/40 backdrop-blur-xl">
                                         {countriesDialCodes.map((country) => (
                                             <SelectItem key={country.code} value={country.dialCode} className="font-bold rounded-xl py-3 focus:bg-primary/10">
-                                                <span className="flex items-center gap-2">
-                                                    <span className="text-lg">{country.flag}</span>
-                                                    <span className="tabular-nums">{country.dialCode}</span>
+                                                <span className="flex items-center gap-2" dir="ltr">
+                                                    <span className="text-xl">{country.flag}</span>
+                                                    <span className="tabular-nums font-black">{country.dialCode}</span>
                                                 </span>
                                             </SelectItem>
                                         ))}
@@ -199,7 +199,7 @@ export const LoginPage = () => {
                                 type="text"
                                 maxLength={4}
                                 placeholder="0 0 0 0"
-                                className="h-20 text-center text-4xl font-black tracking-[0.5em] bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-3xl transition-all tabular-nums shadow-inner text-left"
+                                className="h-20 text-center text-4xl font-black tracking-[0.5em] pl-[0.5em] bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-3xl transition-all tabular-nums shadow-inner"
                                 style={{ direction: "ltr" }}
                                 value={otpCode}
                                 onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ""))}
