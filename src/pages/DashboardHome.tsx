@@ -196,7 +196,7 @@ export default function DashboardHome() {
       </div>
 
       {/* Advanced Filter Card */}
-      <Card className="border-border/40 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm overflow-hidden rounded-3xl">
+      <Card className="border-indigo-200 dark:border-slate-800 shadow-xl shadow-indigo-500/10 bg-gradient-to-r from-indigo-50 via-white to-blue-50 dark:from-slate-900 dark:to-slate-900 overflow-hidden rounded-3xl">
         <CardContent className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto] gap-4">
             <div className="relative group">
@@ -205,7 +205,7 @@ export default function DashboardHome() {
                 placeholder="ابحث بالاسم أو الرقم التعريفي للإعلان..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="h-14 pr-12 bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all font-medium"
+                className="h-14 pr-12 bg-white dark:bg-slate-800 border-indigo-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700 focus:ring-4 focus:ring-indigo-500/20 rounded-2xl transition-all font-medium shadow-sm"
                 style={{ direction: "rtl" }}
               />
               {searchTerm && (
@@ -220,7 +220,7 @@ export default function DashboardHome() {
                 placeholder="ابحث بمعرف المستخدم أو الرقم..."
                 value={uuidSearchTerm}
                 onChange={(e) => setUuidSearchTerm(e.target.value)}
-                className="h-14 pr-12 bg-background/50 border-transparent focus:bg-background focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all font-medium"
+                className="h-14 pr-12 bg-white dark:bg-slate-800 border-indigo-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700 focus:ring-4 focus:ring-indigo-500/20 rounded-2xl transition-all font-medium shadow-sm"
                 style={{ direction: "rtl" }}
               />
               {uuidSearchTerm && (
@@ -229,7 +229,7 @@ export default function DashboardHome() {
                 </Button>
               )}
             </div>
-            <Button onClick={handleFetchClick} disabled={loading} className="h-14 px-10 rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all active:scale-95 font-bold text-lg">
+            <Button onClick={handleFetchClick} disabled={loading} className="h-14 px-10 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white shadow-lg shadow-indigo-500/30 transition-all active:scale-95 font-bold text-lg">
               {loading ? "جاري البحث..." : "تطبيق الفلتر"}
             </Button>
           </div>
@@ -243,7 +243,7 @@ export default function DashboardHome() {
           {/* Mobile Display: Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
             {items.map((item) => (
-              <Card key={item.uuid} className="group hover:shadow-2xl transition-all duration-500 border-border/50 rounded-3xl overflow-hidden active:scale-[0.98]" onClick={() => setSelectedItemUuid(item.uuid)}>
+              <Card key={item.uuid} className="group hover:shadow-2xl transition-all duration-500 border-indigo-100 dark:border-slate-800 rounded-3xl overflow-hidden active:scale-[0.98] bg-white dark:bg-slate-900 shadow-lg shadow-indigo-500/10 hover:border-indigo-300" onClick={() => setSelectedItemUuid(item.uuid)}>
                 <div className="relative aspect-[16/10] overflow-hidden">
                   {item.item_as === 'job' && !(item.thumbnail || (item.images && item.images[0]?.url)) ? (
                     <div className="w-full h-full bg-blue-500/10 flex flex-col items-center justify-center gap-2">
@@ -301,24 +301,24 @@ export default function DashboardHome() {
           </div>
 
           {/* Desktop Display: Modern Responsive Table */}
-          <div className="hidden lg:block bg-card rounded-3xl border border-border/40 shadow-xl shadow-black/5 overflow-hidden">
+          <div className="hidden lg:block bg-white dark:bg-slate-900 rounded-3xl border border-indigo-100 dark:border-slate-800 shadow-xl shadow-indigo-500/10 overflow-hidden">
             <Table>
-              <TableHeader>
-                <TableRow className="h-16 hover:bg-transparent border-border/40">
-                  <TableHead className="w-[280px] font-black uppercase text-xs tracking-widest text-right">العنصر</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest text-right">التصنيف</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest text-right">السعر والقيمة</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest text-right">الموقع الجغرافي</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest text-right">الإحصائيات</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest text-right">المستخدم</TableHead>
-                  <TableHead className="font-black uppercase text-xs tracking-widest text-right pl-6">الحالة</TableHead>
+              <TableHeader className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-500">
+                <TableRow className="h-16 hover:bg-transparent border-transparent">
+                  <TableHead className="w-[280px] font-black uppercase text-xs tracking-widest text-right text-white">العنصر</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right text-white">التصنيف</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right text-white">السعر والقيمة</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right text-white">الموقع الجغرافي</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right text-white">الإحصائيات</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right text-white">المستخدم</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest text-right pl-6 text-white">الحالة</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items.map((item) => (
                   <TableRow
                     key={item.uuid}
-                    className="group border-border/30 hover:bg-muted/30 transition-all cursor-pointer"
+                    className="group border-indigo-50 dark:border-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer even:bg-blue-50/50 dark:even:bg-slate-800/30"
                     onClick={() => setSelectedItemUuid(item.uuid)}
                   >
                     <TableCell>

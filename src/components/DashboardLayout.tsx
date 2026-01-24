@@ -7,7 +7,7 @@ export default function DashboardLayout() {
   return (
     <SidebarProvider>
       <div
-        className="flex min-h-screen w-full flex-row bg-background text-foreground"
+        className="flex min-h-screen w-full flex-row bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-foreground"
         style={{
           direction: "rtl",
           textAlign: "right",

@@ -11,7 +11,7 @@ export function DashboardHeader() {
   const [muted, setMuted] = useState(storageController.get('audio') === 'muted' ? true : false)
 
   return (
-    <header className="sticky top-0 z-40 flex h-20 shrink-0 items-center gap-4 bg-background/60 backdrop-blur-xl px-6 transition-all duration-300">
+    <header className="sticky top-0 z-40 flex h-20 shrink-0 items-center gap-4 bg-gradient-to-l from-indigo-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 backdrop-blur-xl px-6 transition-all duration-300 border-b border-indigo-100 dark:border-slate-800 shadow-sm">
       {/* Mobile Sidebar Trigger */}
       <Button
         variant="ghost"
@@ -26,7 +26,7 @@ export function DashboardHeader() {
 
       {/* Desktop Sidebar Trigger */}
       <div className="hidden lg:flex items-center gap-4">
-        <SidebarTrigger className="h-10 w-10 rounded-xl hover:bg-primary/5 hover:text-primary transition-all duration-200 shadow-sm border border-border/50" />
+        <SidebarTrigger className="h-10 w-10 rounded-xl bg-indigo-100 hover:bg-indigo-200 text-indigo-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 dark:border-slate-700 transition-all duration-200 shadow-sm border border-indigo-200" />
         <Separator orientation="vertical" className="h-8 bg-border/50" />
       </div>
 
@@ -36,7 +36,7 @@ export function DashboardHeader() {
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="البحث السريع..."
-            className="h-10 pr-10 bg-muted/30 border-transparent focus:bg-background focus:ring-2 focus:ring-primary/20 rounded-xl transition-all"
+            className="h-10 pr-10 bg-white dark:bg-slate-800 border-indigo-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-indigo-500/30 rounded-xl transition-all shadow-sm"
             style={{ direction: 'rtl' }}
           />
         </div>
@@ -46,7 +46,7 @@ export function DashboardHeader() {
 
       {/* Right side actions */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-2xl border border-border/50">
+        <div className="flex items-center gap-1 bg-indigo-50 dark:bg-slate-800 p-1 rounded-2xl border border-indigo-200 dark:border-slate-700 shadow-sm">
           <ThemeToggle />
 
           <Separator orientation="vertical" className="h-6 bg-border/50 mx-1" />
@@ -74,9 +74,6 @@ export function DashboardHeader() {
           </Button>
         </div>
       </div>
-
-      {/* Enhanced Bottom Border */}
-      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-border/60 to-transparent" />
     </header>
   )
 }

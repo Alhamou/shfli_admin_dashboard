@@ -253,14 +253,14 @@ export default function BidsScreen() {
               {viewMode === 'table' ? (
                 <div className="rounded-[2.5rem] border border-border/40 bg-card/30 backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/5">
                   <Table>
-                    <TableHeader className="bg-muted/50">
-                      <TableRow className="hover:bg-transparent border-border/40 h-16">
-                        <TableHead className="w-[280px] font-black uppercase tracking-widest text-[10px] text-muted-foreground mr-1 text-right">المزاد</TableHead>
-                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">التصنيف</TableHead>
-                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">السعر الحالي</TableHead>
-                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">الموقع</TableHead>
-                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">الناشر</TableHead>
-                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-muted-foreground text-right">الحالة</TableHead>
+                    <TableHeader className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-500">
+                      <TableRow className="hover:bg-transparent border-transparent h-16">
+                        <TableHead className="w-[280px] font-black uppercase tracking-widest text-[10px] text-white mr-1 text-right">المزاد</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-white text-right">التصنيف</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-white text-right">السعر الحالي</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-white text-right">الموقع</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-white text-right">الناشر</TableHead>
+                        <TableHead className="font-black uppercase tracking-widest text-[10px] text-white text-right">الحالة</TableHead>
                         <TableHead className="w-[60px] text-right"></TableHead>
                       </TableRow>
                     </TableHeader>

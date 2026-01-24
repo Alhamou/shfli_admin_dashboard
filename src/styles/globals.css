@@ -6,33 +6,35 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    /* COLORFUL Light Mode - Visible colored backgrounds */
+    --background: 220 60% 92%;
     --foreground: 222.2 47.4% 11.2%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 47.4% 11.2%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 47.4% 11.2%;
     --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 40% 88%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
+    --muted: 220 35% 90%;
     --muted-foreground: 215.4 16.3% 44%;
-    --accent: 210 40% 96.1%;
+    --accent: 250 50% 92%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 30% 82%;
+    --input: 220 30% 85%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.75rem;
-    --sidebar-background: 0 0% 100%;
+    /* Sidebar - Visible blue tint */
+    --sidebar-background: 220 50% 95%;
     --sidebar-foreground: 222.2 47.4% 11.2%;
     --sidebar-primary: 221.2 83.2% 53.3%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 40% 90%;
     --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-border: 220 35% 85%;
     --sidebar-ring: 221.2 83.2% 53.3%;
   }
 
@@ -93,4 +95,87 @@
     background-image: radial-gradient(hsl(var(--foreground) / 0.05) 1px, transparent 1px);
     background-size: 20px 20px;
   }
+  
+  /* Premium gradient backgrounds - MORE VISIBLE */
+  .bg-gradient-subtle {
+    background: linear-gradient(135deg, 
+      hsl(220 60% 92%) 0%, 
+      hsl(230 50% 88%) 50%,
+      hsl(250 45% 90%) 100%
+    );
+  }
+  
+  .bg-gradient-sidebar {
+    background: linear-gradient(180deg, 
+      hsl(220 50% 95%) 0%, 
+      hsl(230 45% 92%) 100%
+    );
+  }
+  
+  /* Colored card variants */
+  .card-gradient {
+    background: linear-gradient(135deg, 
+      hsl(0 0% 100%) 0%, 
+      hsl(220 40% 96%) 100%
+    );
+  }
+  
+  /* Custom scrollbar styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--muted) / 0.3);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.2);
+    border-radius: 10px;
+    transition: background 0.3s;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.4);
+  }
+  
+  /* Accent highlights */
+  .accent-line {
+    position: relative;
+  }
+  .accent-line::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, 
+      hsl(var(--primary)) 0%, 
+      hsl(250 70% 60%) 100%
+    );
+    border-radius: 2px;
+  }
+}
+
+/* Dark mode specific gradient overrides */
+.dark .bg-gradient-subtle {
+  background: linear-gradient(135deg, 
+    hsl(var(--background)) 0%, 
+    hsl(222 84% 6%) 50%,
+    hsl(240 60% 8%) 100%
+  );
+}
+
+.dark .bg-gradient-sidebar {
+  background: linear-gradient(180deg, 
+    hsl(var(--sidebar-background)) 0%, 
+    hsl(230 60% 8%) 100%
+  );
+}
+
+.dark .card-gradient {
+  background: linear-gradient(135deg, 
+    hsl(var(--card)) 0%, 
+    hsl(225 50% 8%) 100%
+  );
 }

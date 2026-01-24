@@ -102,17 +102,17 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar side="right" className="border-l-0 shadow-2xl">
+    <Sidebar side="right" className="border-l-0 shadow-2xl bg-gradient-to-b from-indigo-600 via-indigo-700 to-blue-800 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <SidebarHeader className="px-6 py-8">
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-xl shadow-black/5 ring-4 ring-primary/10 overflow-hidden">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-xl shadow-black/20 ring-4 ring-white/20 overflow-hidden">
             <img src="/shfli-logo.png" alt="SHFLI Logo" className="h-10 w-10 object-contain" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-black tracking-tight bg-gradient-to-l from-primary to-blue-600 bg-clip-text text-transparent">
+            <span className="text-xl font-black tracking-tight text-white">
               SHFLI
             </span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-200">
               Admin Dashboard
             </span>
           </div>
@@ -133,9 +133,9 @@ export function AppSidebar() {
                       onClick={() => setOpenMobile(false)}
                       className={`
                         group relative h-12 rounded-2xl transition-all duration-300 ease-in-out px-4
-                        hover:bg-primary/5 active:scale-95
+                        hover:bg-white/10 active:scale-95
                         ${isActive
-                          ? "bg-primary/10 shadow-sm border border-primary/20"
+                          ? "bg-white dark:bg-slate-700 shadow-lg border border-white/30 dark:border-slate-600"
                           : "bg-transparent border border-transparent"
                         }
                       `}
@@ -144,8 +144,8 @@ export function AppSidebar() {
                         <div className={`
                           flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-300
                           ${isActive
-                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 rotate-3"
-                            : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary group-hover:-rotate-3"
+                            ? "bg-indigo-600 dark:bg-indigo-500 text-white shadow-lg rotate-3"
+                            : "bg-white/10 text-white group-hover:bg-white/20 group-hover:-rotate-3"
                           }
                         `}>
                           <item.icon className="h-5 w-5" />
@@ -153,15 +153,15 @@ export function AppSidebar() {
                         <span className={`
                           text-sm font-bold transition-colors duration-300
                           ${isActive
-                            ? "text-primary"
-                            : "text-muted-foreground group-hover:text-foreground"
+                            ? "text-indigo-600 dark:text-white"
+                            : "text-indigo-100 group-hover:text-white"
                           }
                         `}>
                           {item.title}
                         </span>
 
                         {isActive && (
-                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-primary rounded-l-full shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-indigo-600 dark:bg-indigo-500 rounded-l-full shadow-lg" />
                         )}
                       </Link>
                     </SidebarMenuButton>
@@ -175,30 +175,28 @@ export function AppSidebar() {
 
       <SidebarFooter className="p-4 mt-auto">
         <div className="flex flex-col gap-3">
-          <div className="relative group overflow-hidden rounded-[1.5rem] bg-muted/40 p-4 border border-border/50 transition-all duration-300 hover:bg-muted/60">
+          <div className="relative group overflow-hidden rounded-[1.5rem] bg-white/10 p-4 border border-white/10 transition-all duration-300 hover:bg-white/15">
             <div className="flex items-center gap-3 relative z-10 w-full mb-1">
-              <Avatar className="h-11 w-11 border-2 border-primary/20 shadow-md shrink-0">
-                <AvatarFallback className="bg-gradient-to-br from-primary via-primary/80 to-blue-600 text-white font-black text-base">
+              <Avatar className="h-11 w-11 border-2 border-white/30 shadow-md shrink-0">
+                <AvatarFallback className="bg-gradient-to-br from-amber-400 to-orange-500 text-white font-black text-base">
                   {getUserInitials()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col min-w-0 flex-1">
-                <span className="text-sm font-black truncate text-foreground leading-tight">
+                <span className="text-sm font-black truncate text-white leading-tight">
                   {getUserDisplayName()}
                 </span>
-                <span className="text-[10px] font-bold text-primary/70 bg-primary/5 px-2 py-0.5 rounded-full w-fit mt-1 border border-primary/10 uppercase tracking-tighter">
+                <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full w-fit mt-1 border border-amber-500/30 uppercase tracking-tighter">
                   {user?.roles?.includes("admin") ? "Administrator" : "Moderator"}
                 </span>
               </div>
             </div>
-            {/* Subtle decorative element */}
-            <div className="absolute -right-2 -bottom-2 w-16 h-16 bg-primary/5 rounded-full blur-2xl transition-opacity opacity-0 group-hover:opacity-100" />
           </div>
 
           <Button
             variant="ghost"
             onClick={logout}
-            className="w-full h-11 rounded-xl bg-destructive/5 hover:bg-destructive hover:text-white text-destructive font-black text-xs flex items-center justify-center gap-3 transition-all duration-300 group shadow-sm border border-destructive/10"
+            className="w-full h-11 rounded-xl bg-red-500/20 hover:bg-red-500 hover:text-white text-red-200 font-black text-xs flex items-center justify-center gap-3 transition-all duration-300 group border border-red-500/30"
           >
             <LogOut className="h-4 w-4 transition-transform group-hover:rotate-12" />
             <span>تسجيل الخروج</span>
