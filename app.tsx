@@ -25,6 +25,7 @@ const DashboardHome = lazy(() => import("./src/pages/DashboardHome").then(m => (
 const LoginPage = lazy(() => import("./src/pages/LoginPage").then(m => ({ default: m.LoginPage })));
 const SettingsPage = lazy(() => import("./src/pages/SettingsPage").then(m => ({ default: m.default })));
 const UserInfo = lazy(() => import("./src/pages/UsersPage").then(m => ({ default: m.UserInfo })));
+const AllDataPage = lazy(() => import("./src/pages/AllDataPage").then(m => ({ default: m.default })));
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, user, logout } = useAuth();
@@ -159,6 +160,14 @@ export default function App() {
                   element={
                     <ProtectedRoute>
                       <Commercial />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="all_data"
+                  element={
+                    <ProtectedRoute>
+                      <AllDataPage />
                     </ProtectedRoute>
                   }
                 />

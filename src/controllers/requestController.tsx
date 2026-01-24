@@ -37,7 +37,7 @@ export async function put<T>(
   return doRequest<T>('PUT', endpoint, body, customHeaders);
 }
 
-export async function Delete<T>(endpoint: string, body: any): Promise<T> {
+export async function del<T>(endpoint: string, body?: any): Promise<T> {
   return doRequest<T>('DELETE', endpoint, body);
 }
 

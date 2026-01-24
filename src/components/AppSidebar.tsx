@@ -3,29 +3,29 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
-    AlertCircle,
-    ChartColumnIncreasing,
-    Gavel,
-    Home,
-    LogOut,
-    MessageCircle,
-    Settings,
-    Tv,
-    User,
-    Users,
-    Zap,
+  AlertCircle,
+  ChartColumnIncreasing,
+  Gavel,
+  Home,
+  LogOut,
+  MessageCircle,
+  Settings,
+  Tv,
+  User,
+  Users,
+  Zap,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -63,12 +63,12 @@ export function AppSidebar() {
     },
     ...(user?.roles.includes("admin")
       ? [
-          {
-            title: "المدراء",
-            url: "/admin",
-            icon: User,
-          },
-        ]
+        {
+          title: "المدراء",
+          url: "/admin",
+          icon: User,
+        },
+      ]
       : []),
     {
       title: "المحادثات",
@@ -84,6 +84,11 @@ export function AppSidebar() {
       title: "الإعدادات",
       url: "/settings",
       icon: Settings,
+    },
+    {
+      title: "إدارة البيانات",
+      url: "/all_data",
+      icon: Zap,
     },
   ];
 
