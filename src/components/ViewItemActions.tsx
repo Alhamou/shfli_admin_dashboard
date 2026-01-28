@@ -1,6 +1,6 @@
 import { ICreatMainItem } from "@/interfaces";
 import { postToFacebook, sendNotTeam, updateItem } from "@/services/restApiServices";
-import { Edit, ExternalLink, Facebook, Flag, Loader2, MessageCircle, RefreshCw, Save, Share2, X } from "lucide-react";
+import { Edit, ExternalLink, Facebook, Flag, Loader2, MessageCircle, RefreshCw, Save, Share2, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { SendNotificationPopup } from "./SendNotificationPopup";
@@ -40,9 +40,13 @@ export const ViewItemActions = ({
   const [loading, setIsloading] = useState(false);
   const [convertingToSale, setConvertingToSale] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showFacebookConfirm, setShowFacebookConfirm] = useState(false);
   const [postingToFacebook, setPostingToFacebook] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handlePostToFacebook = async () => {
+    setShowFacebookConfirm(false);
     setPostingToFacebook(true);
     try {
       await postToFacebook(item.uuid);
@@ -75,6 +79,25 @@ export const ViewItemActions = ({
       toast.error("فشل في التحويل إلى منشور عادي");
     } finally {
       setConvertingToSale(false);
+    }
+  };
+
+  const handleDeleteItem = async () => {
+    setShowDeleteDialog(false);
+    setDeleting(true);
+    try {
+      await updateItem(item.uuid, {
+        deleted_at: new Date()
+      } as any);
+      toast.success("تم حذف المنشور بنجاح");
+      const updatedItem = await fetchItem(item.uuid);
+      if (updatedItem) {
+        onItemUpdate(updatedItem);
+      }
+    } catch (error) {
+      toast.error("فشل في حذف المنشور");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -179,7 +202,7 @@ export const ViewItemActions = ({
             variant="ghost"
             size="sm"
             className="w-full text-blue-600 hover:bg-blue-600 hover:text-white transition-all dark:text-blue-400 dark:hover:text-white"
-            onClick={handlePostToFacebook}
+            onClick={() => setShowFacebookConfirm(true)}
             disabled={postingToFacebook}
           >
             {postingToFacebook ? (
@@ -210,6 +233,24 @@ export const ViewItemActions = ({
               </Button>
             </>
           )}
+
+          <Separator />
+          
+          {/* Delete Action */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-destructive hover:bg-destructive hover:text-white transition-all dark:text-red-400 dark:hover:text-white"
+            onClick={() => setShowDeleteDialog(true)}
+            disabled={deleting}
+          >
+            {deleting ? (
+              <Loader2 className="h-4 w-4 animate-spin ml-2" />
+            ) : (
+              <Trash2 className="h-4 w-4 ml-2" />
+            )}
+            حذف المنشور
+          </Button>
         </CardContent>
       </Card>
 
@@ -224,6 +265,35 @@ export const ViewItemActions = ({
           <AlertDialogFooter>
             <AlertDialogCancel onClick={closeConfirmDialog}>إلغاء</AlertDialogCancel>
             <AlertDialogAction onClick={handleConvertToSale}>تأكيد</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد حذف المنشور</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من رغبتك في حذف هذا المنشور؟ لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteItem} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">تأكيد الحذف</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showFacebookConfirm} onOpenChange={setShowFacebookConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد النشر على فيسبوك</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من رغبتك في نشر هذا المنشور على صفحة فيسبوك؟
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={handlePostToFacebook} className="bg-blue-600 hover:bg-blue-700 text-white">تأكيد النشر</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
