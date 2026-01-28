@@ -25,7 +25,7 @@ import {
     updateItemInArray,
 } from "@/lib/helpFunctions";
 import { getAllItems, updateItem } from "@/services/restApiServices";
-import { Briefcase, Clock, Eye, Hash, LayoutGrid, MapPin, MoreHorizontal, Search, Tag, Users, Wifi, WifiOff, X } from "lucide-react";
+import { Briefcase, Clock, Eye, Gavel, Hash, LayoutGrid, MapPin, MoreHorizontal, Search, Tag, Users, Wifi, WifiOff, X } from "lucide-react";
 import "moment";
 import moment from "moment";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -305,6 +305,7 @@ export default function DashboardHome() {
             <Table>
               <TableHeader className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-500">
                 <TableRow className="h-16 hover:bg-transparent border-transparent">
+                  <TableHead className="w-[110px] p-0"></TableHead>
                   <TableHead className="w-[280px] font-black uppercase text-xs tracking-widest text-right text-white">العنصر</TableHead>
                   <TableHead className="font-black uppercase text-xs tracking-widest text-right text-white">التصنيف</TableHead>
                   <TableHead className="font-black uppercase text-xs tracking-widest text-right text-white">السعر والقيمة</TableHead>
@@ -321,37 +322,42 @@ export default function DashboardHome() {
                     className="group border-indigo-50 dark:border-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-800/50 transition-all cursor-pointer even:bg-blue-50/50 dark:even:bg-slate-800/30"
                     onClick={() => setSelectedItemUuid(item.uuid)}
                   >
-                    <TableCell>
-                      <div className="flex items-center gap-4 py-3">
-                        <div className="h-20 w-20 flex-shrink-0 rounded-2xl overflow-hidden bg-muted flex items-center justify-center shadow-inner group-hover:shadow-md transition-all">
-                          {item.item_as === 'job' && !(item.thumbnail || (item.images && item.images[0]?.url)) ? (
-                            <div className="w-full h-full bg-blue-500/10 flex flex-col items-center justify-center gap-1">
-                                <Briefcase className="h-8 w-8 text-blue-500/40" />
-                                <span className="text-[10px] text-blue-500/50 font-black">وظيفة</span>
-                            </div>
-                          ) : (
-                            <img
-                              src={item.thumbnail || (item.images && item.images[0]?.url) || "/placeholder-item.png"}
-                              alt={item.title}
-                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                              onError={(e) => (e.currentTarget.src = "/placeholder-item.png")}
-                            />
-                          )}
-                        </div>
-                        <div className="min-w-0 space-y-1">
-                          <p className="font-black text-foreground group-hover:text-indigo-600 group-hover:underline underline-offset-4 decoration-2 decoration-indigo-600/30 transition-all duration-300 truncate max-w-[250px]">{item.title}</p>
-                          <p className="text-xs text-muted-foreground/80 line-clamp-1 font-medium max-w-[200px]">{item.description}</p>
-                          {item.status_note && (
-                            <div className="mt-1 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg max-w-[250px]">
-                              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold line-clamp-2 leading-tight">
-                                <span className="opacity-70">ملاحظة:</span> {item.status_note}
-                              </p>
-                            </div>
-                          )}
-                          <div className="flex items-center gap-2 pt-1">
-                            {item.item_as === 'job' && <CustomBadge className="h-5 px-2 text-[10px] bg-blue-500/10 text-blue-500 border-none font-black">{item.need ? "باحث" : "موظِف"}</CustomBadge>}
-                            {item.account_type === 'business' && <CustomBadge className="h-5 px-2 text-[10px] bg-primary/10 text-primary border-none font-black">عمل تجاري</CustomBadge>}
+                    <TableCell className="p-0 w-[110px] min-w-[110px] h-32">
+                      <div className="relative h-32 w-full overflow-hidden bg-muted flex items-center justify-center transition-all">
+                        {item.item_as === 'job' && !(item.thumbnail || (item.images && item.images[0]?.url)) ? (
+                          <div className="w-full h-full bg-blue-500/10 flex flex-col items-center justify-center gap-1">
+                              <Briefcase className="h-8 w-8 text-blue-500/40" />
+                              <span className="text-[10px] text-blue-500/50 font-black">وظيفة</span>
                           </div>
+                        ) : (
+                          <img
+                            src={item.thumbnail || (item.images && item.images[0]?.url) || "/placeholder-item.png"}
+                            alt={item.title}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            onError={(e) => (e.currentTarget.src = "/placeholder-item.png")}
+                          />
+                        )}
+                        {item.item_for === 'bid' && (
+                          <div className="absolute top-1 right-1 h-6 w-6 bg-purple-500 rounded-lg flex items-center justify-center text-white shadow-lg border-2 border-background z-10">
+                              <Gavel className="h-3 w-3" />
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="min-w-0 space-y-1 py-2">
+                        <p className="font-black text-foreground group-hover:text-indigo-600 group-hover:underline underline-offset-4 decoration-2 decoration-indigo-600/30 transition-all duration-300 truncate max-w-[250px]">{item.title}</p>
+                        <p className="text-xs text-muted-foreground/80 line-clamp-1 font-medium max-w-[200px]">{item.description}</p>
+                        {item.status_note && (
+                          <div className="mt-1 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg max-w-[250px]">
+                            <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold line-clamp-2 leading-tight">
+                              <span className="opacity-70">ملاحظة:</span> {item.status_note}
+                            </p>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 pt-1">
+                          {item.item_as === 'job' && <CustomBadge className="h-5 px-2 text-[10px] bg-blue-500/10 text-blue-500 border-none font-black">{item.need ? "باحث" : "موظِف"}</CustomBadge>}
+                          {item.account_type === 'business' && <CustomBadge className="h-5 px-2 text-[10px] bg-primary/10 text-primary border-none font-black">عمل تجاري</CustomBadge>}
                         </div>
                       </div>
                     </TableCell>

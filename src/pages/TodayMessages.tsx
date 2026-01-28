@@ -289,14 +289,14 @@ export const TodayMessages = () => {
                                     <div
                                         key={message.uuid}
                                         onClick={() => handleSelectMessage(message)}
-                                        className={`flex items-center gap-3 p-4 cursor-pointer transition-all hover:bg-primary/5 ${selectedMessage?.uuid === message.uuid ? "bg-primary/10 border-r-4 border-primary" : ""
+                                        className={`flex items-stretch gap-4 p-0 cursor-pointer transition-all hover:bg-primary/5 ${selectedMessage?.uuid === message.uuid ? "bg-primary/10 border-r-4 border-primary" : ""
                                             }`}
                                     >
                                         {/* Thumbnail */}
-                                        <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-muted">
+                                        <div className="w-20 min-h-[80px] overflow-hidden flex-shrink-0 bg-muted">
                                             {message.item_as === "job" ? (
                                                 <div className="w-full h-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                                                    <Briefcase className="h-5 w-5 text-white" />
+                                                    <Briefcase className="h-6 w-6 text-white" />
                                                 </div>
                                             ) : (
                                                 <img
@@ -309,7 +309,7 @@ export const TodayMessages = () => {
                                         </div>
 
                                         {/* Content */}
-                                        <div className="flex-1 min-w-0">
+                                        <div className="flex-1 min-w-0 py-3 pe-4 flex flex-col justify-center">
                                             <div className="flex items-center justify-between mb-1">
                                                 <span className="font-bold text-sm text-foreground truncate max-w-[150px]">
                                                     {message.title}
@@ -361,10 +361,10 @@ export const TodayMessages = () => {
                                         <ArrowRight className="h-5 w-5" />
                                     </Button>
 
-                                    <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-muted">
+                                    <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 bg-muted">
                                         {selectedMessage.item_as === "job" ? (
                                             <div className="w-full h-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                                                <Briefcase className="h-5 w-5 text-white" />
+                                                <Briefcase className="h-6 w-6 text-white" />
                                             </div>
                                         ) : (
                                             <img

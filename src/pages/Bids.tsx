@@ -255,7 +255,8 @@ export default function BidsScreen() {
                   <Table>
                     <TableHeader className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-500">
                       <TableRow className="hover:bg-transparent border-transparent h-16">
-                        <TableHead className="w-[280px] font-black uppercase tracking-widest text-[10px] text-white mr-1 text-right">المزاد</TableHead>
+                        <TableHead className="w-[110px] p-0 mr-1"></TableHead>
+                        <TableHead className="w-[280px] font-black uppercase tracking-widest text-[10px] text-white text-right">المزاد</TableHead>
                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-white text-right">التصنيف</TableHead>
                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-white text-right">السعر الحالي</TableHead>
                         <TableHead className="font-black uppercase tracking-widest text-[10px] text-white text-right">الموقع</TableHead>
@@ -271,24 +272,25 @@ export default function BidsScreen() {
                             className="group hover:bg-primary/5 transition-all duration-300 border-border/30 h-28 cursor-pointer"
                             onClick={() => setSelectedItemUuid(item.uuid)}
                         >
-                          <TableCell className="p-4">
-                            <div className="flex items-center gap-5">
-                               <div className="relative h-20 w-20 flex-shrink-0 group-hover:scale-105 transition-transform duration-500 flex items-center justify-center bg-muted rounded-2xl overflow-hidden border border-border/20 shadow-lg">
-                                {item.item_as === 'job' && !(item.thumbnail || (item.images && item.images[0]?.url)) ? (
-                                  <div className="w-full h-full bg-blue-500/10 flex items-center justify-center">
-                                      <Briefcase className="h-8 w-8 text-blue-500/30" />
-                                  </div>
-                                ) : (
-                                  <img
-                                    className="h-full w-full object-cover"
-                                    src={item.thumbnail || (item.images && item.images[0]?.url) || "/placeholder-item.png"}
-                                    alt={item.title}
-                                  />
-                                )}
-                                <div className="absolute top-1 right-1 h-6 w-6 bg-purple-500 rounded-lg flex items-center justify-center text-white shadow-lg border-2 border-background z-10">
-                                    <Gavel className="h-3 w-3" />
+                          <TableCell className="p-0 w-[110px] min-w-[110px] h-28">
+                            <div className="relative h-28 w-full flex-shrink-0 transition-transform duration-500 flex items-center justify-center bg-muted overflow-hidden">
+                              {item.item_as === 'job' && !(item.thumbnail || (item.images && item.images[0]?.url)) ? (
+                                <div className="w-full h-full bg-blue-500/10 flex items-center justify-center">
+                                    <Briefcase className="h-8 w-8 text-blue-500/30" />
                                 </div>
+                              ) : (
+                                <img
+                                  className="h-full w-full object-cover"
+                                  src={item.thumbnail || (item.images && item.images[0]?.url) || "/placeholder-item.png"}
+                                  alt={item.title}
+                                />
+                              )}
+                              <div className="absolute top-1 right-1 h-6 w-6 bg-purple-500 rounded-lg flex items-center justify-center text-white shadow-lg border-2 border-background z-10">
+                                  <Gavel className="h-3 w-3" />
                               </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="p-4">
                               <div className="space-y-1.5 flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
                                     <h4 className="font-black text-base truncate tracking-tight max-w-[250px] group-hover:text-indigo-600 group-hover:underline underline-offset-4 decoration-2 decoration-indigo-600/30 transition-all duration-300">{item.title}</h4>
@@ -311,7 +313,6 @@ export default function BidsScreen() {
                                    </div>
                                 </div>
                               </div>
-                            </div>
                           </TableCell>
                           <TableCell className="text-center">
                             <div className="inline-flex flex-col items-center gap-1">
