@@ -1,3 +1,4 @@
+import { useEffect, useState, type ReactNode } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,10 +8,81 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { useAuth } from "@/context/AuthContext"
-import { Bell, Globe, Lock, Mail, Phone, Settings, ShieldCheck, User } from "lucide-react"
+import { getAppSettings, IAppSetting, updateAppSetting } from "@/services/restApiServices"
+import { Bell, Globe, Mail, MessageSquareText, Phone, Settings, ShieldCheck, User } from "lucide-react"
+
+type SettingsMap = Record<string, IAppSetting>
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const [settings, setSettings] = useState<SettingsMap>({})
+  const [loading, setLoading] = useState(true)
+  const [savingKey, setSavingKey] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [teamPhones, setTeamPhones] = useState<string[]>([])
+  const [newPhone, setNewPhone] = useState("")
+
+  const load = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res: any = await getAppSettings()
+      const list: IAppSetting[] = res?.data ?? res ?? []
+      const map: SettingsMap = {}
+      for (const s of list) map[s.key] = s
+      setSettings(map)
+
+      const raw = map["team_sms_phones"]?.value || "[]"
+      try {
+        const parsed = JSON.parse(raw)
+        setTeamPhones(Array.isArray(parsed) ? parsed.filter((p) => typeof p === "string") : [])
+      } catch {
+        setTeamPhones([])
+      }
+    } catch (e: any) {
+      setError(e?.message || "Failed to load settings")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    load()
+  }, [])
+
+  const saveSetting = async (key: string, value: string) => {
+    setSavingKey(key)
+    setError(null)
+    try {
+      await updateAppSetting(key, value)
+      await load()
+    } catch (e: any) {
+      setError(e?.message || `Failed to save ${key}`)
+    } finally {
+      setSavingKey(null)
+    }
+  }
+
+  const enableSmsRelay = settings["enable_sms_relay_login"]?.value === "true"
+
+  const onToggleRelay = (checked: boolean) => {
+    saveSetting("enable_sms_relay_login", checked ? "true" : "false")
+  }
+
+  const onAddPhone = () => {
+    const trimmed = newPhone.trim()
+    if (!trimmed) return
+    const next = [...teamPhones, trimmed]
+    setTeamPhones(next)
+    setNewPhone("")
+    saveSetting("team_sms_phones", JSON.stringify(next))
+  }
+
+  const onRemovePhone = (idx: number) => {
+    const next = teamPhones.filter((_, i) => i !== idx)
+    setTeamPhones(next)
+    saveSetting("team_sms_phones", JSON.stringify(next))
+  }
 
   const getInitials = () => {
     if (!user) return "AD";
@@ -32,7 +104,7 @@ export default function SettingsPage() {
     }
   };
 
-  const InfoItem = ({ icon, label, value, isLtr }: { icon: React.ReactNode, label: string, value: string | number, isLtr?: boolean }) => (
+  const InfoItem = ({ icon, label, value, isLtr }: { icon: ReactNode, label: string, value: string | number, isLtr?: boolean }) => (
     <div className="space-y-2 group">
         <div className="flex items-center gap-2 px-1">
             <div className="text-muted-foreground group-hover:text-primary transition-colors">
@@ -129,6 +201,95 @@ export default function SettingsPage() {
                ))}
             </CardContent>
           </Card>
+
+          <Card className="border-border/40 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm overflow-hidden rounded-[2.5rem]">
+            <CardHeader className="p-8 pb-4">
+              <div className="flex items-center gap-4 mb-2">
+                 <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 shadow-inner">
+                    <MessageSquareText className="h-6 w-6" />
+                 </div>
+                 <div>
+                    <CardTitle className="text-xl font-black">SMS Relay Login</CardTitle>
+                    <CardDescription className="font-bold text-muted-foreground/70">إدارة تسجيل الدخول عبر وسيط رسائل SMS للفريق</CardDescription>
+                 </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-8 pt-4 space-y-6">
+              {error && (
+                <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-600">
+                  {error}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between py-2 gap-6">
+                <div className="space-y-1">
+                  <Label className="text-base font-black" htmlFor="enable-sms-relay-login">تفعيل SMS Relay Login</Label>
+                  <p className="text-xs font-bold text-muted-foreground leading-relaxed">
+                    عند التفعيل يستخدم تطبيق الجوال مسار SMS Relay لتسجيل الدخول برقم الهاتف.
+                  </p>
+                </div>
+                <Switch
+                  id="enable-sms-relay-login"
+                  checked={enableSmsRelay}
+                  disabled={loading || savingKey === "enable_sms_relay_login"}
+                  onCheckedChange={onToggleRelay}
+                  className="data-[state=checked]:bg-primary"
+                />
+              </div>
+
+              <Separator className="bg-border/40" />
+
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <Label className="text-base font-black">أرقام فريق SMS</Label>
+                  <p className="text-xs font-bold text-muted-foreground leading-relaxed">
+                    يتم إرسال رموز التحقق لهذه الأرقام بالتناوب.
+                  </p>
+                </div>
+
+                <ul className="space-y-3">
+                  {teamPhones.length === 0 && (
+                    <li className="rounded-2xl border border-dashed border-border/60 px-4 py-4 text-sm font-bold text-muted-foreground">
+                      لم يتم إضافة أرقام بعد
+                    </li>
+                  )}
+                  {teamPhones.map((phone, idx) => (
+                    <li
+                      key={`${phone}-${idx}`}
+                      className="flex items-center justify-between gap-3 rounded-2xl border border-border/40 bg-background/50 px-4 py-3"
+                    >
+                      <span className="font-mono text-sm font-bold" dir="ltr">{phone}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={savingKey === "team_sms_phones"}
+                        onClick={() => onRemovePhone(idx)}
+                        className="rounded-xl font-black"
+                      >
+                        حذف
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-1" dir="ltr">
+                  <Input
+                    placeholder="+963XXXXXXXXX"
+                    value={newPhone}
+                    onChange={(e) => setNewPhone(e.target.value)}
+                    className="rounded-2xl font-mono"
+                  />
+                  <Button
+                    disabled={savingKey === "team_sms_phones" || !newPhone.trim()}
+                    onClick={onAddPhone}
+                    className="rounded-2xl font-black sm:w-24"
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Sidebar Info */}
@@ -193,5 +354,5 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
