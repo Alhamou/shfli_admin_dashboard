@@ -8,7 +8,12 @@ interface CustomHeaders {
   [key: string]: string;
 }
 
-const apiUrl: string = 'https://team.shfli.com/api/v1';
+// Backend address. Defaults keep today's behaviour; set VITE_API_URL / VITE_SOCKET_URL / VITE_SOCKET_PATH at
+// build time to call the API's backoffice module directly (https://api.shfli.com/api/backoffice/v1,
+// socket path /backoffice-socket) instead of going through the team.shfli.com proxy.
+const apiUrl: string = import.meta.env.VITE_API_URL || 'https://team.shfli.com/api/v1';
+const socketUrl: string = import.meta.env.VITE_SOCKET_URL || 'https://team.shfli.com';
+const socketPath: string = import.meta.env.VITE_SOCKET_PATH || '/socket.io';
 export async function get<T>(endpoint: string): Promise<T> {
   return doRequest<T>('GET', endpoint);
 }
@@ -132,7 +137,8 @@ export async function handleError(
 
 const token = storageController.get("token");
 
-export const socket: Socket = io("https://team.shfli.com", {
+export const socket: Socket = io(socketUrl, {
+  path: socketPath,
   transports: ["websocket", "polling"],
   autoConnect: false,
   reconnectionAttempts: 5,
