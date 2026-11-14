@@ -376,22 +376,27 @@ export interface Stat {
   count: number;
 }
 
+export interface NotificationImage {
+  image_url: string;
+  /** Display size (about 300 wide): the old app draws it at this size, the new apps use the ratio. */
+  width: number;
+  height: number;
+}
+
+export interface NotificationAction {
+  navigate_info?: {
+    tab: string;
+    screen: string;
+    params: { uuid: string };
+  };
+  outside_link?: string;
+  image?: NotificationImage;
+}
+
 export interface NotificationBody {
   message: string;
-  action:
-    | {
-        navigate_info: {
-          tab: string;
-          screen: string;
-          params: {
-            uuid: string;
-          };
-        };
-        outside_link?: undefined;
-      }
-    | {
-        outside_link: string;
-        navigate_info?: undefined;
-      };
-  user_id: number;
+  title?: string;
+  is_public?: boolean;
+  action?: NotificationAction;
+  user_id?: number;
 }

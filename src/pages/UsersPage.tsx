@@ -238,8 +238,9 @@ export const UserInfo = () => {
                             try {
                               await sendNotTeam(messageData);
                               toast.success("تم إرسال الإشعار بنجاح");
-                            } catch {
+                            } catch (e) {
                               toast.error("فشل إرسال الإشعار");
+                              throw e;
                             } finally {
                               setLoadingNotification(false);
                             }

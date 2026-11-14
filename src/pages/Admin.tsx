@@ -1,4 +1,3 @@
-import { AnnouncementDialog } from "@/components/FirebaseAnnouncement";
 import { SendNotificationPopup } from "@/components/SendNotificationPopup";
 import { VerifyResultsDialog } from "@/components/VerifyResultsDialog";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { getEligibleUsersCount, sendFirebase, sendNotAdmin, verifyEligibleUsers 
 import { Bell, Megaphone, RefreshCw, ShieldAlert, ShieldCheck, Sparkles, Wifi, WifiOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { NotificationBody } from "@/interfaces";
 
 export default function Admin() {
   const [loadingNotification, setLoadingNotification] = useState(false);
@@ -16,27 +16,27 @@ export default function Admin() {
   const [verifiedUsersResult, setVerifiedUsersResult] = useState<{ id: number }[]>([]);
   const [isResultDialogOpen, setIsResultDialogOpen] = useState(false);
 
-  const handleSendNotification = async (messageData: any) => {
+  const handleSendNotification = async (messageData: NotificationBody) => {
     setLoadingNotification(true);
     try {
       await sendNotAdmin(messageData);
       toast.success("تم إرسال الإشعار بنجاح");
-    } catch {
+    } catch (e) {
       toast.error("فشل في إرسال الإشعار");
+      throw e;
     } finally {
       setLoadingNotification(false);
     }
   };
 
-  const handleSendAnnouncement = async (data: {
-    title: string;
-    description: string;
-  }) => {
+  // Push only, no inbox entry.
+  const handleSendPushOnly = async (data: { title: string; description: string; image_url?: string }) => {
     try {
       await sendFirebase(data);
-      toast.success("تم إرسال الإعلان بنجاح");
-    } catch {
-      toast.error("فشل في إرسال الإعلان");
+      toast.success("تم إرسال التنبيه بنجاح");
+    } catch (e) {
+      toast.error("فشل في إرسال التنبيه");
+      throw e;
     }
   };
 
@@ -128,23 +128,23 @@ export default function Admin() {
             <div className="h-16 w-16 rounded-[1.5rem] bg-blue-500/10 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner">
                <Bell className="h-8 w-8" />
             </div>
-            <CardTitle className="text-2xl font-black">إشعارات عامة</CardTitle>
-            <CardDescription className="text-base font-medium leading-relaxed">إرسال إشعارات فورية لجميع مستخدمي التطبيق عبر الخدمات السحابية.</CardDescription>
+            <CardTitle className="text-2xl font-black">إشعار لكل المستخدمين</CardTitle>
+            <CardDescription className="text-base font-medium leading-relaxed">تنبيه على الموبايل، مع صورة ورابط إن أردت.</CardDescription>
           </CardHeader>
           <CardContent className="p-8 pt-4">
             <div className="space-y-6">
                 <ul className="space-y-3">
                     <li className="flex items-center gap-3 text-sm font-bold text-muted-foreground/80">
                         <div className="h-1.5 w-1.5 rounded-full bg-blue-500"></div>
-                        وصول فوري لجميع الأجهزة النشطة
+                        تنبيه + صندوق الإشعارات، أو تنبيه فقط
                     </li>
                     <li className="flex items-center gap-3 text-sm font-bold text-muted-foreground/80">
                         <div className="h-1.5 w-1.5 rounded-full bg-blue-500"></div>
-                        دعم الروابط العميقة (Deep Links)
+                        صورة من جهازك مباشرة
                     </li>
                     <li className="flex items-center gap-3 text-sm font-bold text-muted-foreground/80">
                         <div className="h-1.5 w-1.5 rounded-full bg-blue-500"></div>
-                        تخصيص أيقونات الإشعارات
+                        يفتح إعلاناً أو رابطاً عند الضغط
                     </li>
                 </ul>
 
@@ -153,48 +153,13 @@ export default function Admin() {
                     userId={1}
                     loading={loadingNotification}
                     onSend={handleSendNotification}
+                    onSendPushOnly={handleSendPushOnly}
                 >
                     <Button className="w-full h-16 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 font-black text-lg transition-all active:scale-95 flex items-center gap-3">
                         <Sparkles className="h-5 w-5" />
                         بدء إرسال الإشعار
                     </Button>
                 </SendNotificationPopup>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Send Announcement Card */}
-        <Card className="group border-border/40 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm overflow-hidden rounded-[2.5rem] hover:shadow-2xl transition-all duration-500">
-          <CardHeader className="p-8 pb-4">
-            <div className="h-16 w-16 rounded-[1.5rem] bg-orange-500/10 flex items-center justify-center text-orange-600 mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner">
-               <Megaphone className="h-8 w-8" />
-            </div>
-            <CardTitle className="text-2xl font-black">إعلانات التطبيق</CardTitle>
-            <CardDescription className="text-base font-medium leading-relaxed">عرض نافذة إعلانية منبثقة تظهر للمستخدمين عند فتح التطبيق.</CardDescription>
-          </CardHeader>
-          <CardContent className="p-8 pt-4">
-            <div className="space-y-6">
-                <ul className="space-y-3">
-                    <li className="flex items-center gap-3 text-sm font-bold text-muted-foreground/80">
-                        <div className="h-1.5 w-1.5 rounded-full bg-orange-500"></div>
-                        تنبيهات الصيانة والتحديثات الهامة
-                    </li>
-                    <li className="flex items-center gap-3 text-sm font-bold text-muted-foreground/80">
-                        <div className="h-1.5 w-1.5 rounded-full bg-orange-500"></div>
-                        العروض الترويجية والخصومات الجديدة
-                    </li>
-                    <li className="flex items-center gap-3 text-sm font-bold text-muted-foreground/80">
-                        <div className="h-1.5 w-1.5 rounded-full bg-orange-500"></div>
-                        إمكانية إضافة صور وروابط تفاعلية
-                    </li>
-                </ul>
-
-                <AnnouncementDialog onSend={handleSendAnnouncement}>
-                    <Button className="w-full h-16 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-500/20 font-black text-lg transition-all active:scale-95 flex items-center gap-3">
-                        <Megaphone className="h-5 w-5" />
-                        إنشاء إعلان جديد
-                    </Button>
-                </AnnouncementDialog>
             </div>
           </CardContent>
         </Card>

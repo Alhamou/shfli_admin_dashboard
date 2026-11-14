@@ -8,7 +8,7 @@ import {
   NotificationBody,
   Stat,
 } from "@/interfaces";
-import { del, get, post, put } from "../controllers/requestController";
+import { del, formData, get, post, put } from "../controllers/requestController";
 
 export function insertItem(payload: object): Promise<object> {
   return post("/items", payload);
@@ -59,6 +59,13 @@ export function sendNotTeam(body: NotificationBody) {
   return post(`/team/send_not`, body);
 }
 
+/** Uploads a notification picture; the server stores a JPEG and answers its URL and size. */
+export function uploadNotificationImage(image: Blob): Promise<{ image_url: string; width: number; height: number }> {
+  const fd = new FormData();
+  fd.append("image", image, "notification.jpg");
+  return formData(`/team/notification_image`, fd);
+}
+
 export function getAllCommercialItems(queries: string) {
   return get<IResultAndPagination>(`/items/commercial?${queries}`);
 }
@@ -95,7 +102,7 @@ export function verifyEligibleUsers() {
   return post<{ id: number }[]>(`/team/verify_eligible_users`, {});
 }
 
-export function sendFirebase(body: { title: string; description: string }) {
+export function sendFirebase(body: { title: string; description: string; image_url?: string }) {
   return post<void>(`/admin/send_firebase_all`, body);
 }
 
