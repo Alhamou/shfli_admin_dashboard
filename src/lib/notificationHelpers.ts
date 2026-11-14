@@ -40,22 +40,36 @@ export function displaySize(width: number, height: number, max = 300) {
   return { width: w, height: Math.max(1, Math.round((height * w) / width)) };
 }
 
-/** Shrinks a picture in the browser (JPEG, longest side <= max) so the upload is small and the size is known. */
-export async function shrinkImage(file: File, max = 1600): Promise<{ blob: Blob; width: number; height: number }> {
+/**
+ * Shrinks a picture in the browser (JPEG, longest side <= max) so the upload is small and the size is known.
+ * Stays under ~900 KB: team.shfli.com (nginx) refuses request bodies over 1 MB.
+ */
+export async function shrinkImage(file: File, max = 1600, maxBytes = 900_000): Promise<{ blob: Blob; width: number; height: number }> {
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
-  const width = Math.round(bitmap.width * scale);
-  const height = Math.round(bitmap.height * scale);
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("no canvas");
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, width, height);
-  ctx.drawImage(bitmap, 0, 0, width, height);
-  bitmap.close?.();
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.88));
-  if (!blob) throw new Error("encode failed");
-  return { blob, width, height };
+  try {
+    let result: { blob: Blob; width: number; height: number } | null = null;
+    for (const side of [max, 1280, 1024]) {
+      const scale = Math.min(1, side / Math.max(bitmap.width, bitmap.height));
+      const width = Math.round(bitmap.width * scale);
+      const height = Math.round(bitmap.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("no canvas");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(bitmap, 0, 0, width, height);
+      for (const quality of [0.88, 0.8, 0.7]) {
+        const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+        if (!blob) throw new Error("encode failed");
+        result = { blob, width, height };
+        if (blob.size <= maxBytes) return result;
+      }
+    }
+    if (!result || result.blob.size > maxBytes) throw new Error("image too large");
+    return result;
+  } finally {
+    bitmap.close?.();
+  }
 }
