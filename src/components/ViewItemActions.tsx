@@ -161,8 +161,9 @@ export const ViewItemActions = ({
               try {
                 await sendNotTeam(messageData);
                 toast.success("تم إرسال الإشعار بنجاح");
-              } catch {
+              } catch (e) {
                 toast.error("فشل في إرسال الإشعار");
+                throw e;
               } finally {
                 setIsloading(false);
               }
