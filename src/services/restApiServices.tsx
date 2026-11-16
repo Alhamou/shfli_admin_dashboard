@@ -184,3 +184,19 @@ export const createAllResourcesJobSubcategory = (name: object, category_id: numb
 export const updateAllResourcesJobSubcategory = (id: number, name: object, category_id: number) => put<IJobSubcategory>(`/all_resources/job_subcategories/${id}`, { name, category_id });
 export const deleteAllResourcesJobSubcategory = (id: number) => del<void>(`/all_resources/job_subcategories/${id}`);
 
+
+export interface IAppSetting {
+  key: string;
+  value: string | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export function getAppSettings() {
+  return get<IAppSetting[]>(`/admin/settings`);
+}
+
+export function updateAppSetting(key: string, value: string) {
+  return put<IAppSetting>(`/admin/settings/${encodeURIComponent(key)}`, { value });
+}
