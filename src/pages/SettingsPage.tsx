@@ -21,6 +21,7 @@ export default function SettingsPage() {
   const [error, setError] = useState<string | null>(null)
   const [teamPhones, setTeamPhones] = useState<string[]>([])
   const [newPhone, setNewPhone] = useState("")
+  const [whatsappPhone, setWhatsappPhone] = useState("")
 
   const load = async () => {
     setLoading(true)
@@ -32,6 +33,7 @@ export default function SettingsPage() {
       for (const s of list) map[s.key] = s
       setSettings(map)
 
+      setWhatsappPhone(map["team_whatsapp_phone"]?.value || "")
       const raw = map["team_sms_phones"]?.value || "[]"
       try {
         const parsed = JSON.parse(raw)
@@ -235,6 +237,33 @@ export default function SettingsPage() {
                   onCheckedChange={onToggleRelay}
                   className="data-[state=checked]:bg-primary"
                 />
+              </div>
+
+              <Separator className="bg-border/40" />
+
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <Label className="text-base font-black" htmlFor="team-whatsapp-phone">رقم واتساب</Label>
+                  <p className="text-xs font-bold text-muted-foreground leading-relaxed">
+                    زر واتساب يرسل الرسالة لهذا الرقم. إذا كان فارغاً يُستخدم رقم SMS.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3" dir="ltr">
+                  <Input
+                    id="team-whatsapp-phone"
+                    placeholder="+20XXXXXXXXXX"
+                    value={whatsappPhone}
+                    onChange={(e) => setWhatsappPhone(e.target.value)}
+                    className="rounded-2xl font-mono"
+                  />
+                  <Button
+                    disabled={savingKey === "team_whatsapp_phone" || whatsappPhone.trim() === (settings["team_whatsapp_phone"]?.value || "")}
+                    onClick={() => saveSetting("team_whatsapp_phone", whatsappPhone.trim())}
+                    className="rounded-2xl font-black sm:w-24"
+                  >
+                    Save
+                  </Button>
+                </div>
               </div>
 
               <Separator className="bg-border/40" />
